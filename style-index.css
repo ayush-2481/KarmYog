@@ -4,10 +4,175 @@
 .not-ok {
   color: red;
 }
-/* .image {
-            background-image: url(pics/laboursss.png);
-            height: 100vh;
-            width: 100vw; 
-            background-size: cover;
-            background-repeat: no-repeat;
-        }  */
+/* Area of Chahat Started  */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
+html {
+  max-width: 100%;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+.header {
+  min-height: 100vh;
+  width: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.7)),
+    url(/public/pics/pngtree-human-resources-and-customer-relationship-management-image_1056957.jpg);
+  background-position: center;
+  background-size: cover;
+  position: relative;
+}
+nav {
+  display: flex;
+  padding: 2% 6%;
+  justify-content: space-between;
+  align-items: center;
+}
+nav img {
+  width: 32px;
+}
+.nav-links {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-content: center;
+}
+.nav-btn-1 {
+  display: flex;
+  justify-content: space-around;
+  align-content: center;
+  gap: 18px;
+}
+.nav-btn-2 {
+  display: flex;
+  justify-content: space-around;
+  align-content: center;
+  gap: 12px;
+}
+.nav-btn-1 li a {
+  text-decoration: none;
+  color: #fff;
+}
+.nav-btn-1 li {
+  list-style: none;
+}
+.nav-btn-2 li a {
+  text-decoration: none;
+  color: #fff;
+}
+.nav-btn-2 li {
+  list-style: none;
+}
+.btn11 {
+  height: 28px;
+  font-size: 13px;
+  background-color: #000;
+  color: #fff;
+  font-weight: bolder;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 4px;
+  border: solid 0.5px white;
+}
+.btn11:hover {
+  color: #f44336;
+  border: 0.5px solid red;
+}
+.btn12:hover {
+  color: #f44336;
+  background-color: #000;
+  border: 0.5px solid red;
+}
+.btn12 {
+  height: 28px;
+  font-size: 13px;
+  background-color: #f44336;
+  color: #fff;
+  font-weight: bolder;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 4px;
+  border: solid 0.2px white;
+}
+.nav-btn-1 li a::after {
+  content: "";
+  width: 0%;
+  height: 2px;
+  background: #f44336;
+  display: block;
+  margin: auto;
+  transition: 0.5s;
+}
+.nav-btn-1 li a:hover::after {
+  width: 100%;
+}
+.text-box {
+  width: 70%;
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.text-box h1 {
+  font-size: 70px;
+}
+.text-box p {
+  margin: 10px 0 40px;
+  font-size: 14px;
+  color: #fff;
+}
+.hero-btn {
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 12px 34px;
+  font-size: 13px;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+}
+.hero-btn:hover {
+  border: 1px solid #f44336;
+  background: #f44336;
+  transition: 1s;
+}
+
+nav .fas {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .text-box h1 {
+    font-size: 20px;
+  }
+  .nav-links ul li {
+    display: block;
+  }
+  .nav-links {
+    position: fixed;
+    background: #f44336;
+    height: 100vh;
+    width: 200px;
+    top: 0;
+    right: -200px;
+    text-align: left;
+    z-index: 2;
+    transition: 1s;
+  }
+  nav .fas {
+    display: block;
+    color: #fff;
+    margin: 10px;
+    font-size: 22px;
+    cursor: pointer;
+  }
+  .nav-links ul {
+    padding: 40px;
+  }
+}
+/* Area of Chahat Ended  */
