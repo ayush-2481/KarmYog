@@ -19,7 +19,7 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="/style-index.css" />
+    <link rel="stylesheet" href="style-index.css" />
     <script>
       $(document).ready(function () {
         //signup valid code
@@ -86,7 +86,7 @@
             //-------------------------------
             $("#signupEmail").blur(function () {
                 let obj = {
-                    url: "/checksign-User",
+                    url: "/check-User",
                     data: {
                         KUCHEmail: $("#signupEmail").val(),
                     },
@@ -182,8 +182,6 @@
                     });
             });
 
-
-
         // signup eye code
         $(".fa-solid").mousedown(function () {
           $("#signupPass").prop("type", "text");
@@ -217,7 +215,12 @@
     >
       <div class="ms-3">
         <a class="navbar-brand" href="#">
-          <img src="pics/allcus.png" alt="Bootstrap" width="50" height="50" />
+          <img
+            src="/public/pics/allcus.png"
+            alt="Bootstrap"
+            width="50"
+            height="50"
+          />
           <span
             style="
               color: black;
