@@ -86,9 +86,9 @@
             //-------------------------------
             $("#signupEmail").blur(function () {
                 let obj = {
-                    url: "/check-User",
+                    url: "/checksign-User",
                     data: {
-                        KUCHEmail: $("#signupEmail").val(),
+                        kuchEmail: $("#signupEmail").val(),
                     },
                 };
                 $.ajax(obj)
