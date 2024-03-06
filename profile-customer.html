@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <title>Profile - customer </title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            color: antiquewhite;
+            background-image: url(https://akm-img-a-in.tosshub.com/indiatoday/images/story/201912/question-mark-2492009_960_720.jpeg?size=690:388);
+        }
+
+        .ok {
+            color: rgb(58, 228, 58);
+        }
+
+        .not-ok {
+            color: red;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .left-div {
+            background-image: url(https://img.freepik.com/free-photo/abstract-luxury-gradient-blue-background-smooth-dark-blue-with-black-vignette-studio-banner_1258-100595.jpg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            margin-left: 80px;
+
+        }
+
+        .left-div img {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+
+        }
+
+        .right-div {
+            background-image: url(https://ae01.alicdn.com/kf/HTB1sNzCaiLxK1Rjy0Ffq6zYdVXav/VinylBDS-Custom-Professional-Photo-Background.jpg_Q90.jpg_.webp);
+            background-repeat: no-repeat;
+            background-size: cover;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $("#txtEmailProf").keyup(function () {
+                let email = $("#txtEmailProf").val();
+                var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+                if (r.test(email) == false) {
+                    $("#emailerr").html("(Invalid Email)").addClass("not-ok").removeClass("ok");
+                }
+                else
+                    $("#emailerr").html("(Valid Email)").addClass("ok").removeClass("not-ok");
+
+            });
+            $("#termsconditions").change(function () {
+
+                $("#btnProfSave").attr("disabled", !$(this).prop("checked"));
+                $("#btnProfUpdate").attr("disabled", !$(this).prop("checked"));
+            })
+
+            //---------------------
+            $("#btnSearch").click(function () {
+                let obj = {
+
+                    url: "/fetch-one",
+                    data: {
+                        kuchEmail: $("#txtEmailProf").val(),
+                    }
+                }
+                $.ajax(obj).done(function (respJsonArray) {
+
+                    alert(JSON.stringify(respJsonArray));
+                    $("#txtEmailProf").val(respJsonArray[0].emailid);
+                    $("#txtNameProf").val(respJsonArray[0].Fname);
+                    $("#txtLnameProf").val(respJsonArray[0].Lname);
+                    $("#txtAddProf").val(respJsonArray[0].address);
+                    $("#txtNumProf").val(respJsonArray[0].contact);
+                    $("#txtStateProf").val(respJsonArray[0].state);
+                    $("#txtCityProf").val(respJsonArray[0].city);
+                    $("#prev2").prop("src", "uploads/" + respJsonArray[0].picname);
+                    $("#hdn").val(respJsonArray[0].picname)
+                     alert(respJsonArray[0].picname);
+                }).fail(function (err) {
+                    alert(err);
+                })
+
+            })
+
+
+        });
+        function doShowPreview(refFile, refImg) {
+            const [file] = refFile.files
+            if (file) {
+                refImg.src = URL.createObjectURL(file)
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-4 left-div ">
+                <img src="https://ise-erp.com/wp-content/uploads/2019/05/Hardhat-profile-with-industrial-graphics-2-PS.jpg"
+                    class="img-fluid pt-4 pb-4" alt="Image 3">
+                <img src="https://www.labor.ucla.edu/wp-content/uploads/2022/12/Profile-of-Janitorial-Workers-in-CA_Blog-post.png"
+                    class="img-fluid pt-4" alt="Image 2"><br><br>
+                <img src="https://ise-erp.com/wp-content/uploads/2019/05/Hardhat-profile-with-industrial-graphics-2-PS.jpg"
+                    class="img-fluid pt-4 pb-4" alt="Image 3">
+                <img src="https://www.labor.ucla.edu/wp-content/uploads/2022/12/Profile-of-Janitorial-Workers-in-CA_Blog-post.png"
+                    class="img-fluid pt-4" alt="Image 2"><br><br>
+
+            </div>
+
+
+            <div class="col-md-6 right-div">
+                <form action="/custProfileSave" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="hdn" name="hdn">
+                    <h2 class="mb-4"> CUSTOMER PROFILE</h2>
+
+                    <div class="form-group mb-4">
+                        <label for="txtEmailProf" class="required">Email ID </label>
+                        <span id="emailerr"></span>
+                        <button type="button" class="btn btn-outline-primary pb-1 pt-1" id="btnSearch">Search</button>
+                        <input type="email" class="form-control" name="txtEmailProf" id="txtEmailProf" required>
+
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="txtNameProf">First Name</label>
+                        <input type="text" class="form-control" name="txtNameProf" id="txtNameProf" required>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="txtLnameProf">Last Name</label>
+                        <input type="text" class="form-control" id="txtLnameProf" name="txtLnameProf" required>
+                    </div>
+
+
+                    <div class="form-group mb-4">
+                        <label for="txtNumProf">Contact Number </label>
+                        <input type="text" class="form-control" id="txtNumProf" name="txtNumProf" required>
+
+                    </div>
+
+
+                    <div class="form-group mb-4">
+                        <label for="txtAddProf"> Address</label>
+                        <input type="text" class="form-control" id="txtAddProf" name="txtAddProf" required>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="txtCityProf">City</label>
+                        <input type="text" class="form-control" id="txtCityProf" name="txtCityProf" required>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="txtStateProf">State</label>
+                        <input type="text" class="form-control" id="txtStateProf" name="txtStateProf" required>
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        Profile Pic<input class="form-control" type="file" name="photo" value="photo" id="formFile"
+                            onchange="doShowPreview(this,prev2)">
+                        <img src="" id="prev2" alt="" style="margin-top: 10px;">
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <input type="checkbox" id="termsconditions" name="termsconditions"> Terms and Conditions applied
+
+                    </div>
+
+
+                    <button type="submit" class="btn btn-outline-primary mb-4 ml-8" id="btnProfSave"
+                        style="font-size:20px;" disabled>Save
+                    </button>
+                    <button type="submit" formaction="/custProfileUpdate" class="btn btn-outline-primary mb-4 ml-2"
+                        id="btnProfUpdate" style="font-size:20px;" disabled>Modify
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

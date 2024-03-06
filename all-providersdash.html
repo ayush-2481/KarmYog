@@ -1,0 +1,600 @@
+<!-- <!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<script>
+    var module = angular.module("myModule", []);
+    var controller = module.controller("myController", function ($scope, $http) {
+        $scope.jsonRecordsArry = [];
+        $scope.doFetchAll = function () {
+            let url = "angular-fetchprovider-all";
+            $http.get(url).then(success, errors);
+            function success(response) {
+                $scope.jsonRecordsArry = response.data;
+            }
+            function errors(response) {
+                alert(response.data);
+            }
+        }
+       $scope.showDetails=function(details){
+        $scope.selectedDetails=details;
+        $('#detailsModal').modal('show');
+       }
+       $scope.doFetchDistinctproviderrcategory = function () {
+            let url = "angular-fetch-distinctprovider-category";
+            $http.get(url).then(success, errors);
+            function success(response) {
+                $scope.jsoncategoryArray = response.data;
+                // alert(JSON.stringify($scope.jsonCitiesArry))
+            }
+            function errors(response) {
+                alert(response.data);
+            }
+        }
+        //---------------------------
+        $scope.doShowprovidercategory=function()
+        {
+            let url = "/angular-fetchprovidercategory?category="+$scope.selcategory.category;
+            $http.get(url).then(success, errors);
+            function success(response) {
+                $scope.jsonRecordsArry = response.data;
+            }
+            function errors(response) {
+                alert(response.data);
+            }
+        }
+        $scope.doFetchDistinctproviderrlocation = function () {
+            let url = "angular-fetch-distinctprovider-location";
+            $http.get(url).then(success, errors);
+            function success(response) {
+                $scope.jsonlocationArray = response.data;
+                // alert(JSON.stringify($scope.jsonCitiesArry))
+            }
+            function errors(response) {
+                alert(response.data);
+            }
+        }
+        //---------------------------
+        $scope.doShowproviderlocation=function()
+        {
+let url = "/angular-fetchproviderlocation?location="+$scope.sellocation.location;
+            $http.get(url).then(success, errors);
+            function success(response) {
+                $scope.jsonRecordsArry = response.data;
+            }
+            function errors(response) {
+                alert(response.data);
+            }
+        }
+    })
+</script> 
+
+<!-- <body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll();doFetchDistinctproviderrcategory();doFetchDistinctproviderrlocation();"
+    style=" background-color: rgb(244, 230, 212); overflow: hidden;">
+    <center> -->
+<!-- <input type="button" value="Fetch All Records" ng-click="doFetchAll();"
+            style="margin-bottom: 20px; margin-top: 20px;"> -->
+<!-- <table class="table table-secondary table-bordered border-danger" width="700">
+            <tr>
+                <thead class="table-dark">
+                    <th>Email Id</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Gender</th>
+                    <th>Category</th>
+                    <th>Firm</th>
+                    <th>Website</th>
+                    <th>Location</th>
+                    <th>Since</th>
+                    <th>Profile Pic</th>
+                    <th>Otherinfo</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="obj in jsonRecordsArry">
+                    <td>{{obj.email}}</td>
+                    <td>{{obj.Fname}}</td>
+                    <td>{{obj.contact}}</td>
+                    <td>{{obj.gender}}</td>
+                    <td>{{obj.category}}</td>
+                    <td>{{obj.firm}}</td>
+                    <td>{{obj.website}}</td>
+                    <td>{{obj.location}}</td>
+                    <td>{{obj.since}}</td>
+                    <td>{{obj.profpic}}</td>
+                    <td>{{obj.otherinfo}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </center> 
+    <div class="row">
+        <div class="col-md-12">
+<center>
+    <h1 style="background-color: rgb(4, 5, 5); margin-top: 20px; color: bisque;padding: 10px; ">
+        All Records of Providers
+        <select ng-options="obj.category for obj in jsoncategoryArray" ng-model="selcategory" ng-change="doShowprovidercategory();" class="form-select form-select-lg mb-3" aria-label="Large select example"
+          style=" background-color: rgb(229, 231, 232); width:240px;margin-top: 20px; margin-right: 10px; ">
+          <option value="">Distinct Categories</option>
+          </select>
+          <select ng-options="obj.location for obj in jsonlocationArray" ng-model="sellocation" ng-change="doShowproviderlocation();" class="form-select form-select-lg mb-3" aria-label="Large select example"
+          style=" background-color: rgb(229, 231, 232); width:240px;margin-top: 20px; margin-right: 10px; ">
+          <option value="">Distinct Locations</option>
+          </select>
+    </h1>
+</center>
+    </div>
+</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4" ng-repeat="obj in jsonRecordsArry" style="margin-bottom: 30px; margin-top: 30px;">
+                <div class="card " style="width: 350px;height:450px; background-size: contain;margin-bottom: 20px;">
+                    <img src="uploads/{{obj.profpic}}" class="card-img-top" alt="..." style="height:10rem ; background-size:contain;">
+                    <div class="card-body">
+                      <p class="card-text">
+                           <h6>
+                            ~Email Id : {{obj.email}}<br><br>
+                            ~Name : {{obj.Fname}}<br><br>
+                            ~Contact : {{obj.contact}} <br><br>
+                            ~Address : {{obj.genger}} <br><br>
+                            ~Category : {{obj.category}}
+                    
+                            ~City Name : {{obj.city}} <br><br>
+                            ~State Name : {{obj.state}} <br><br>
+                            ~PicName : {{obj.picname}} <br><br> -->
+<!-- </h6>
+                        
+                </p>
+                <div class="modal"  id="detailsModal" tabindex="-1" role="dialog" >
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Details Of Providers</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" class="col-md-3">
+                          <p>
+                            
+                                <img src="uploads/{{selectedDetails.profpic}}" alt="...">
+                                  <p>
+                                    <ol>
+                                        <h6>
+                                            ~Email Id : {{selectedDetails.email}}<br><br>
+                                            ~Name : {{selectedDetails.Fname}}<br><br>
+                                            ~Contact : {{selectedDetails.contact}} <br><br>
+                                            ~Gender : {{selectedDetails.gender}} <br><br>
+                                            ~Category : {{selectedDetails.category}} <br><br>
+                                            ~Firm : {{selectedDetails.firm}} <br><br>
+                                            ~Website : {{selectedDetails.website}} <br><br>
+                                            ~Location : {{selectedDetails.location}} <br><br>
+                                            ~Since : {{selectedDetails.since}} <br><br>
+                                            ~PicName : {{selectedDetails.profpic}} <br><br>
+                                            ~Other Info : {{selectedDetails.otherinfo}} <br><br>
+
+                                           </h6>
+                                    </ol>
+                                    </p>
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            
+                      <button type="button" ng-click="showDetails(obj)"  class="btn btn-primary">Show All Details</button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html> 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootstrap demo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <script>
+        var module = angular.module("myModule", []);
+        var controller = module.controller(
+            "myController",
+            function ($scope, $http) {
+                $scope.jsonRecordsAry = [];
+                $scope.jsoncategoryArray = [];
+                $scope.jsonlocationArray= [];
+                $scope.selectedcategory = ''; // Initialize selectedcategory
+                $scope.selectedlocation = ''; // Initialize selectedlocation
+
+
+                $scope.doFetchAll = function () {
+                    let url = "angular-fetchprovider-all";
+                    $http.get(url).then(success, errors);
+                    function success(response) {
+                        $scope.jsonRecordsAry = response.data;
+                    }
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };
+                // --------------uniquecategory--------------------------
+                $scope.doFetchDistinctproviderrcategory = function () {
+                    let url = "/angular-fetch-distinctprovider-category";
+                    $http.get(url).then(success, errors);
+
+                    function success(response) {
+                        $scope.jsoncategoryArray = response.data;
+
+                        if ($scope.selectedcategory) {
+                            $scope.doShowprovidercategory($scope.selectedcategory);
+                        } else {
+                            $scope.doFetchAll();
+                        }
+                    }
+
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };
+
+                $scope.doShowprovidercategory=function(selectedcategory)
+        {
+            let url = "/doShowprovidercategory?category="+selectedcategory;
+                    $http.get(url).then(success, errors);
+
+                    function success(response) {
+                        $scope.jsonRecordsAry = response.data;
+                    }
+
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };
+
+                //-----------------------------------------------------------------
+                $scope.doFetchDistinctproviderrlocation = function () {
+                    let url = "/angular-fetch-distinctprovider-location";
+                    $http.get(url).then(success, errors);
+
+                    function success(response) {
+                        $scope.jsonlocationArray = response.data;
+                        // console.log($scope.UniqueSercat);
+
+                        if ($scope.selectedlocation) {
+                            $scope.doShowproviderlocation($scope.selectedlocation);
+                        } else {
+                            $scope.doFetchAll();
+                        }
+                    }
+
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };
+
+                $scope.doShowproviderlocation = function (selectedlocation) {
+                    let url = "/doShowproviderlocation?location=" + selectedlocation;
+                    $http.get(url).then(success, errors);
+
+                    function success(response) {
+                        $scope.jsonRecordsAry = response.data;
+                    }
+
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };
+                //-----------------------------------------------------------------
+                $scope.showModal = function (selectedRecord) {
+                    $scope.selectedRecord = selectedRecord;
+                    $("#show").modal("show");
+                };
+            }
+        );
+    </script>
+</head>
+
+<body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll();">
+    <h1 style="margin-bottom: 30px;"><center>Records of Provider</center></h1>
+    <div class="container mt-2 d-flex justify-content-end">
+        <div class="col-md-4" style="margin-right: 20px; margin-bottom: 30px;">
+            <select class="form-select bg-light" ng-model="selectedcategory" ng-change="doFetchDistinctproviderrcategory()"
+                aria-label="Default select example" aria-placeholder="📍">
+                <option selected disabled value="">📍Choose service category...</option>
+                <option ng-repeat="obj in jsoncategoryArray" value="{{obj.category}}">
+                    {{obj.category}}
+                </option>
+            </select>
+        </div>
+        <!-- --------------------------------------------------- 
+        <div class="col-md-3" style="margin-bottom: 30px;">
+            <select class="form-select bg-light" ng-model="selectedlocation" ng-change="doFetchDistinctproviderrlocation()"
+                aria-label="Default select example" aria-placeholder="📍">
+                <option selected disabled value="">
+                    📍Choose city ...
+                </option>
+                <option ng-repeat="obj in jsonlocationArray" value="{{obj.location}}">
+                    {{obj.location}}
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="container mt-2 mb-5">
+        <div class="row">
+            <div class="col-md-4 mt-3" ng-repeat="obj in jsonRecordsAry" style="margin-bottom: 30px; margin-top: 30px;">
+                <div class="card mb-3" style="align-items: center; width: 350px;height:450px; background-size: contain;margin-bottom: 20px;">
+                    <img ng-src="/uploads/{{obj.profpic}}" class="card-img-top rounded"
+                        style="height: 222px; width: 192px" /> 
+                    <div class="card-body">
+                        <h5 class="card-title">~Email Id : {{obj.email}}</h5>
+                        <p class="card-text">~Name : {{obj.Fname}}</p>
+                        <p class="card-text">~Contact : {{obj.contact}}</p>
+                        <p class="card-text">~Category : {{obj.category}}</p>
+
+                        <button class="btn btn-primary" ng-click="showModal(obj)">
+                            Show Full Details
+                        </button>
+
+                        <!--  -----------------------------------------------------------Modal-------------------------------------------------------... 
+
+                        <div class="modal fade" id="show" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">
+                                            Full Details
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>~Email Id : {{selectedRecord.email}}</p>
+                                        <p>~Name : {{selectedRecord.Fname}}</p>
+                                        <p>~Contact : {{selectedRecord.contact}}</p>
+                                        <p>~Gender : {{selectedRecord.gender}}</p>
+                                        <p>~Category : {{selectedRecord.category}}</p>
+                                        <p>~Firm : {{selectedRecord.firm}}</p>
+                                        <p>~Website : {{selectedRecord.website}}</p>
+                                        <p>~Location : {{selectedRecord.location}}</p>
+                                        <p>~Since : {{selectedRecord.since}}</p>
+                                        <p>~PicName : {{selectedRecord.profpic}}</p>
+                                        <p>~Other Info : {{selectedRecord.otherinfo}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                     ----------------------------------------------- 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>  -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KarmYog.com</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <script>
+var module = angular.module("myModule", []);
+        var controller = module.controller(
+            "myController",
+            function ($scope, $http) {
+                $scope.jsonRecordsAry = [];
+                $scope.jsoncategoryArray = [];
+                $scope.jsonlocationArray= [];
+                $scope.selectedcategory = ''; // Initialize selectedcategory
+                $scope.selectedlocation = ''; // Initialize selectedlocation
+
+
+                $scope.doFetchAll = function () {
+                    let url = "angular-fetchprovider-all";
+                    $http.get(url).then(success, errors);
+                    function success(response) {
+                        $scope.jsonRecordsAry = response.data;
+                    }
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };                
+                // --------------uniquecity--------------------------
+                $scope.doFetchDistinctproviderrlocation = function () {
+                    let url = "/angular-fetch-distinctprovider-location";
+                    $http.get(url).then(success, errors);
+
+                    function success(response) {
+                        $scope.UniqueCities = response.data;
+                    }
+
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };
+
+
+                // //-----------------------------------------------------------------
+                $scope.doShowprovidercategory = function (selectedCity) {
+                    let url = "/doShowprovidercategory?location=" + selectedCity;
+                    $http.get(url).then(success, errors);
+
+                    function success(response) {
+                        $scope.UniqueSercat = response.data;
+                    }
+
+                    function errors(response) {
+                        alert(response.data);
+                    }
+                };
+
+                $scope.searchh = function () {
+
+                    let url = "/fetchcardbycityandsercat?city=" + $scope.selectedCity + "&cat=" + $scope.selectedsercat;
+
+                    $http.get(url).then(succ, errr);
+
+                    function succ(response) {
+
+
+                        $scope.jsonRecordsAry = response.data;
+
+                    }
+                    function errr(response) {
+                        alert(response.data);
+                    }
+                };
+
+
+                // //-----------------------------------------------------------------
+                $scope.showModal = function (selectedRecord) {
+                    $scope.selectedRecord = selectedRecord;
+                    $("#show").modal("show");
+                };
+            }
+        );
+    </script>
+</head>
+
+<body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll(); doFetchDistinctproviderrlocation();">
+
+    <div class="container mt-2 d-flex justify-content-end">
+        <div class="col-md-2" style="margin-right: 20px">
+            <select class="form-select bg-light" ng-model="selectedCity" ng-change="doShowprovidercategory(selectedCity)"
+                aria-label="Default select example">
+                <option selected disabled value="">📍Choose city...</option>
+                <option ng-repeat="obj in UniqueCities" value="{{obj.location}}">
+                    {{obj.location}}
+                </option>
+            </select>
+        </div>
+        <!-- --------------------------------------------------- -->
+        <div class="col-md-3" style="margin-right: 15px">
+            <select class="form-select bg-light" ng-model="selectedsercat" aria-label="Default select example">
+                <option selected disabled value="">
+                    Choose service category ...
+                </option>
+                <option ng-repeat="ary in UniqueSercat" value="{{ary.category}}">
+                    {{ary.category}}
+                </option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="button" ng-click="searchh()" class="btn btn-primary">
+                Search
+            </button>
+        </div>
+    </div>
+
+    <div class="container mt-2 mb-5">
+        <div class="row">
+            <div class="col-md-4 mt-5" ng-repeat="obj in jsonRecordsAry ">
+                <div class="card mb-3" style="
+              width: 300px;
+              height: 400px;
+              align-items: center;
+              
+            ">
+                    <img ng-src="/uploads/{{obj.profpic}}" class="card-img-top rounded" style="height: 222px; width: 192px"
+                        ng-click="showModal(obj)" />
+
+                    <div class="card-body">
+                        <h5 class="card-title">~Email Id : {{obj.email}}</h5>
+                        <p class="card-text">~Name : {{obj.Fname}}</p>
+                        <p class="card-text">~Contact : {{obj.contact}}</p>
+                        <p class="card-text">~Category : {{obj.category}}</p>
+                         <!-- <button class="btn btn-primary" ng-click="showModal(obj)">
+                Show Full Details
+              </button>  -->
+
+                        <!--  -----------------------------------------------------------Modal-------------------------------------------------------... -->
+
+                        <div class="modal fade" id="show" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">
+                                            Show Full Details
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="d-flex justify-content-center mb-2">
+                                            <img src="uploads/{{selectedRecord.profpic}}" style="height: 200px; width: 200px;">
+                                        </div>
+                                        <p>~Email Id : {{selectedRecord.email}}</p>
+                                        <p>~Name : {{selectedRecord.Fname}}</p>
+                                        <p>~Contact : {{selectedRecord.contact}}</p>
+                                        <p>~Gender : {{selectedRecord.gender}}</p>
+                                        <p>~Category : {{selectedRecord.category}}</p>
+                                        <p>~Firm : {{selectedRecord.firm}}</p>
+                                        <p>~Website : {{selectedRecord.website}}</p>
+                                        <p>~Location : {{selectedRecord.location}}</p>
+                                        <p>~Since : {{selectedRecord.since}}</p>
+                                        <p>~PicName : {{selectedRecord.profpic}}</p>
+                                        <p>~Other Info : {{selectedRecord.otherinfo}}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+</body>
+
+</html>
