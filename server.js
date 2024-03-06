@@ -50,7 +50,7 @@ app.get("/saveProfile", function (req, resp) {
 })
 //------------------------------------------------
 app.get("/checksign-User", function (req, resp) {
-    mysql.query("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
+    mysql.query("select * from users where emailid=?", [req.query.onlyEmail], function (err, resultJsonArray) {
         if (resultJsonArray.length == 1)
             resp.send("Email already exists");
         else
@@ -61,7 +61,7 @@ app.get("/checksign-User", function (req, resp) {
 
 //-------------------------------------------------
 app.get("/checkUserLogin", function (req, resp) {
-    mysql.query("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
+    mysql.query("select * from users where emailid=?", [req.query.onlyEmail], function (err, resultJsonArray) {
         if (resultJsonArray.length == 1)
             resp.send("Email exists");
         else
