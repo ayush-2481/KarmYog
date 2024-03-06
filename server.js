@@ -85,9 +85,9 @@ app.get("/change-pass", function (req, resp) {
     })
 })
 //------------------------------------------------
-app.post("/profileLogin", function (req, resp) {
-    const emaill = req.body.Emailiid;
-    const passwor = req.body.Passwords;
+app.get("/profileLogin", function (req, resp) {
+    const emaill = req.query.Emailiid;
+    const passwor = req.query.Passwords;
     mysql.query("select * from users where emailid=? and pwd=?", [emaill, passwor], function (err, resultJsonArray) {
         if (err) {
             
