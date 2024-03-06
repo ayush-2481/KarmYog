@@ -34,12 +34,12 @@ app.get("/", function (req, resp) {
 });
 
 app.get("/saveProfile", function (req, resp) {
-    const emailiiiid = req.query.txtEmail;
-    const passwords = req.query.txtPwd;
+    const email = req.query.txtEmail;
+    const password = req.query.txtPwd;
     const usertype = req.query.utype;
     const status = 1;
 
-    mysql.query("Insert into users values(?,?,?,current_date(),?)", [emailiiiid, passwords, usertype, status], function (err) {
+    mysql.query("Insert into users values(?,?,?,current_date(),?)", [email, password, usertype, status], function (err) {
         if (err == null) {
             resp.send("Sign Up Successfully!!!");
         }
@@ -50,7 +50,7 @@ app.get("/saveProfile", function (req, resp) {
 })
 //------------------------------------------------
 app.get("/check-User", function (req, resp) {
-    mysql.query("select * from users where emailid=?", [req.query.KUCHEmail], function (err, resultJsonArray) {
+    mysql.query("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
         if (resultJsonArray.length == 1)
             resp.send("Email already exists");
         else
@@ -61,7 +61,7 @@ app.get("/check-User", function (req, resp) {
 
 //-------------------------------------------------
 app.get("/checkUserLogin", function (req, resp) {
-    mysql.query("select * from users where emailid=?", [req.query.KUCHEmail], function (err, resultJsonArray) {
+    mysql.query("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
         if (resultJsonArray.length == 1)
             resp.send("Email exists");
         else
@@ -86,11 +86,10 @@ app.get("/change-pass", function (req, resp) {
 })
 //------------------------------------------------
 app.post("/profileLogin", function (req, resp) {
-    const emaill = req.body.Email;
-    const passwor = req.body.Password;
-    mysql.query("select * from users where emailid=? and pwd=?", [emaill, passwor], function (err, resultJsonArray) {
+    const email = req.body.Email;
+    const password = req.body.Pass;
+    mysql.query("select * from users where emailid=? and pwd=?", [email, password], function (err, resultJsonArray) {
         if (err) {
-            
             resp.send(err.message);
             return;
         }
