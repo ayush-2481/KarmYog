@@ -1,0 +1,15 @@
+.ok {
+  color: rgb(58, 228, 58);
+}
+.not-ok {
+  color: red;
+}
+.h1 {
+}
+/* .image {
+            background-image: url(pics/laboursss.png);
+            height: 100vh;
+            width: 100vw; 
+            background-size: cover;
+            background-repeat: no-repeat;
+        }  */

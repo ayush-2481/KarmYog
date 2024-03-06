@@ -1,100 +1,94 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bootstrap demo</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        <link rel="stylesheet" href="/style-index.css">
-        
-    <style>
-         /* .image {
-            background-image: url(pics/laboursss.png);
-            height: 100vh;
-            width: 100vw; 
-            background-size: cover;
-            background-repeat: no-repeat;
-        }  */
-
-       
-        .ok {
-            color: rgb(58, 228, 58);
-        }
-
-        .not-ok {
-            color: red;
-        }
-    </style>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/style-index.css" />
     <script>
-        $(document).ready(function () {
-            //signup valid code
-            $("#signupEmail").keyup(function () {
-                let email = $("#signupEmail").val();
-                var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-                if (r.test(email) == false) {
-                    $("#signuperr").html("(Invalid Email)").addClass("not-ok").removeClass("ok");
-                }
-                else
-                    $("#signuperr").html("(Valid Email)").addClass("ok").removeClass("not-ok");
+      $(document).ready(function () {
+        //signup valid code
+        $("#signupEmail").keyup(function () {
+          let email = $("#signupEmail").val();
+          var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+          if (r.test(email) == false) {
+            $("#signuperr")
+              .html("(Invalid Email)")
+              .addClass("not-ok")
+              .removeClass("ok");
+          } else $("#signuperr").html("(Valid Email)").addClass("ok").removeClass("not-ok");
+        });
 
-            });
+        $("#signupPass").keyup(function () {
+          let pass = $("#signupPass").val();
+          var r =
+            /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+          if (r.test(pass) == false) {
+            $("#signuperrpass")
+              .html("(Invalid Password)")
+              .addClass("not-ok")
+              .removeClass("ok");
+          } else $("#signuperrpass").html("(Valid Password)").addClass("ok").removeClass("not-ok");
+        });
 
-            $("#signupPass").keyup(function () {
-                let pass = $("#signupPass").val();
-                var r = /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-                if (r.test(pass) == false) {
-                    $("#signuperrpass").html("(Invalid Password)").addClass("not-ok").removeClass("ok");
-                }
-                else
-                    $("#signuperrpass").html("(Valid Password)").addClass("ok").removeClass("not-ok")
-            });
+        $("#signvalidid").click(function () {
+          if (
+            $("#signupEmail").val() == "" ||
+            $("#signupPass").val() == "" ||
+            $("signupUser").val() == "Select"
+          ) {
+            alert("Please Enter the  Data Carefully!!!!");
+          } else if (
+            $("#signuperr").html() == "(Invalid Email)" ||
+            $("#signuperrPass").html() == "(Invalid Password)"
+          ) {
+            alert("Please Enter Valid data!!");
+          } else {
+            let Email = $("#signupEmail").val();
+            let Password = $("#signupPass").val();
+            let userType = $("select[name='signupUser']").val(); //challenge faced that we cannot pass the id directly....
 
-            $("#signvalidid").click(function () {
-                if ($("#signupEmail").val() == "" || $("#signupPass").val() == "" || $("signupUser").val() == "Select") {
-                    alert("Please Enter the  Data Carefully!!!!");
-                }
-                else if (
-                    $("#signuperr").html() == "(Invalid Email)" || $("#signuperrPass").html() == "(Invalid Password)"
-                ) {
-                    alert("Please Enter Valid data!!");
-                } else {
-                    let Email = $("#signupEmail").val();
-                    let Password = $("#signupPass").val();
-                    let userType = $("select[name='signupUser']").val(); //challenge faced that we cannot pass the id directly....
+            let obj = {
+              // method: "POST",
+              url: "/saveProfile",
+              data: { txtEmail: Email, txtPwd: Password, utype: userType },
+            };
 
-                    let obj = {
-                        // method: "POST",
-                        url: "/saveProfile",
-                        data: { txtEmail: Email, txtPwd: Password, utype: userType },
-                    };
-
-                    $.ajax(obj).done(function (resp) {
-                        $("#signstatus")
-                            .html(resp)
-                            .addClass("ok")
-                            .removeClass("not-ok");
-                    })
-                        .fail(function (err) {
-                            alert("Error=" + err)
-                            $("#signstatus")
-                                .html(err)
-                                .addClass("not-ok")
-                                .removeClass("ok")
-                        })
-                }
-            });
+            $.ajax(obj)
+              .done(function (resp) {
+                $("#signstatus")
+                  .html(resp)
+                  .addClass("ok")
+                  .removeClass("not-ok");
+              })
+              .fail(function (err) {
+                alert("Error=" + err);
+                $("#signstatus").html(err).addClass("not-ok").removeClass("ok");
+              });
+          }
+        });
 
             //-------------------------------
             $("#signupEmail").blur(function () {
                 let obj = {
                     url: "/check-User",
                     data: {
-                        kuchEmail: $("#signupEmail").val(),
+                        KUCHEmail: $("#signupEmail").val(),
                     },
                 };
                 $.ajax(obj)
@@ -162,7 +156,7 @@
                     method: "POST",
                     data: {
                         Email: $("#loginEmail").val(),
-                        Pass: $("#loginPass").val(),
+                        Password: $("#loginPass").val(),
 
                     },
                 };
@@ -190,141 +184,237 @@
 
 
 
-            // signup eye code
-            $(".fa-solid").mousedown(function () {
-                $("#signupPass").prop("type", "text");
-                $(".fa-solid").addClass("fa-eye").removeClass("fa-eye-slash");
-            })
-
-            $(".fa-solid").mouseup(function () {
-                $("#signupPass").prop("type", "password");
-                $(".fa-solid").addClass("fa-eye-slash").removeClass("fa-eye");
-            })
-            // login eye code
-            $(".fa-solid").mousedown(function () {
-                $("#loginPass").prop("type", "text");
-                $(".fa-solid").addClass("fa-eye").removeClass("fa-eye-slash");
-            })
-
-            $(".fa-solid").mouseup(function () {
-                $("#loginPass").prop("type", "password");
-                $(".fa-solid").addClass("fa-eye-slash").removeClass("fa-eye");
-            })
+        // signup eye code
+        $(".fa-solid").mousedown(function () {
+          $("#signupPass").prop("type", "text");
+          $(".fa-solid").addClass("fa-eye").removeClass("fa-eye-slash");
         });
+
+        $(".fa-solid").mouseup(function () {
+          $("#signupPass").prop("type", "password");
+          $(".fa-solid").addClass("fa-eye-slash").removeClass("fa-eye");
+        });
+        // login eye code
+        $(".fa-solid").mousedown(function () {
+          $("#loginPass").prop("type", "text");
+          $(".fa-solid").addClass("fa-eye").removeClass("fa-eye-slash");
+        });
+
+        $(".fa-solid").mouseup(function () {
+          $("#loginPass").prop("type", "password");
+          $(".fa-solid").addClass("fa-eye-slash").removeClass("fa-eye");
+        });
+      });
     </script>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- code of navbar -->
-    <nav class="navbar bg-light" style="background-color: white;" data-bs-theme="dark">
-        <div class="ms-3">
-            <a class="navbar-brand " href="#">
-                <img src="pics/allcus.png" alt="Bootstrap" width="50" height="50">
-                <span style="color: black; margin-left: 10px;padding: 10px; font-family: Arial, Helvetica, sans-serif; font-size: x-large;"><b>KarmYog.com</b></span>
-               
-            </a>
+    <nav
+      class="navbar bg-light"
+      style="background-color: white"
+      data-bs-theme="dark"
+    >
+      <div class="ms-3">
+        <a class="navbar-brand" href="#">
+          <img src="pics/allcus.png" alt="Bootstrap" width="50" height="50" />
+          <span
+            style="
+              color: black;
+              margin-left: 10px;
+              padding: 10px;
+              font-family: Arial, Helvetica, sans-serif;
+              font-size: x-large;
+            "
+            ><b>KarmYog.com</b></span
+          >
+        </a>
+      </div>
 
-        </div>
-
-        <div class="me-3">
-            <button type="button" class="btn btn-outline-primary p-2" data-bs-toggle="modal"
-                data-bs-target="#SignupModal"><h5>Signup</h5></button>
-            <button type="button" class="btn btn-outline-primary p-2" data-bs-toggle="modal"
-                data-bs-target="#LoginModal"><h5>Login</h5></button>
-                <!-- <a href="/login-signup">
+      <div class="me-3">
+        <button
+          type="button"
+          class="btn btn-outline-primary p-2"
+          data-bs-toggle="modal"
+          data-bs-target="#SignupModal"
+        >
+          <h5>Signup</h5>
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary p-2"
+          data-bs-toggle="modal"
+          data-bs-target="#LoginModal"
+        >
+          <h5>Login</h5>
+        </button>
+        <!-- <a href="/login-signup">
                     <button type="button" class="btn btn-outline-primary p-2"><h4>Register</h4></button>
                 </a> -->
-                
-                
-        </div>
+      </div>
     </nav>
     <div class="container-fluid">
-      <div class=" container d-flex justify-content-center" style="align-items:center;">
-        <h3>Welcome to <br>KaramYog.com!</h3><img class="img-fluid" style="width: 400px; height:350px; margin-top: 100px;" src="https://swiftsystems.com/guides-tips/wp-content/uploads/2019/09/managed-it-services.jpg"  alt=""></div>
+      <div
+        class="container d-flex justify-content-center"
+        style="align-items: center"
+      >
+        <h3>Welcome to <br />KaramYog.com!</h3>
+        <img
+          class="img-fluid"
+          style="width: 400px; height: 350px; margin-top: 100px"
+          src="https://swiftsystems.com/guides-tips/wp-content/uploads/2019/09/managed-it-services.jpg"
+          alt=""
+        />
+      </div>
     </div>
-    
+
     <!-- <div style="background-color: rgb(242, 244, 244);width: 1000px; height:1000px;"></div> -->
 
-
-
     <!-- code for modalsignup -->
-    <div class="modal fade" id="SignupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Signup-Model</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <div class="form-floating col-md-10 mb-3">
-                        <input type="email" class="form-control" id="signupEmail" placeholder="name@example.com">
-                        <label for="floatingInput">Email address <span id="signuperr"></span></label>
-                    </div>
-                    <div class="form-floating col-md-11 d-flex align-items-center mb-3">
-                        <input type="password" class="form-control" id="signupPass" placeholder="Password">
-                        <label for="floatingPassword">Password <span id="signuperrpass"></span></label>
-                        <div class="col-md-1 ms-1">
-                            <i class="fa-solid fa-eye-slash fa-beat"></i>
-                        </div>
-
-                    </div>
-
-                    <div class="form-floating col-md-10 ">
-                        <select class="form-select" id="signupUser" name="signupUser"
-                            aria-label="Floating label select example">
-
-                            <option value="None">Select</option>
-                            <option value="Customer">Customer</option>
-                            <option value="Service-Provider">Service-Provider</option>
-                        </select>
-                        <label for="floatingSelect">User-Type</label>
-                    </div>
-                </div>
-
-                <div class="modal-footer mx-auto">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="signvalidid">Signup</button><span
-                        id="signstatus">*</span>
-                </div>
+    <div
+      class="modal fade"
+      id="SignupModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Signup-Model
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating col-md-10 mb-3">
+              <input
+                type="email"
+                class="form-control"
+                id="signupEmail"
+                placeholder="name@example.com"
+              />
+              <label for="floatingInput"
+                >Email address <span id="signuperr"></span
+              ></label>
             </div>
+            <div class="form-floating col-md-11 d-flex align-items-center mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="signupPass"
+                placeholder="Password"
+              />
+              <label for="floatingPassword"
+                >Password <span id="signuperrpass"></span
+              ></label>
+              <div class="col-md-1 ms-1">
+                <i class="fa-solid fa-eye-slash fa-beat"></i>
+              </div>
+            </div>
+
+            <div class="form-floating col-md-10">
+              <select
+                class="form-select"
+                id="signupUser"
+                name="signupUser"
+                aria-label="Floating label select example"
+              >
+                <option value="None">Select</option>
+                <option value="Customer">Customer</option>
+                <option value="Service-Provider">Service-Provider</option>
+              </select>
+              <label for="floatingSelect">User-Type</label>
+            </div>
+          </div>
+
+          <div class="modal-footer mx-auto">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" id="signvalidid">
+              Signup</button
+            ><span id="signstatus">*</span>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- code for login-model -->
-    <div class="modal fade" id="LoginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Login-Model</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-floating  col-md-10 mb-3">
-                        <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com">
-                        <label for="floatingInput">Email address <span id="loginerr"></span></label>
-                    </div>
-                    <div class="form-floating col-md-11 d-flex align-items-center mb-3">
-                        <input type="password" class="form-control" id="loginPass" placeholder="Password">
-                        <label for="floatingPassword">Password <span id="loginerrpass"></span></label>
-                        <div class="col-md-1 ms-1">
-                            <i class="fa-solid fa-eye-slash fa-beat"></i>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer mx-auto ">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="loginvalidid">Login</button>
-                </div>
+    <div
+      class="modal fade"
+      id="LoginModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Login-Model</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating col-md-10 mb-3">
+              <input
+                type="email"
+                class="form-control"
+                id="loginEmail"
+                placeholder="name@example.com"
+              />
+              <label for="floatingInput"
+                >Email address <span id="loginerr"></span
+              ></label>
             </div>
+            <div class="form-floating col-md-11 d-flex align-items-center mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="loginPass"
+                placeholder="Password"
+              />
+              <label for="floatingPassword"
+                >Password <span id="loginerrpass"></span
+              ></label>
+              <div class="col-md-1 ms-1">
+                <i class="fa-solid fa-eye-slash fa-beat"></i>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer mx-auto">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" id="loginvalidid">
+              Login
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
-</body>
-
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
