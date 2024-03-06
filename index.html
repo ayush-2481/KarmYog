@@ -83,106 +83,96 @@
           }
         });
 
-            //-------------------------------
-            $("#signupEmail").blur(function () {
-                let obj = {
-                    url: "/check-User",
-                    data: {
-                        KUCHEmail: $("#signupEmail").val(),
-                    },
-                };
-                $.ajax(obj)
-                    .done(function (resp) {
-                        $("#signuperr").html(resp);
-                        if (resp === "Email Already Exists")
-                            $("#signuperr").removeClass("ok").addClass("not-ok");
-                        else
-                            $("#signuperr").addClass("ok").removeClass("not-ok");
-                    })
-                    .fail(function (err) {
-                        alert("Error=" + err);
-                    });
+        //-------------------------------
+        $("#signupEmail").blur(function () {
+          let obj = {
+            url: "/check-User",
+            data: {
+              kuchEmail: $("#signupEmail").val(),
+            },
+          };
+          $.ajax(obj)
+            .done(function (resp) {
+              $("#signuperr").html(resp);
+              if (resp === "Email Already Exists")
+                $("#signuperr").removeClass("ok").addClass("not-ok");
+              else $("#signuperr").addClass("ok").removeClass("not-ok");
+            })
+            .fail(function (err) {
+              alert("Error=" + err);
             });
+        });
 
-
-
-            // login valid code
-            $("#loginEmail").keyup(function () {
-                let email = $("#loginEmail").val();
-                var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-                if (r.test(email) == false) {
-                    $("#loginerr").html("(Invalid Email)").addClass("not-ok").removeClass("ok");
-                }
-                else
-                    $("#loginerr").html("(Valid Email)").addClass("ok").removeClass("not-ok");
-
-
+        // login valid code
+        $("#loginEmail").keyup(function () {
+          let email = $("#loginEmail").val();
+          var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+          if (r.test(email) == false) {
+            $("#loginerr")
+              .html("(Invalid Email)")
+              .addClass("not-ok")
+              .removeClass("ok");
+          } else $("#loginerr").html("(Valid Email)").addClass("ok").removeClass("not-ok");
+        });
+        $("#loginPass").keyup(function () {
+          let pass = $("#loginPass").val();
+          var r =
+            /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+          if (r.test(pass) == false) {
+            $("#loginerrpass")
+              .html("(Invalid Password)")
+              .addClass("not-ok")
+              .removeClass("ok");
+          } else $("#loginerrpass").html("(Valid Password)").addClass("ok").removeClass("not-ok");
+        });
+        //---------------------------
+        $("#loginEmail").blur(function () {
+          let obj = {
+            url: "/checkUserLogin",
+            data: {
+              kuchEmail: $("#loginEmail").val(),
+            },
+          };
+          $.ajax(obj)
+            .done(function (resp) {
+              $("#loginerr").html(resp);
+              if (resp === "Email exists")
+                $("#loginerr").removeClass("ok").addClass("not-ok");
+              else $("#loginerr").addClass("ok").removeClass("not-ok");
+            })
+            .fail(function (err) {
+              alert("Error=" + err);
             });
-            $("#loginPass").keyup(function () {
-                let pass = $("#loginPass").val();
-                var r = /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-                if (r.test(pass) == false) {
-                    $("#loginerrpass").html("(Invalid Password)").addClass("not-ok").removeClass("ok");
-                }
-                else
-                    $("#loginerrpass").html("(Valid Password)").addClass("ok").removeClass("not-ok");
-
+        });
+        //----------------------------------
+        $("#loginvalidid").click(function () {
+          let email = $("#loginEmail").val();
+          let obj = {
+            url: "/profileLogin",
+            method: "POST",
+            data: {
+              Email: $("#loginEmail").val(),
+              Password: $("#loginPass").val(),
+            },
+          };
+          $.ajax(obj)
+            .done(function (resp) {
+              alert(resp);
+              if (resp == "Customer") {
+                //alert(resp+"***");
+                localStorage.setItem("user", email);
+                //  alert(localStorage.getItem("user"));
+                window.location.href = "/customerDash";
+              } else if (resp == "Service-Provider") {
+                // alert(resp+"$$$");
+                localStorage.setItem("User", email);
+                window.location.href = "/providerdash";
+              }
+            })
+            .fail(function (err) {
+              alert(err);
             });
-            //---------------------------
-            $("#loginEmail").blur(function () {
-                let obj = {
-                    url: "/checkUserLogin",
-                    data: {
-                        kuchEmail: $("#loginEmail").val(),
-                    },
-                };
-                $.ajax(obj)
-                    .done(function (resp) {
-                        $("#loginerr").html(resp);
-                        if (resp === "Email exists")
-                            $("#loginerr").removeClass("ok").addClass("not-ok");
-                        else
-                            $("#loginerr").addClass("ok").removeClass("not-ok");
-                    })
-                    .fail(function (err) {
-                        alert("Error=" + err);
-                    });
-            });
-            //----------------------------------
-            $("#loginvalidid").click(function () {
-                let email=$("#loginEmail").val();
-                let obj = {
-                    url: "/profileLogin",
-                    method: "POST",
-                    data: {
-                        Email: $("#loginEmail").val(),
-                        Password: $("#loginPass").val(),
-
-                    },
-                };
-                $.ajax(obj)
-                    .done(function (resp) {
-                        alert(resp);
-                        if(resp=="Customer")
-                        {
-                            //alert(resp+"***");
-                         localStorage.setItem("user",email);
-                        //  alert(localStorage.getItem("user"));
-                       window.location.href="/customerDash";
-                        }
-                        else if(resp=="Service-Provider")
-                        {
-                           // alert(resp+"$$$");
-                            localStorage.setItem("User",email);
-                            window.location.href="/providerdash";
-                        }
-                    })
-                    .fail(function (err) {
-                        alert(err);
-                    });
-            });
-
-
+        });
 
         // signup eye code
         $(".fa-solid").mousedown(function () {
