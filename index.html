@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bootstrap demo</title>
+    <title>KarmYog</title>
     <script
       src="https://code.jquery.com/jquery-3.7.1.min.js"
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
@@ -19,7 +19,12 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style-index.css" />
+    <link rel="icon" type="image/x-icon" href="/public/pics/allcus.png" />
     <script>
       $(document).ready(function () {
         //signup valid code
@@ -102,7 +107,6 @@
               alert("Error=" + err);
             });
         });
-
         // login valid code
         $("#loginEmail").keyup(function () {
           let email = $("#loginEmail").val();
@@ -152,7 +156,7 @@
             method: "POST",
             data: {
               Email: $("#loginEmail").val(),
-              Pass: $("#loginPass").val(),
+              Password: $("#loginPass").val(),
             },
           };
           $.ajax(obj)
@@ -199,8 +203,74 @@
   </head>
 
   <body>
+    <!-- Area of Chahat Started -->
+    <section class="header">
+      <nav>
+        <div class="nav-links">
+          <a href="index.html"><img src="/public/pics/allcus.png" /></a>
+          <i class="fas fa-times" onclick="hideMenu()"></i>
+          <div class="nav-btn-1">
+            <li class="li1"><a href="index.html">HOME</a></li>
+            <li class="li1" v><a href="">ABOUT</a></li>
+            <li class="li1"><a href="">CONACT</a></li>
+          </div>
+          <div class="nav-btn-2">
+            <li class="li2">
+              <button
+                type="button"
+                class="btn11"
+                data-bs-toggle="modal"
+                data-bs-target="#SignupModal"
+              >
+                Sign up
+              </button>
+            </li>
+            <li class="li2">
+              <button
+                type="button"
+                class="btn12"
+                data-bs-toggle="modal"
+                data-bs-target="#LoginModal"
+              >
+                LOGIN
+              </button>
+            </li>
+          </div>
+        </div>
+
+        <i class="fas fa-bars" onclick="showMenu()"></i>
+      </nav>
+
+      <div class="text-box">
+        <h1>WELCOME TO KARMYOG</h1>
+        <p>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia
+          porro tenetur nobis ullam? Eveniet officia perspiciatis architecto a
+          sapiente excepturi delectus reiciendis, vel dolore tempora tenetur
+          amet. Nisi modi officiis error possimus ipsam minima cum neque sit
+          sapiente harum accusantium dolorem, impedit sequi eveniet voluptate
+          temporibus quas aut nostrum veniam soluta provident animi in corrupti
+          eius? Consequuntur, vel nostrum assumenda quasi impedit est iste!
+          Libero officia velit culpa inventore officiis corporis cupiditate
+          iusto voluptate dolor?
+        </p>
+        <a href="" class="hero-btn">VISIT US TO KNOW MORE</a>
+      </div>
+    </section>
+    <!------JavaScript for toggle Menu----->
+    <script>
+      var navLinks = document.getElementById("navLinks");
+
+      function showMenu() {
+        navLinks.style.right = "0";
+      }
+      function hideMenu() {
+        navLinks.style.right = "-200px";
+      }
+    </script>
+    <!-- Area of Chahat Ended -->
     <!-- code of navbar -->
-    <nav
+    <!-- <nav
       class="navbar bg-light"
       style="background-color: white"
       data-bs-theme="dark"
@@ -243,12 +313,12 @@
         >
           <h5>Login</h5>
         </button>
-        <!-- <a href="/login-signup">
+         <a href="/login-signup">
                     <button type="button" class="btn btn-outline-primary p-2"><h4>Register</h4></button>
-                </a> -->
+                </a> 
       </div>
-    </nav>
-    <div class="container-fluid">
+    </nav> -->
+    <!-- <div class="container-fluid">
       <div
         class="container d-flex justify-content-center"
         style="align-items: center"
@@ -261,7 +331,7 @@
           alt=""
         />
       </div>
-    </div>
+    </div> -->
 
     <!-- <div style="background-color: rgb(242, 244, 244);width: 1000px; height:1000px;"></div> -->
 
