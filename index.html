@@ -181,12 +181,12 @@
         // signup eye code
         $(".fa-solid").mousedown(function () {
           $("#signupPass").prop("type", "text");
-          $(".fa-solid").addClass("fa-eye-slash").removeClass("fa-eye");
+          $(".fa-solid").addClass("fa-eye").removeClass("fa-eye-slash");
         });
 
         $(".fa-solid").mouseup(function () {
           $("#signupPass").prop("type", "password");
-          $(".fa-solid").addClass("fa-eye").removeClass("fa-eye-slash");
+          $(".fa-solid").addClass("fa-eye-slash").removeClass("fa-eye");
         });
         // login eye code
         $(".fa-solid").mousedown(function () {
