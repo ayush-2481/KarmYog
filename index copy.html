@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KarmYog</title>
+  </head>
+  <body>
+    <!-- Area of Chahat Started -->
+    <section class="header">
+      <nav>
+        <div class="nav-links">
+          <a class="img_logo" href="index.html"
+            ><img src="/public/pics/allcus.png"
+          /></a>
+          <div class="nav-btn-1">
+            <li class="li1"><a href="index.html">HOME</a></li>
+            <li class="li1" v><a href="">ABOUT</a></li>
+            <li class="li1"><a href="">CONACT</a></li>
+          </div>
+          <div class="nav-btn-2">
+            <li class="li2">
+              <button type="button" class="btn11">Sign up</button>
+            </li>
+            <li class="li2">
+              <button type="button" class="btn12">LOGIN</button>
+            </li>
+          </div>
+        </div>
+      </nav>
+
+      <div class="text-box">
+        <h1>WELCOME TO KARMYOG</h1>
+        <p>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia
+          porro tenetur nobis ullam? Eveniet officia perspiciatis architecto a
+          sapiente excepturi delectus reiciendis, vel dolore tempora tenetur
+          amet. Nisi modi officiis error possimus ipsam minima cum neque sit
+          sapiente harum
+        </p>
+        <p class="t2">
+          accusantium dolorem, impedit sequi eveniet voluptate temporibus quas
+          aut nostrum veniam soluta provident animi in corrupti eius?
+          Consequuntur, vel nostrum assumenda quasi impedit est iste! Libero
+          officia velit culpa inventore officiis corporis cupiditate iusto
+          voluptate dolor?
+        </p>
+
+        <a href="" class="hero-btn">VISIT US TO KNOW MORE</a>
+      </div>
+    </section>
+    <!-- code for modalsignup -->
+    <div
+      class="modal fade"
+      id="SignupModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Signup-Model
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating col-md-10 mb-3">
+              <input
+                type="email"
+                class="form-control"
+                id="signupEmail"
+                placeholder="name@example.com"
+              />
+              <label for="floatingInput"
+                >Email address <span id="signuperr"></span
+              ></label>
+            </div>
+            <div class="form-floating col-md-11 d-flex align-items-center mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="signupPass"
+                placeholder="Password"
+              />
+              <label for="floatingPassword"
+                >Password <span id="signuperrpass"></span
+              ></label>
+              <div class="col-md-1 ms-1">
+                <i class="fa-solid fa-eye-slash fa-beat"></i>
+              </div>
+            </div>
+
+            <div class="form-floating col-md-10">
+              <select
+                class="form-select"
+                id="signupUser"
+                name="signupUser"
+                aria-label="Floating label select example"
+              >
+                <option value="None">Select</option>
+                <option value="Customer">Customer</option>
+                <option value="Service-Provider">Service-Provider</option>
+              </select>
+              <label for="floatingSelect">User-Type</label>
+            </div>
+          </div>
+
+          <div class="modal-footer mx-auto">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" id="signvalidid">
+              Signup</button
+            ><span id="signstatus">*</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- code for login-model -->
+    <div
+      class="modal fade"
+      id="LoginModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Login-Model</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating col-md-10 mb-3">
+              <input
+                type="email"
+                class="form-control"
+                id="loginEmail"
+                placeholder="name@example.com"
+              />
+              <label for="floatingInput"
+                >Email address <span id="loginerr"></span
+              ></label>
+            </div>
+            <div class="form-floating col-md-11 d-flex align-items-center mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="loginPass"
+                placeholder="Password"
+              />
+              <label for="floatingPassword"
+                >Password <span id="loginerrpass"></span
+              ></label>
+              <div class="col-md-1 ms-1">
+                <i class="fa-solid fa-eye-slash fa-beat"></i>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer mx-auto">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" id="loginvalidid">
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
