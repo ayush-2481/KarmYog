@@ -130,7 +130,13 @@ $("#changepassword").click(function(){
             alert(err);
           })
         })
-
+        $("#logOut").click(function(){
+        if(confirm("ARE YOU SURE TO LOG OUT?")==true)
+          {
+                localStorage.removeItem("user");
+                window.location.href="/";
+          }
+       })
     });
   </script>
 </head>
@@ -138,12 +144,12 @@ $("#changepassword").click(function(){
 <body
   style="background-image: url(https://www.hdwallpapers.in/download/white_aesthetic_lines_background_hd_white_aesthetic-HD.jpg); background-size: cover;">
   <br>
-<h1>Welcome:<span id="active"></span></h1>
+<center><h3>Welcome:<span id="active"></span></h1></center>
   <div class="container text-center">
     <div class="row">
       <div class="col">
 
-        <div class="card" style="width: 18rem; text-align: center; margin-left:205px;height:400px;">
+        <div class="card" style="width: 18rem; text-align: center;height:400px;">
           <img src="https://cdn.pixabay.com/photo/2023/09/22/12/18/profile-8268938_640.png" class="card-img-top"
             alt="..." height="290px">
           <div class="card-body">
@@ -168,6 +174,18 @@ $("#changepassword").click(function(){
           </div>
         </div>
       </div>
+      <div class="col">
+
+        <div class="card" style="width: 18rem; text-align: center; height:400px;">
+          <img src="https://i.pinimg.com/originals/74/90/bc/7490bc360ce1a5d10956f04105b2d284.jpg" class="card-img-top"
+            alt="..." width="286" height="379">
+          <div class="card-body">
+            <h3 class="card-title">Search Service Providers </h3>
+            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+            <a href="/providerdash-table" class="btn btn-primary">VISIT PAGE</a>
+          </div>
+        </div>
+      </div>
     </div>
     <br><br><br>
     <div class="row">
@@ -187,12 +205,12 @@ $("#changepassword").click(function(){
       <div class="col">
 
         <div class="card" style="width: 18rem; text-align: center; height:400px;">
-          <img src="https://i.pinimg.com/originals/74/90/bc/7490bc360ce1a5d10956f04105b2d284.jpg" class="card-img-top"
-            alt="..." width="286" height="379">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB-WQzKhZxpwK_pBj7I78jNfm6wOq52GoA9A&usqp=CAU" class="card-img-top"
+            alt="..." height="290px">
           <div class="card-body">
-            <h3 class="card-title">Search Service Providers </h3>
+            <h3 class="card-title">Customer-Logout</h3>
             <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-            <a href="/providerdash-table" class="btn btn-primary">VISIT PAGE</a>
+            <input type="button"value="LogOut" class="btn btn-primary" id="logOut">
           </div>
         </div>
       </div>
