@@ -48,14 +48,20 @@ $("#changepassword").click(function(){
             alert(err);
           })
         })
+        $("#logOut").click(function(){
+        if(confirm("ARE YOU SURE TO LOG OUT?")==true)
+          {
+                localStorage.removeItem("User");
+                window.location.href="/";
+          }
+       })
       });
   </script>
   </head>
   <body>
     
-    <body style="background-image: url(https://marketplace.canva.com/EAE0ezUD9Wc/1/0/1600w/canva-modern-black-background-personal-profile-linkedin-banner-f4Zcf_pQHQ4.jpg); background-repeat: no-repeat;background-size: cover;">
-        <br>
-      <h1>Welcome: <span id="active"></span></h1>
+    <body>
+      <center><h2>Welcome:<span id="active"></span></h2></center>
         <div class="container text-center">
           <div class="row">
             <div class="col">
@@ -83,13 +89,14 @@ $("#changepassword").click(function(){
                 </div>
               </div>
             </div>
+           
           </div>
           <br><br><br>
           <div class="row">
             
             <div class="col">
       
-              <div class="card" style="width: 18rem; text-align: center; height:400px;margin-left:405px;">
+              <div class="card" style="width: 18rem; text-align: center; margin-left:205px;height:400px;">
                 <img
                   src="https://prosettings.net/cdn-cgi/image/dpr=1%2Cf=auto%2Cfit=cover%2Cheight=675%2Cq=85%2Cwidth=1200/wp-content/uploads/best-cs2-settings-and-options.png"
                   class="card-img-top" alt="..." width="286" height="379">
@@ -100,6 +107,19 @@ $("#changepassword").click(function(){
                       Page</button>
         
                   </div>
+              </div>
+            </div>
+            <div class="col">
+      
+              <div class="card" style="width: 18rem; text-align: center;height:400px;">
+                <img
+                  src="https://st4.depositphotos.com/1563253/27983/i/450/depositphotos_279834480-stock-photo-logout-web-sticker-button.jpg"
+                  class="card-img-top" alt="..." width="286" height="379">
+                <div class="card-body">
+                  <h3 class="card-title">Provider-Logout</h3>
+                  <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                  <input type="button" class="btn btn-primary" value="Logout" id="logOut">
+                </div>
               </div>
             </div>
             <!-- modal of settings -->
