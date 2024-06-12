@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mysql2 = require("mysql2")
 const fileuploader = require("express-fileupload");
+//const path = require("path");
 const obj = {
     host: "127.0.0.1",
     user: "root",
@@ -26,7 +27,7 @@ app.listen(3004, function () {
 
 })
 
-app.use(express.static("public"));
+app.use(express.static("public/assets"));
 
 app.get("/", function (req, resp) {
     let filePath = process.cwd() + "/index.html";
