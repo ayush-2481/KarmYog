@@ -4,6 +4,6 @@
     "express-fileupload": "^1.4.3",
     "fileupload": "^1.0.0",
     "mysql2": "^3.9.1",
-    "nodemon": "^3.0.3"
+    "nodemon": "^3.1.3"
   }
 }
