@@ -26,14 +26,14 @@ app.listen(3004, function () {
     console.log("Welcome to server 3004");
 
 })
-/*app.use(express.static("public"));
+app.use(express.static("public"));
 
 app.get("/", function (req, resp) {
     let filePath = process.cwd() + "/index.html";
     resp.sendFile(filePath);
 });
-*/
 
+/*
 // Serve static files from the "assets" directory
 app.use(express.static(path.join(__dirname, "assets")));
 
@@ -42,7 +42,7 @@ app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-
+*/
 app.get("/saveProfile", function (req, resp) {
     const email = req.query.txtEmail;
     const password = req.query.txtPwd;
