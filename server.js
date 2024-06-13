@@ -340,63 +340,61 @@ app.get("/block", function (req, resp) {
     const status = 0;
     // console.log(req.query.email);
 
-    mysql.query("select * from users where emailid=?",[email],function (err, result) {
-            if (err) 
-            {
-                resp.send(err.message);
-                return;
-            } 
-            else {
-                const currentStatus = result[0].status;
+    mysql.query("select * from users where emailid=?", [email], function (err, result) {
+        if (err) {
+            resp.send(err.message);
+            return;
+        }
+        else {
+            const currentStatus = result[0].status;
 
-                if (currentStatus === 0) {
-                    resp.send("ALREADY BLOCKED");
-                    
-                    return;
-                } 
-                else {
-                    mysql.query("update users set status=? where emailid=? ",[status, email], function (errr) {
-                            if 
-                            (errr) resp.send(errr.message);
-                            else 
-                            resp.send("User status blocked successfully.");
-                        }
-                    );
+            if (currentStatus === 0) {
+                resp.send("ALREADY BLOCKED");
+
+                return;
+            }
+            else {
+                mysql.query("update users set status=? where emailid=? ", [status, email], function (errr) {
+                    if
+                        (errr) resp.send(errr.message);
+                    else
+                        resp.send("User status blocked successfully.");
                 }
+                );
             }
         }
+    }
     );
 });
 app.get("/resume", function (req, resp) {
-    const email= req.query.Email;
+    const email = req.query.Email;
     const status = 1;
     // console.log(req.query.email);
 
-    mysql.query("select * from users where emailid=?",[email],function (err, result) {
-            if (err) 
-            {
-                resp.send(err.message);
-                return;
-            } 
-            else {
-                const currentStatus = result[0].status;
+    mysql.query("select * from users where emailid=?", [email], function (err, result) {
+        if (err) {
+            resp.send(err.message);
+            return;
+        }
+        else {
+            const currentStatus = result[0].status;
 
-                if (currentStatus === 1) {
-                    resp.send("ALREADY Resumed");
-                    
-                    return;
-                } 
-                else {
-                    mysql.query("update users set status=? where emailid=? ",[status, email], function (errr) {
-                            if 
-                            (errr) resp.send(errr.message);
-                            else 
-                            resp.send("User status resumed successfully.");
-                        }
-                    );
+            if (currentStatus === 1) {
+                resp.send("ALREADY Resumed");
+
+                return;
+            }
+            else {
+                mysql.query("update users set status=? where emailid=? ", [status, email], function (errr) {
+                    if
+                        (errr) resp.send(errr.message);
+                    else
+                        resp.send("User status resumed successfully.");
                 }
+                );
             }
         }
+    }
     );
 });
 app.get("/angular-fetchprovider-all", function (req, resp) {
@@ -420,7 +418,7 @@ app.get("/angular-fetch-distinctcustomer-cities", function (req, resp) {
     })
 })
 app.get("/angular-fetchcustomercity", function (req, resp) {
-    mysql.query("select * from customprof where city=?",[req.query.city],function (err, resultJsonArray) {
+    mysql.query("select * from customprof where city=?", [req.query.city], function (err, resultJsonArray) {
         resp.send(resultJsonArray);
     })
 })
@@ -430,7 +428,7 @@ app.get("/angular-fetchcustomercity", function (req, resp) {
 //     })
 // })
 app.get("/angular-fetchcustomerstates", function (req, resp) {
-    mysql.query("select * from customprof where city=?",[req.query.city],function (err, resultJsonArray) {
+    mysql.query("select * from customprof where city=?", [req.query.city], function (err, resultJsonArray) {
         resp.send(resultJsonArray);
     })
 })
@@ -462,7 +460,7 @@ app.get("/angular-fetch-distinct-cities", function (req, resp) {
     })
 })
 app.get("/angular-fetchcity", function (req, resp) {
-    mysql.query("select * from task where city=?",[req.query.city],function (err, resultJsonArray) {
+    mysql.query("select * from task where city=?", [req.query.city], function (err, resultJsonArray) {
         resp.send(resultJsonArray);
     })
 })
@@ -472,7 +470,7 @@ app.get("/angular-fetchcity", function (req, resp) {
 //     })
 // })
 app.get("/doShowprovidercategory", function (req, resp) {
-    mysql.query("select * from provider where location=?",[req.query.location],function (err, resultJsonArray) {
+    mysql.query("select * from provider where location=?", [req.query.location], function (err, resultJsonArray) {
         resp.send(resultJsonArray);
     })
 })
@@ -482,12 +480,12 @@ app.get("/angular-fetch-distinctprovider-location", function (req, resp) {
     })
 })
 app.get("/fetchcardbycityandsercat", function (req, resp) {
-    mysql.query("select * from provider where location=? and category=?",[req.query.city,req.query.cat],function (err, resultJsonArray) {
+    mysql.query("select * from provider where location=? and category=?", [req.query.city, req.query.cat], function (err, resultJsonArray) {
         resp.send(resultJsonArray);
     })
 })
 app.get("/fetchcardbycityandserstate", function (req, resp) {
-    mysql.query("select * from customprof where city=? and state=?",[req.query.city,req.query.state],function (err, resultJsonArray) {
+    mysql.query("select * from customprof where city=? and state=?", [req.query.city, req.query.state], function (err, resultJsonArray) {
         resp.send(resultJsonArray);
     })
 })
