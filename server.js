@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mysql2 = require("mysql2")
 const fileuploader = require("express-fileupload");
+const path = require("path");
 const obj = {
     host: "127.0.0.1",
     user: "root",
@@ -25,13 +26,22 @@ app.listen(3004, function () {
     console.log("Welcome to server 3004");
 
 })
-
-app.use(express.static("public"));
+/*app.use(express.static("public"));
 
 app.get("/", function (req, resp) {
     let filePath = process.cwd() + "/index.html";
     resp.sendFile(filePath);
 });
+*/
+
+// Serve static files from the "assets" directory
+app.use(express.static(path.join(__dirname, "assets")));
+
+// Route to serve the index.html file
+app.get("/", function (req, res) {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
+
 
 app.get("/saveProfile", function (req, resp) {
     const email = req.query.txtEmail;
