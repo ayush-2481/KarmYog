@@ -116,6 +116,7 @@ app.post("/profileLogin", function (req, resp) {
         }
     });
 });
+
 //-------------------------------------
 app.get("/inputProf", function (req, resp) {
     let filePath = process.cwd() + "/profile-customer.html";
@@ -245,7 +246,21 @@ app.get("/providerprof", function (req, resp) {
     let filePath3 = process.cwd() + "/provider-profile.html";
     resp.sendFile(filePath3);
 })
-
+//--------------//
+app.get("/fj", function (req, resp) {
+    let filepath = process.cwd() + "/findjobsprovider.html";
+    resp.sendFile(filepath);
+  });
+  
+  app.get("/angular-fetch-alljobs", function (req, resp) {
+    mysql.query("select * from task", function (err, result) {
+      if (err) {
+        resp.send(err.message);
+        return;
+      } else resp.send(result);
+    });
+  });
+  //----------------------//
 app.post("/provider-profile-save", function (req, resp) {
     const emailadd = req.body.txtEmailProvider;
     const name = req.body.txtnamePro;
