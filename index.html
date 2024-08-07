@@ -45,7 +45,7 @@
     <script>
       $(document).ready(function () {
         //signup valid code
-        localStorage.setItem("active",$("#loginEmail").val());
+        
         $("#signupEmail").keyup(function () {
           let email = $("#signupEmail").val();
           var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
@@ -296,6 +296,7 @@
           $("#loginPass").prop("type", "password");
           $(".fa-solid").addClass("fa-eye-slash").removeClass("fa-eye");
         });
+        localStorage.setItem("active",$("#loginEmail").val());
       });
     </script>
   </head>
