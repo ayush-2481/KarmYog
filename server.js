@@ -3,13 +3,14 @@ const app = express();
 const mysql2 = require("mysql2")
 const fileuploader = require("express-fileupload");
 const path = require("path");
-const obj = {
-    host: "127.0.0.1",
-    user: "root",
-    password: "Ayush@2481",
-    database: "project",
-    dateStrings: true // challange of time showing in IST
-}
+// const obj = {
+//     host: "127.0.0.1",
+//     user: "root",
+//     password: "Ayush@2481",
+//     database: "project",
+//     dateStrings: true // challange of time showing in IST
+// }
+const obj = "mysql://avnadmin:AVNS_Y9MOkNSWqRrG5hKLoNZ@mysql-31b481bf-ayushsingla5552-f5ef.g.aivencloud.com:24567/defaultdb?ssl-mode=REQUIRED";
 app.use(express.urlencoded({ extended: true }));
 app.use(fileuploader());
 
