@@ -3,6 +3,7 @@ const app = express();
 const mysql2 = require("mysql2")
 const fileuploader = require("express-fileupload");
 const path = require("path");
+const cloudinary = require("cloudinary").v2;
 // const obj = {
 //     host: "127.0.0.1",
 //     user: "root",
@@ -12,6 +13,13 @@ const path = require("path");
 // }
 
 // Online Database
+
+cloudinary.config({ 
+    cloud_name: 'dgzqwxjyz', 
+    api_key: '533745967584789', 
+    api_secret: 'KZarjThqQeWnOBY5FdMafXk__Yc' 
+});
+
 const obj = "mysql://avnadmin:AVNS_Y9MOkNSWqRrG5hKLoNZ@mysql-31b481bf-ayushsingla5552-f5ef.g.aivencloud.com:24567/defaultdb?ssl-mode=REQUIRED";
 app.use(express.urlencoded({ extended: true }));
 app.use(fileuploader());
@@ -131,7 +139,7 @@ app.get("/login-signup", function (req, resp) {
 })
 
 
-app.post("/custProfileSave", function (req, resp) {
+app.post("/custProfileSave",async function (req, resp) {
     const Email = req.body.txtEmailProf;
     const Fname = req.body.txtNameProf;
     const Lname = req.body.txtLnameProf;
@@ -145,7 +153,13 @@ app.post("/custProfileSave", function (req, resp) {
     filename = req.files.photo.name;
     let path = process.cwd() + "/public/uploads/" + filename;
     req.files.photo.mv(path);//to store pic in uploads folder 
+    // Cloudinary Url creater 
+    await cloudinary.uploader.upload(path).then(result => {
+        filename = result.url;
+    })
+    .catch(err=>{
 
+    });
     req.body.photo = filename;
     console.log(req.body.txtEmailProf);
 
@@ -158,7 +172,7 @@ app.post("/custProfileSave", function (req, resp) {
 
 })
 //------------------------------------------------------
-app.post("/custProfileUpdate", function (req, resp) {
+app.post("/custProfileUpdate", async function (req, resp) {
     const Email = req.body.txtEmailProf;
     const Fname = req.body.txtNameProf;
     const Lname = req.body.txtLnameProf;
@@ -174,8 +188,14 @@ app.post("/custProfileUpdate", function (req, resp) {
     filename = req.files.photo.name;
     let path = process.cwd() + "/public/uploads/" + filename;
     req.files.photo.mv(path);//to store pic in uploads folder 
+    await cloudinary.uploader.upload(path).then(result=>{
+        filename = result.url;
+    })
+    .catch(err=>{
 
+    });
     req.body.photo = filename;
+    
     // resp.send(filename);
     console.log(filename);
 
@@ -264,7 +284,7 @@ app.get("/fj", function (req, resp) {
     });
   });
   //----------------------//
-app.post("/provider-profile-save", function (req, resp) {
+app.post("/provider-profile-save",async function (req, resp) {
     const emailadd = req.body.txtEmailProvider;
     const name = req.body.txtnamePro;
     const contact = req.body.txtnumberPro;
@@ -283,7 +303,13 @@ app.post("/provider-profile-save", function (req, resp) {
     req.files.txtpicPro.mv(path);//to store pic in uploads folder 
 
     req.body.txtpicPro = filename;
+    await cloudinary.uploader.upload(path)
+    .then(result=>{
+        filename = result.url;
+    })
+    .catch(err=>{
 
+    });
     //console.log(req.query.txtEmailDash);
 
     mysql.query("insert into provider values(?,?,?,?,?,?,?,?,?,?,?)", [emailadd, name, contact, gender, category, firm, website, location, since, filename, otherinfo], function (err) {
@@ -296,7 +322,7 @@ app.post("/provider-profile-save", function (req, resp) {
 
 })
 //---------------------------------------
-app.post("/Edit-Profile", function (req, resp) {
+app.post("/Edit-Profile", async function (req, resp) {
     // console.log(req.body.txtnamePro);
     const EMAIL = req.body.txtEmailProvider;
     const name = req.body.txtnamePro;
@@ -314,7 +340,13 @@ app.post("/Edit-Profile", function (req, resp) {
     filename = req.files.txtpicPro.name;
     let path = process.cwd() + "/public/uploads/" + filename;
     req.files.txtpicPro.mv(path);//to store pic in uploads folder 
+    await cloudinary.uploader.upload(path)
+    .then(result=>{
+        filename = result.url;
+    })
+    .catch(err=>{
 
+    });
     req.body.txtpicPro = filename;
 
     mysql.query("update provider set Fname=?,contact=?,gender=?,category=?,firm=?,website=?,location=?,since=?,profpic=?,otherinfo=? where email=?", [name, Contact, Gender, Category, Firm, Website, Location, Since, filename, Otherinfo, EMAIL], function (err) {
