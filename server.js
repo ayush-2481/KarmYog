@@ -10,6 +10,8 @@ const path = require("path");
 //     database: "project",
 //     dateStrings: true // challange of time showing in IST
 // }
+
+// Online Database
 const obj = "mysql://avnadmin:AVNS_Y9MOkNSWqRrG5hKLoNZ@mysql-31b481bf-ayushsingla5552-f5ef.g.aivencloud.com:24567/defaultdb?ssl-mode=REQUIRED";
 app.use(express.urlencoded({ extended: true }));
 app.use(fileuploader());
