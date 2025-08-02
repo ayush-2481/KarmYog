@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Service Provider Dashboard Test</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <h1>Service Provider Dashboard Test</h1>
+    
+    <div id="status"></div>
+    
+    <h2>Debug Information:</h2>
+    <ul>
+        <li>Current URL: <span id="currentUrl"></span></li>
+        <li>User in localStorage: <span id="userCheck"></span></li>
+        <li>Server Status: <span id="serverStatus"></span></li>
+    </ul>
+    
+    <h2>Quick Actions:</h2>
+    <button onclick="testLogin()">Test Login (Set User)</button>
+    <button onclick="testDashboard()">Load Dashboard</button>
+    <button onclick="clearUser()">Clear User</button>
+    
+    <script>
+        $(document).ready(function() {
+            // Display current URL
+            $("#currentUrl").text(window.location.href);
+            
+            // Check localStorage
+            const user = localStorage.getItem("User");
+            $("#userCheck").text(user || "No user found");
+            
+            // Test server connection
+            $.get("/provider-stats", { email: "test@example.com" })
+                .done(function() {
+                    $("#serverStatus").text("✅ Server is running").css("color", "green");
+                })
+                .fail(function(xhr) {
+                    if (xhr.status === 0) {
+                        $("#serverStatus").text("❌ Server is not running (Connection refused)").css("color", "red");
+                    } else {
+                        $("#serverStatus").text("⚠️ Server error: " + xhr.status).css("color", "orange");
+                    }
+                });
+        });
+        
+        function testLogin() {
+            localStorage.setItem("User", "provider@test.com");
+            $("#userCheck").text("provider@test.com");
+            alert("Test user set! Now try loading the dashboard.");
+        }
+        
+        function testDashboard() {
+            window.location.href = "/providerdash";
+        }
+        
+        function clearUser() {
+            localStorage.removeItem("User");
+            $("#userCheck").text("No user found");
+            alert("User cleared from localStorage");
+        }
+    </script>
+</body>
+</html>

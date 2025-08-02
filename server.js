@@ -28,10 +28,8 @@ const mysql = mysql2.createConnection(obj);
 
 mysql.connect(function (err) {
     if (err == null) {
-        console.log("Connected to database");
-        
-        // Update database schema to support longer addresses
-        console.log("Updating database schema for longer addresses...");
+        console.log("✅ Connected to database successfully");
+        console.log("🔄 Updating database schema for longer addresses...");
         
         // Update customprof table address column
         mysql.query("ALTER TABLE customprof MODIFY COLUMN address TEXT", function(err, result) {
@@ -54,22 +52,30 @@ mysql.connect(function (err) {
         // Check table structure to debug column lengths
         mysql.query("DESCRIBE customprof", function(err, result) {
             if (err == null) {
-                console.log("customprof table structure:", result);
+                console.log("📋 customprof table structure verified");
             }
         });
         mysql.query("DESCRIBE task", function(err, result) {
             if (err == null) {
-                console.log("task table structure:", result);
+                console.log("📋 task table structure verified");
             }
         });
     }
-    else
-        console.log(err.message);
+    else {
+        console.error("❌ Database connection failed:", err.message);
+        console.error("Please check your database connection and try again.");
+    }
 })
 
 app.listen(3004, function () {
-    console.log("Welcome to server 3004");
-
+    console.log("🚀 KarmYog Server is running!");
+    console.log("📍 Server URL: http://localhost:3004");
+    console.log("🏠 Home Page: http://localhost:3004/");
+    console.log("👨‍💼 Provider Dashboard: http://localhost:3004/providerdash");
+    console.log("🧪 Test Dashboard: http://localhost:3004/test-dashboard");
+    console.log("📊 Admin Panel: http://localhost:3004/admin");
+    console.log("===============================================");
+    console.log("Server is ready to accept connections!");
 })
 app.use(express.static("public"));
 
@@ -395,6 +401,11 @@ app.get("/radioadd", function (req, resp) {
 app.get("/providerdash", function (req, resp) {
     let filePath3 = process.cwd() + "/service-providerdashboard.html";
     resp.sendFile(filePath3);
+})
+
+app.get("/test-dashboard", function (req, resp) {
+    let filePath = process.cwd() + "/test-dashboard.html";
+    resp.sendFile(filePath);
 })
 
 app.get("/providerprof", function (req, resp) {

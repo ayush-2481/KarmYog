@@ -135,6 +135,19 @@
   <script>
     $(document).ready(function(){
       let User = localStorage.getItem("User")
+      
+      // Debug: Check if user is logged in
+      console.log("User from localStorage:", User);
+      
+      if (!User) {
+        console.warn("No user found in localStorage - redirecting to login");
+        // If no user is logged in, redirect to login page
+        setTimeout(function() {
+          window.location.href = '/';
+        }, 2000);
+        return;
+      }
+      
       if (User) {
         $("#active").html(User);
         $("#userEmail").val(User);
@@ -171,21 +184,30 @@
       // Load provider statistics
       function loadProviderStats() {
         const email = localStorage.getItem("User");
+        console.log("Loading stats for email:", email);
+        
         if (email) {
           // Show loading state
           $(".stat-value").html('<div class="loading-skeleton"></div>');
           
           $.get("/provider-stats", { email: email }).done(function (stats) {
+            console.log("Provider stats loaded:", stats);
             $("#availableJobs").text(stats.availableJobs || 0);
             $("#totalEarnings").text("₹" + (stats.totalEarnings || 0));
             $("#completedJobs").text(stats.completedJobs || 0);
             $("#thisMonth").text(stats.thisMonth || 0);
-          }).fail(function() {
+          }).fail(function(xhr, status, error) {
+            console.error("Failed to load provider stats:", xhr, status, error);
             // Set default values on error
             $("#availableJobs").text("0");
             $("#totalEarnings").text("₹0");
             $("#completedJobs").text("0");
             $("#thisMonth").text("0");
+            
+            // Show error message if server is not responding
+            if (xhr.status === 0) {
+              console.error("Server not responding - make sure server.js is running on port 3004");
+            }
           });
         }
       }
@@ -193,8 +215,11 @@
       // Load provider profile info
       function loadProviderInfo() {
         const email = localStorage.getItem("User");
+        console.log("Loading provider info for email:", email);
+        
         if (email) {
           $.get("/fetch-provider-details", { email: email }).done(function (provider) {
+            console.log("Provider details loaded:", provider);
             if (provider && provider.length > 0) {
               const p = provider[0];
               $("#providerName").text(p.Fname || "Provider");
@@ -208,6 +233,11 @@
                 $("#providerImage").show();
                 $("#userInitial").hide();
               }
+            }
+          }).fail(function(xhr, status, error) {
+            console.error("Failed to load provider details:", xhr, status, error);
+            if (xhr.status === 0) {
+              console.error("Server not responding - make sure server.js is running on port 3004");
             }
           });
         }
