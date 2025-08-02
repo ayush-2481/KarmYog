@@ -11,99 +11,341 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .table-responsive {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .btn-group .btn {
+            margin: 0 2px;
+        }
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .badge {
+            font-size: 0.75em;
+        }
+        tbody tr:hover {
+            background-color: rgba(0,123,255,0.1);
+        }
+        .card-header {
+            border-bottom: 3px solid #007bff;
+        }
+        .stats-card {
+            border-left: 4px solid #007bff;
+        }
+        
+        /* Additional improvements */
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .col-md-3 {
+                margin-bottom: 1rem;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn-group .btn {
+                margin: 2px 0;
+                font-size: 0.8rem;
+            }
+        }
+        
+        .action-buttons {
+            min-width: 120px;
+        }
+    </style>
 </head>
 <script>
     var module = angular.module("myModule", []);
-    var contoller = module.controller("myController", function ($scope, $http) {
-        $scope.jsonRecorsdArry = [];
+    var controller = module.controller("myController", function ($scope, $http) {
+        $scope.jsonRecordsArry = [];
+        $scope.loading = true; // Add loading state
+        
         $scope.doFetchAll = function () {
+            $scope.loading = true;
             let url = "angular-fetch-all";
             $http.get(url).then(success, errors);
             function success(response) {
                 $scope.jsonRecordsArry = response.data;
+                $scope.loading = false;
             }
             function errors(response) {
-                alert(response.data);
+                alert("Error fetching data: " + response.data);
+                $scope.loading = false;
             }
         }
         $scope.doDelete = function (selemailid) {
-            if (confirm("R U Sure?") == false)
+            if (confirm("Are you sure you want to delete this user?") == false)
                 return;
             let url = "/angular-delete?emailkuch=" + selemailid;
             $http.get(url).then(success, errors);
             function success(response) {
                 alert(response.data);
+                window.location.reload(); // Refresh the page after successful deletion
             }
             function errors(response) {
-                alert(response.data);
+                alert("Error: " + response.data);
             }
         }
         $scope.doBlock = function (selecEmail) {
-
+            if (confirm("Are you sure you want to block this user?") == false)
+                return;
             let url = "/block?email=" + selecEmail;
             $http.get(url).then(success, errors);
             function success(response) {
                // alert(response.data);
-                window.location.reload();   //google 
+                window.location.reload();   // Refresh page after successful block
             }
             function errors(response) {
-                alert(response.data);
+                alert("Error: " + response.data);
             }
         }
         $scope.doResume = function (selectEmail) {
-
-            let url = "/resume?Email=" + selectEmail;
+            if (confirm("Are you sure you want to resume this user?") == false)
+                return;
+            let url = "/resume?email=" + selectEmail; // Fixed parameter name to match block function
             $http.get(url).then(success, errors);
             function success(response) {
                 //alert(response.data);
-                window.location.reload();   //google 
+                window.location.reload();   // Refresh page after successful resume
             }
             function errors(response) {
-                alert(response.data);
+                alert("Error: " + response.data);
             }
         };
     })
 </script>
 
 <body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll();"
-    style="  overflow: hidden;">
-    <center>
-        <h1 style="margin-top: 10px; margin-bottom: 20px;">Fetching All Records of users</h1>
-        <div class="cointainer col-md-11">
-        <table class="table table-secondary table-bordered border-danger">
-            <tr>
-                <thead class="table-dark">
-                    <th>Email Id</th>
-                    <th>Password</th>
-                    <th>UserType</th>
-                    <th>Date of SignUp</th>
-                    <th>Status</th>
-                    <th>Delete Operation</th>
-                    <th>Block Operation</th>
-                    <th>Resume Operation</th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="obj in jsonRecordsArry">
-                    <td>{{obj.emailid}}</td>
-                    <td>{{obj.pwd}}</td>
-                    <td>{{obj.usertype}}</td>
-                    <td>{{obj.dos}}</td>
-                    <td>{{obj.status}}</td>
-                    <th>
-                        <button type="button" ng-click="doDelete(obj.emailid);" class="btn btn-primary">Delete</button>
-                    </th>
-                    <th>
-                        <button type="button" ng-click="doBlock(obj.emailid);" class="btn btn-primary">Block</button>
-                    </th>
-                    <th>
-                        <button type="button" ng-click="doResume(obj.emailid);" class="btn btn-primary">Resume</button>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
+    style="background-color: rgb(250, 248, 246); min-height: 100vh;">
+    
+    <!-- Navigation Header -->
+    <nav class="navbar bg-body-tertiary shadow-sm" style="margin-bottom: 30px;">
+        <div class="container-fluid">
+            <span class="navbar-brand h1" style="margin-left: 20px;">
+                <i class="fas fa-users-cog me-2"></i>
+                User Management Dashboard
+            </span>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-info fs-6 me-3">Total Users: {{jsonRecordsArry.length}}</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Users</h6>
+                                        <h3>{{jsonRecordsArry.length}}</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Active Users</h6>
+                                        <h3>{{(jsonRecordsArry | filter:{status:'1'}).length}}</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-user-check fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Blocked Users</h6>
+                                        <h3>{{(jsonRecordsArry | filter:{status:'0'}).length}}</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-user-times fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Providers</h6>
+                                        <h3>{{(jsonRecordsArry | filter:{usertype:'Provider'}).length}}</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-briefcase fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Table Card -->
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-table me-2"></i>
+                            All User Records
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- Loading Spinner -->
+                        <div ng-if="loading" class="text-center p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading user data...</p>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div ng-if="!loading && jsonRecordsArry.length === 0" class="text-center p-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Users Found</h5>
+                            <p class="text-muted">There are currently no users in the system.</p>
+                            <button class="btn btn-primary" ng-click="doFetchAll()">
+                                <i class="fas fa-refresh me-1"></i> Refresh
+                            </button>
+                        </div>
+                        
+                        <!-- Data Table -->
+                        <div ng-if="!loading && jsonRecordsArry.length > 0" class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead class="table-dark sticky-top">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">
+                                            <i class="fas fa-envelope me-1"></i>Email Id
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-key me-1"></i>Password
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-user-tag me-1"></i>User Type
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-calendar me-1"></i>Date of SignUp
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-toggle-on me-1"></i>Status
+                                        </th>
+                                        <th scope="col" class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="obj in jsonRecordsArry" 
+                                        ng-class="{'table-success': obj.status == '1', 'table-warning': obj.status == '0'}">
+                                        <td class="fw-bold">{{$index + 1}}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-circle text-primary me-2"></i>
+                                                {{obj.emailid}}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">••••••••</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" 
+                                                  ng-class="{'bg-info': obj.usertype == 'Customer', 'bg-primary': obj.usertype == 'Provider', 'bg-success': obj.usertype == 'Admin'}">
+                                                {{obj.usertype}}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{obj.dos}}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge" 
+                                                  ng-class="{'bg-success': obj.status == '1', 'bg-danger': obj.status == '0'}">
+                                                <i class="fas" ng-class="{'fa-check': obj.status == '1', 'fa-times': obj.status == '0'}"></i>
+                                                {{obj.status == '1' ? 'Active' : 'Blocked'}}
+                                            </span>
+                                        </td>
+                                        <td class="action-buttons">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" 
+                                                        ng-click="doDelete(obj.emailid);" 
+                                                        class="btn btn-outline-danger btn-sm"
+                                                        title="Delete User"
+                                                        data-bs-toggle="tooltip">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                <button type="button" 
+                                                        ng-click="doBlock(obj.emailid);" 
+                                                        class="btn btn-outline-warning btn-sm"
+                                                        ng-if="obj.status == '1'"
+                                                        title="Block User"
+                                                        data-bs-toggle="tooltip">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                                <button type="button" 
+                                                        ng-click="doResume(obj.emailid);" 
+                                                        class="btn btn-outline-success btn-sm"
+                                                        ng-if="obj.status == '0'"
+                                                        title="Resume User"
+                                                        data-bs-toggle="tooltip">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light" ng-if="!loading">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Showing {{jsonRecordsArry.length}} users. Last updated: {{new Date() | date:'medium'}}
+                                </small>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-sm btn-outline-secondary" ng-click="doFetchAll()">
+                                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    </center>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
