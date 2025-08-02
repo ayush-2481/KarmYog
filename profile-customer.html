@@ -4,218 +4,1208 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <title>KarmYog</title>
+    <title>KarmYog - Customer Profile</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/modern-design-system.css">
+    <link rel="stylesheet" href="/css/modern-navbar.css">
+    
     <style>
         body {
-            color: antiquewhite;
-            background-image: url(https://akm-img-a-in.tosshub.com/indiatoday/images/story/201912/question-mark-2492009_960_720.jpeg?size=690:388);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            background-image: none !important;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            min-height: 100vh;
         }
-
-        .ok {
-            color: rgb(58, 228, 58);
+        
+        .profile-container {
+            max-width: 900px;
+            margin: 1rem auto;
+            padding: 0 0.75rem;
         }
-
-        .not-ok {
-            color: red;
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-
-        .container {
-            margin-top: 20px;
+        
+        .profile-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
         }
-
-        .left-div {
-            background-image: url(https://img.freepik.com/free-photo/abstract-luxury-gradient-blue-background-smooth-dark-blue-with-black-vignette-studio-banner_1258-100595.jpg);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            margin-left: 80px;
-
+        
+        .profile-subtitle {
+            font-size: 1rem;
+            color: #64748b;
         }
-
-        .left-div img {
-            width: 100%;
-            border-radius: 5px;
-            margin-bottom: 10px;
-
+        
+        .profile-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
         }
-
-        .right-div {
-            background-image: url(https://ae01.alicdn.com/kf/HTB1sNzCaiLxK1Rjy0Ffq6zYdVXav/VinylBDS-Custom-Professional-Photo-Background.jpg_Q90.jpg_.webp);
-            background-repeat: no-repeat;
-            background-size: cover;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
+        
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #0ea5e9, #06b6d4, #10b981, #f59e0b, #ef4444);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
         }
-
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+        
+        .profile-card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px) scale(1.01);
+        }
+        
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
-
-        form {
-            max-width: 400px;
-            margin: 0 auto;
+        
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            display: block;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
         }
-
-        button {
-            background-color: #007bff;
-            color: #fff;
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #fafbfc, #f8fafc);
+            font-family: 'Inter', sans-serif;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1), inset 0 2px 4px rgba(14, 165, 233, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .form-input:hover, .form-textarea:hover {
+            border-color: #cbd5e1;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .character-counter {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
             border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            letter-spacing: 0.025em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+            box-shadow: 0 4px 14px rgba(100, 116, 139, 0.3);
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #475569, #334155);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-outline:hover:not(:disabled) {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #475569;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 0.875rem;
+            font-size: 0.8rem;
+        }
+        
+        .email-validation {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .text-success {
+            color: #22c55e;
+        }
+        
+        .text-error {
+            color: #ef4444;
+        }
+        
+        .profile-image {
+            max-width: 180px;
+            max-height: 180px;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border: 3px solid #fff;
+            transition: all 0.4s ease;
+            object-fit: cover;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .unified-image-section {
+            border: 2px dashed #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            background: linear-gradient(145deg, #fafbfc, #f8fafc);
+            position: relative;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .unified-image-section:hover {
+            border-color: #0ea5e9;
+            background: linear-gradient(145deg, #f0f9ff, #e0f2fe);
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.1);
+        }
+        
+        .unified-image-section.dragover {
+            border-color: #10b981;
+            background: linear-gradient(145deg, #ecfdf5, #d1fae5);
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
+        }
+        
+        .unified-image-section.has-image {
+            border-style: solid;
+            border-color: #22c55e;
+            background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+        }
+        
+        .image-upload-content {
+            transition: all 0.3s ease;
+        }
+        
+        .image-upload-content.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .image-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .btn-image {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            border-radius: 0.5rem;
+        }
+        
+        .image-upload-area {
+            border: 2px dashed #e2e8f0;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+        
+        .image-upload-area:hover {
+            border-color: #0ea5e9;
+            background: #f0f9ff;
+        }
+        
+        .image-upload-area.dragover {
+            border-color: #0ea5e9;
+            background: #f0f9ff;
+            transform: scale(1.02);
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            accent-color: #0ea5e9;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Form state indicators */
+        .form-group.required .form-label::after {
+            content: ' *';
+            color: #ef4444;
+        }
+        
+        .form-input.error, .form-textarea.error {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .form-input.success, .form-textarea.success {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        
+        /* Loading states */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1.5rem;
+            z-index: 10;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #0ea5e9;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Form sections and dividers */
+        .form-section {
+            padding: 1.25rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, #0ea5e9, transparent);
+        }
+        
+        /* Enhanced grid layouts */
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-container {
+                margin: 0.5rem auto;
+                padding: 0 0.5rem;
+            }
+            
+            .profile-card {
+                padding: 1rem;
+                border-radius: 1rem;
+            }
+            
+            .profile-title {
+                font-size: 1.75rem;
+            }
+            
+            .profile-header {
+                margin-bottom: 1.5rem;
+            }
+            
+            .form-section {
+                padding: 1rem 0;
+                margin-bottom: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .form-grid-2 {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .unified-image-section {
+                padding: 1rem;
+                min-height: 120px;
+            }
+            
+            .profile-image {
+                max-width: 150px;
+                max-height: 150px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .profile-container {
+                margin: 0.25rem auto;
+                padding: 0 0.25rem;
+            }
+            
+            .profile-card {
+                padding: 0.75rem;
+                margin: 0.25rem;
+            }
+            
+            .profile-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-input, .form-textarea {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .form-section {
+                padding: 0.75rem 0;
+                margin-bottom: 0.75rem;
+            }
+            
+            .section-title {
+                font-size: 0.95rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .btn {
+                padding: 0.625rem 0.875rem;
+                font-size: 0.75rem;
+            }
         }
     </style>
     <script>
         $(document).ready(function () {
             $("#txtEmailProf").keyup(function () {
                 let email = $("#txtEmailProf").val();
-                var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+                // More flexible email validation regex
+                var r = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (r.test(email) == false) {
-                    $("#emailerr").html("(Invalid Email)").addClass("not-ok").removeClass("ok");
+                    $("#emailerr").html('<i class="fas fa-times-circle"></i> Invalid Email').addClass("text-error").removeClass("text-success");
                 }
                 else
-                    $("#emailerr").html("(Valid Email)").addClass("ok").removeClass("not-ok");
+                    $("#emailerr").html('<i class="fas fa-check-circle"></i> Valid Email').addClass("text-success").removeClass("text-error");
 
             });
+            
             $("#termsconditions").change(function () {
-
                 $("#btnProfSave").attr("disabled", !$(this).prop("checked"));
                 $("#btnProfUpdate").attr("disabled", !$(this).prop("checked"));
-            })
+            });
+
+            // Handle form submission with AJAX
+            $('form').on('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+                
+                // Validate required fields
+                const requiredFields = ['txtEmailProf', 'txtNameProf', 'txtLnameProf', 'txtNumProf', 'txtAddProf', 'txtCityProf', 'txtStateProf'];
+                let isValid = true;
+                
+                requiredFields.forEach(fieldId => {
+                    const field = $('#' + fieldId);
+                    if (!field.val().trim()) {
+                        field.addClass('error');
+                        isValid = false;
+                    } else {
+                        field.removeClass('error');
+                    }
+                });
+                
+                if (!isValid) {
+                    showNotification('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                // Check if terms are accepted
+                if (!$("#termsconditions").prop("checked")) {
+                    showNotification('Please accept the Terms and Conditions', 'error');
+                    return;
+                }
+                
+                const formData = new FormData(this);
+                const submitButton = $(document.activeElement);
+                const isUpdate = submitButton.attr('formaction') === '/custProfileUpdate';
+                const url = isUpdate ? '/custProfileUpdate' : '/custProfileSave';
+                
+                // Show loading state
+                const originalText = submitButton.html();
+                submitButton.html('<i class="fas fa-spinner fa-spin"></i> ' + (isUpdate ? 'Updating...' : 'Saving...')).prop('disabled', true);
+                
+                // Add loading overlay to form
+                $('.profile-card').css('position', 'relative');
+                $('.profile-card').append('<div class="loading-overlay"><div class="spinner"></div></div>');
+                
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        showNotification(
+                            isUpdate ? 'Profile updated successfully!' : 'Profile saved successfully!', 
+                            'success'
+                        );
+                        
+                        // If it's a new save, switch to update mode
+                        if (!isUpdate) {
+                            $("#btnProfSave").hide();
+                            $("#btnProfUpdate").show();
+                        }
+                        
+                        // Remove error styling from all fields
+                        $('.form-input, .form-textarea').removeClass('error');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Form submission error:', xhr, status, error);
+                        let errorMessage = isUpdate ? 'Error updating profile: ' : 'Error saving profile: ';
+                        
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage += xhr.responseJSON.error;
+                        } else if (xhr.responseText) {
+                            try {
+                                const errorData = JSON.parse(xhr.responseText);
+                                errorMessage += errorData.error || xhr.responseText;
+                            } catch (e) {
+                                errorMessage += xhr.responseText;
+                            }
+                        } else {
+                            errorMessage += (error || 'Unknown error');
+                        }
+                        
+                        showNotification(errorMessage, 'error');
+                    },
+                    complete: function() {
+                        // Remove loading overlay and reset button state
+                        $('.loading-overlay').remove();
+                        submitButton.html(originalText).prop('disabled', false);
+                        
+                        // Re-enable submit buttons based on checkbox state
+                        const isChecked = $("#termsconditions").prop("checked");
+                        $("#btnProfSave").attr("disabled", !isChecked);
+                        $("#btnProfUpdate").attr("disabled", !isChecked);
+                    }
+                });
+            });
+
+            // Initialize form in empty state but allow editing for new customers
+            clearForm();
+            // Enable basic editing for new customers
+            enableNewCustomerEditing();
+            
+            // Add reset button functionality
+            $("#btnReset").click(function() {
+                clearForm();
+                enableNewCustomerEditing(); // Allow editing after reset for new customers
+                showNotification("Form has been reset", "info");
+            });
 
             //---------------------
             $("#btnSearch").click(function () {
+                // Add loading state to form
+                $('.profile-card').css('position', 'relative');
+                $('.profile-card').append('<div class="loading-overlay"><div class="spinner"></div></div>');
+                
+                // Add loading state to button
+                $(this).html('<i class="fas fa-spinner fa-spin"></i> Searching...').prop('disabled', true);
+                
                 let obj = {
-
                     url: "/fetch-one",
                     data: {
                         kuchEmail: $("#txtEmailProf").val(),
                     }
                 }
                 $.ajax(obj).done(function (respJsonArray) {
-
-                    alert(JSON.stringify(respJsonArray));
-                    $("#txtEmailProf").val(respJsonArray[0].emailid);
-                    $("#txtNameProf").val(respJsonArray[0].Fname);
-                    $("#txtLnameProf").val(respJsonArray[0].Lname);
-                    $("#txtAddProf").val(respJsonArray[0].address);
-                    $("#txtNumProf").val(respJsonArray[0].contact);
-                    $("#txtStateProf").val(respJsonArray[0].state);
-                    $("#txtCityProf").val(respJsonArray[0].city);
-                    $("#prev2").prop("src", "uploads/" + respJsonArray[0].picname);
-                    $("#hdn").val(respJsonArray[0].picname)
-                     alert(respJsonArray[0].picname);
-                }).fail(function (err) {
-                    alert(err);
-                })
-
+                    console.log("Search response:", respJsonArray);
+                    if (respJsonArray && respJsonArray.length > 0) {
+                        // Populate form with search results
+                        $("#txtEmailProf").val(respJsonArray[0].emailid);
+                        $("#txtNameProf").val(respJsonArray[0].Fname);
+                        $("#txtLnameProf").val(respJsonArray[0].Lname);
+                        $("#txtAddProf").val(respJsonArray[0].address);
+                        $("#txtNumProf").val(respJsonArray[0].contact);
+                        $("#txtStateProf").val(respJsonArray[0].state);
+                        $("#txtCityProf").val(respJsonArray[0].city);
+                        
+                        // Fix image path - check if it's already a full URL or needs uploads/ prefix
+                        if (respJsonArray[0].picname) {
+                            if (respJsonArray[0].picname.startsWith('http')) {
+                                $("#prev2").prop("src", respJsonArray[0].picname);
+                            } else {
+                                $("#prev2").prop("src", "uploads/" + respJsonArray[0].picname);
+                            }
+                            showImagePreview();
+                        } else {
+                            hideImagePreview();
+                        }
+                        $("#hdn").val(respJsonArray[0].picname);
+                        
+                        // Update character counters
+                        updateCharacterCounters();
+                        
+                        // Show success message with modern styling
+                        showNotification("Profile data loaded successfully!", "success");
+                        
+                        // Enable form editing
+                        enableFormEditing();
+                        
+                        // Show update button instead of save for existing users
+                        $("#btnProfSave").hide();
+                        $("#btnProfUpdate").show();
+                    } else {
+                        showNotification("No profile found for this email ID. You can create a new profile!", "info");
+                        // Clear form except email and enable editing for new customer
+                        clearFormExceptEmail();
+                        enableNewCustomerEditing();
+                    }
+                }).fail(function (xhr, status, error) {
+                    console.error("Search error:", xhr, status, error);
+                    let errorMessage = "Error searching for profile: ";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage += xhr.responseJSON.error;
+                    } else if (xhr.responseText) {
+                        try {
+                            const errorData = JSON.parse(xhr.responseText);
+                            errorMessage += errorData.error || xhr.responseText;
+                        } catch (e) {
+                            errorMessage += xhr.responseText;
+                        }
+                    } else {
+                        errorMessage += (error || "Unknown error");
+                    }
+                    
+                    showNotification(errorMessage, "error");
+                }).always(function() {
+                    // Remove loading overlay and reset button state
+                    $('.loading-overlay').remove();
+                    $("#btnSearch").html('<i class="fas fa-search"></i> Search').prop('disabled', false);
+                });
             })
-
-
         });
+
         function doShowPreview(refFile, refImg) {
             const [file] = refFile.files
             if (file) {
-                refImg.src = URL.createObjectURL(file)
+                refImg.src = URL.createObjectURL(file);
+                $(refImg).show();
             }
         }
 
+        // Enhanced image handling functions
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                // Validate file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification("File size must be less than 5MB", "error");
+                    input.value = '';
+                    return;
+                }
+                
+                // Validate file type
+                if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
+                    showNotification("Please select a valid image file (JPG, PNG, GIF)", "error");
+                    input.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#prev2').attr('src', e.target.result);
+                    showImagePreview();
+                    showNotification("Image uploaded successfully!", "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function showImagePreview() {
+            $('#uploadContent').hide();
+            $('#imagePreview').show();
+            $('#imageSection').addClass('has-image');
+        }
+        
+        function hideImagePreview() {
+            $('#uploadContent').show();
+            $('#imagePreview').hide();
+            $('#imageSection').removeClass('has-image');
+            $('#prev2').attr('src', '');
+            $('#formFile').val('');
+        }
+        
+        function changeImage() {
+            $('#formFile').click();
+        }
+        
+        function removeImage() {
+            hideImagePreview();
+            $("#hdn").val("");
+            showNotification("Image removed", "info");
+        }
+        
+        // Add drag and drop functionality
+        $(document).ready(function() {
+            const imageSection = $('#imageSection')[0];
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                imageSection.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                imageSection.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                imageSection.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight(e) {
+                $('#imageSection').addClass('dragover');
+            }
+            
+            function unhighlight(e) {
+                $('#imageSection').removeClass('dragover');
+            }
+            
+            imageSection.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length > 0) {
+                    $('#formFile')[0].files = files;
+                    handleImageUpload($('#formFile')[0]);
+                }
+            }
+        });
+
+        // Modern notification function
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            $('.notification').remove();
+            
+            const iconMap = {
+                'success': 'fas fa-check-circle',
+                'error': 'fas fa-exclamation-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'info': 'fas fa-info-circle'
+            };
+            
+            const colorMap = {
+                'success': '#22c55e',
+                'error': '#ef4444',
+                'warning': '#f59e0b',
+                'info': '#0ea5e9'
+            };
+            
+            const notification = $(`
+                <div class="notification" style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: white;
+                    border-left: 4px solid ${colorMap[type]};
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                    z-index: 1000;
+                    max-width: 400px;
+                    animation: slideIn 0.3s ease;
+                ">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="${iconMap[type]}" style="color: ${colorMap[type]};"></i>
+                        <span style="color: #1e293b; font-weight: 500;">${message}</span>
+                        <button onclick="$(this).closest('.notification').remove()" style="
+                            background: none;
+                            border: none;
+                            color: #64748b;
+                            cursor: pointer;
+                            margin-left: auto;
+                            padding: 0;
+                        ">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `);
+            
+            $('body').append(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 5000);
+        }
+
+        // Character counter for address field
+        $('#txtAddProf').on('input', function() {
+            const maxLength = 1000;
+            const currentLength = $(this).val().length;
+            const remaining = maxLength - currentLength;
+            $('#addressCounter').text(remaining);
+            
+            if (remaining < 50) {
+                $('#addressCounter').css('color', '#ef4444');
+            } else {
+                $('#addressCounter').css('color', '#64748b');
+            }
+        });
+        
+        // Character counter for contact number field
+        $('#txtNumProf').on('input', function() {
+            const maxLength = 15;
+            const currentLength = $(this).val().length;
+            const remaining = maxLength - currentLength;
+            $('#contactCounter').text(remaining);
+            
+            if (remaining < 3) {
+                $('#contactCounter').css('color', '#ef4444');
+            } else {
+                $('#contactCounter').css('color', '#64748b');
+            }
+        });
+
+        // Add CSS animation for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Clear form function
+        function clearForm() {
+            $('form')[0].reset();
+            hideImagePreview();
+            $("#hdn").val("");
+            $("#emailerr").html("");
+            $("#termsconditions").prop("checked", false);
+            $("#btnProfSave").attr("disabled", true).show();
+            $("#btnProfUpdate").attr("disabled", true).hide();
+            updateCharacterCounters();
+        }
+        
+        // Clear form except email
+        function clearFormExceptEmail() {
+            const email = $("#txtEmailProf").val();
+            const emailValidation = $("#emailerr").html();
+            $('form')[0].reset();
+            $("#txtEmailProf").val(email);
+            $("#emailerr").html(emailValidation);
+            hideImagePreview();
+            $("#hdn").val("");
+            $("#termsconditions").prop("checked", false);
+            $("#btnProfSave").attr("disabled", true).show();
+            $("#btnProfUpdate").attr("disabled", true).hide();
+            updateCharacterCounters();
+        }
+        
+        // Update character counters
+        function updateCharacterCounters() {
+            // Address counter
+            const addressLength = $("#txtAddProf").val().length;
+            const addressRemaining = 1000 - addressLength;
+            $('#addressCounter').text(addressRemaining);
+            $('#addressCounter').css('color', addressRemaining < 50 ? '#ef4444' : '#64748b');
+            
+            // Contact counter
+            const contactLength = $("#txtNumProf").val().length;
+            const contactRemaining = 15 - contactLength;
+            $('#contactCounter').text(contactRemaining);
+            $('#contactCounter').css('color', contactRemaining < 3 ? '#ef4444' : '#64748b');
+        }
+        
+        // Enable form editing (after successful search)
+        function enableFormEditing() {
+            $('input:not(#txtEmailProf), textarea, select').prop('disabled', false);
+            $('.form-input:not(#txtEmailProf), .form-textarea').css({
+                'background': '#fff',
+                'opacity': '1'
+            });
+        }
+        
+        // Enable editing for new customers (all fields except email can be edited)
+        function enableNewCustomerEditing() {
+            $('input:not(#txtEmailProf), textarea, select').prop('disabled', false);
+            $('.form-input:not(#txtEmailProf), .form-textarea').css({
+                'background': '#fff',
+                'opacity': '1'
+            });
+            // Keep email field enabled for search but with different styling
+            $('#txtEmailProf').css({
+                'background': '#f0f9ff',
+                'border-color': '#0ea5e9'
+            });
+        }
+        
+        // Disable form editing (initial state)
+        function disableFormEditing() {
+            $('input:not(#txtEmailProf):not(#termsconditions), textarea, select').prop('disabled', true);
+            $('.form-input:not(#txtEmailProf), .form-textarea').css({
+                'background': '#f8fafc',
+                'opacity': '0.7'
+            });
+        }
     </script>
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <h1 class="profile-title">
+                <i class="fas fa-user-circle" style="color: #0ea5e9; margin-right: 0.5rem;"></i>
+                Customer Profile
+            </h1>
+            <p class="profile-subtitle">Manage your personal information and preferences</p>
+        </div>
 
-            <div class="col-md-4 left-div ">
-                <img src="https://ise-erp.com/wp-content/uploads/2019/05/Hardhat-profile-with-industrial-graphics-2-PS.jpg"
-                    class="img-fluid pt-4 pb-4" alt="Image 3">
-                <img src="https://www.labor.ucla.edu/wp-content/uploads/2022/12/Profile-of-Janitorial-Workers-in-CA_Blog-post.png"
-                    class="img-fluid pt-4" alt="Image 2"><br><br>
-                <img src="https://ise-erp.com/wp-content/uploads/2019/05/Hardhat-profile-with-industrial-graphics-2-PS.jpg"
-                    class="img-fluid pt-4 pb-4" alt="Image 3">
-                <img src="https://www.labor.ucla.edu/wp-content/uploads/2022/12/Profile-of-Janitorial-Workers-in-CA_Blog-post.png"
-                    class="img-fluid pt-4" alt="Image 2"><br><br>
-
-            </div>
-
-
-            <div class="col-md-6 right-div">
-                <form action="/custProfileSave" method="post" enctype="multipart/form-data">
-                    <input type="hidden" id="hdn" name="hdn">
-                    <h2 class="mb-4"> CUSTOMER PROFILE</h2>
-
-                    <div class="form-group mb-4">
-                        <label for="txtEmailProf" class="required">Email ID </label>
-                        <span id="emailerr"></span>
-                        <button type="button" class="btn btn-outline-primary pb-1 pt-1" id="btnSearch">Search</button>
-                        <input type="email" class="form-control" name="txtEmailProf" id="txtEmailProf" required>
-
+        <!-- Profile Form Card -->
+        <div class="profile-card">
+            <form action="/custProfileSave" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="hdn" name="hdn">
+                
+                <!-- Account Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user-circle"></i>
+                        Account Information
+                    </h3>
+                    
+                    <!-- Email Section -->
+                    <div class="form-group">
+                        <label for="txtEmailProf" class="form-label">
+                            <i class="fas fa-envelope" style="margin-right: 0.5rem; color: #0ea5e9;"></i>
+                            Email Address
+                        </label>
+                        <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                            <input type="email" class="form-input" name="txtEmailProf" id="txtEmailProf" 
+                                   placeholder="Enter your email address" required style="flex: 1;">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnSearch">
+                                <i class="fas fa-search"></i>
+                                Search
+                            </button>
+                        </div>
+                        <div class="email-validation">
+                            <span id="emailerr"></span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                            <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i>
+                            Enter your email and click Search to load existing profile, or start filling details for a new profile
+                        </div>
                     </div>
-                    <div class="form-group mb-4">
-                        <label for="txtNameProf">First Name</label>
-                        <input type="text" class="form-control" name="txtNameProf" id="txtNameProf" required>
+                </div>
+
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-address-card"></i>
+                        Personal Information
+                    </h3>
+                    
+                    <!-- Name Section -->
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="txtNameProf" class="form-label">
+                                <i class="fas fa-user" style="margin-right: 0.5rem; color: #0ea5e9;"></i>
+                                First Name
+                            </label>
+                            <input type="text" class="form-input" name="txtNameProf" id="txtNameProf" 
+                                   placeholder="Enter first name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="txtLnameProf" class="form-label">
+                                <i class="fas fa-user" style="margin-right: 0.5rem; color: #0ea5e9;"></i>
+                                Last Name
+                            </label>
+                            <input type="text" class="form-input" id="txtLnameProf" name="txtLnameProf" 
+                                   placeholder="Enter last name" required>
+                        </div>
                     </div>
 
-                    <div class="form-group mb-4">
-                        <label for="txtLnameProf">Last Name</label>
-                        <input type="text" class="form-control" id="txtLnameProf" name="txtLnameProf" required>
+                    <!-- Contact Number -->
+                    <div class="form-group">
+                        <label for="txtNumProf" class="form-label">
+                            <i class="fas fa-phone" style="margin-right: 0.5rem; color: #0ea5e9;"></i>
+                            Contact Number
+                        </label>
+                        <input type="text" class="form-input" id="txtNumProf" name="txtNumProf" maxlength="15" 
+                               pattern="[0-9+\-\s\(\)]+" placeholder="Enter contact number" required>
+                        <div class="character-counter">
+                            Characters remaining: <span id="contactCounter">15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Address Information
+                    </h3>
+                    
+                    <!-- Address -->
+                    <div class="form-group">
+                        <label for="txtAddProf" class="form-label">
+                            <i class="fas fa-home" style="margin-right: 0.5rem; color: #0ea5e9;"></i>
+                            Complete Address
+                        </label>
+                        <textarea class="form-textarea" id="txtAddProf" name="txtAddProf" maxlength="1000" rows="3" 
+                                  placeholder="Enter your complete address including street, area, and landmarks" required></textarea>
+                        <div class="character-counter">
+                            Characters remaining: <span id="addressCounter">1000</span>
+                        </div>
                     </div>
 
+                    <!-- Location Section -->
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="txtCityProf" class="form-label">
+                                <i class="fas fa-city" style="margin-right: 0.5rem; color: #0ea5e9;"></i>
+                                City
+                            </label>
+                            <input type="text" class="form-input" id="txtCityProf" name="txtCityProf" 
+                                   placeholder="Enter city" required>
+                        </div>
 
-                    <div class="form-group mb-4">
-                        <label for="txtNumProf">Contact Number </label>
-                        <input type="text" class="form-control" id="txtNumProf" name="txtNumProf" required>
+                        <div class="form-group">
+                            <label for="txtStateProf" class="form-label">
+                                <i class="fas fa-flag" style="margin-right: 0.5rem; color: #0ea5e9;"></i>
+                                State
+                            </label>
+                            <input type="text" class="form-input" id="txtStateProf" name="txtStateProf" 
+                                   placeholder="Enter state" required>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Profile Picture -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-camera"></i>
+                        Profile Picture
+                    </h3>
+                    
+                    <div class="form-group">
+                        <div class="unified-image-section" id="imageSection">
+                            <!-- Upload Content (shown when no image) -->
+                            <div class="image-upload-content" id="uploadContent">
+                                <input class="form-input" type="file" name="photo" value="photo" id="formFile"
+                                       onchange="handleImageUpload(this)" accept="image/*" style="margin-bottom: 1rem;">
+                                <div style="color: #64748b; font-size: 0.85rem;">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; margin-bottom: 0.75rem; display: block; color: #0ea5e9;"></i>
+                                    <strong>Choose an image or drag and drop</strong>
+                                    <br><small style="margin-top: 0.25rem; display: block;">JPG, PNG, GIF (Max 5MB)</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Preview (shown when image is selected) -->
+                            <div id="imagePreview" style="display: none;">
+                                <img src="" id="prev2" alt="Profile Preview" class="profile-image">
+                                <div class="image-actions">
+                                    <button type="button" class="btn btn-outline btn-image" onclick="changeImage()">
+                                        <i class="fas fa-edit"></i> Change
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-image" onclick="removeImage()">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms and Actions Section -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-check-circle"></i>
+                        Agreement & Actions
+                    </h3>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="form-group">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="termsconditions" name="termsconditions">
+                            <label for="termsconditions" class="form-label" style="margin-bottom: 0; cursor: pointer; text-transform: none;">
+                                I agree to the Terms and Conditions and Privacy Policy
+                            </label>
+                        </div>
                     </div>
 
-
-                    <div class="form-group mb-4">
-                        <label for="txtAddProf"> Address</label>
-                        <input type="text" class="form-control" id="txtAddProf" name="txtAddProf" required>
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary" id="btnProfSave" disabled>
+                            <i class="fas fa-save"></i>
+                            Save Profile
+                        </button>
+                        <button type="submit" formaction="/custProfileUpdate" class="btn btn-secondary" id="btnProfUpdate" disabled style="display: none;">
+                            <i class="fas fa-edit"></i>
+                            Update Profile
+                        </button>
+                        <button type="button" class="btn btn-outline" id="btnReset">
+                            <i class="fas fa-redo"></i>
+                            Reset Form
+                        </button>
                     </div>
-
-                    <div class="form-group mb-4">
-                        <label for="txtCityProf">City</label>
-                        <input type="text" class="form-control" id="txtCityProf" name="txtCityProf" required>
-                    </div>
-
-                    <div class="form-group mb-4">
-                        <label for="txtStateProf">State</label>
-                        <input type="text" class="form-control" id="txtStateProf" name="txtStateProf" required>
-                    </div>
-
-
-
-                    <div class="mb-3">
-                        Profile Pic<input class="form-control" type="file" name="photo" value="photo" id="formFile"
-                            onchange="doShowPreview(this,prev2)">
-                        <img src="" id="prev2" alt="" style="margin-top: 10px;">
-                    </div>
-
-                    <div class="form-group mb-4">
-                        <input type="checkbox" id="termsconditions" name="termsconditions"> Terms and Conditions applied
-
-                    </div>
-
-
-                    <button type="submit" class="btn btn-outline-primary mb-4 ml-8" id="btnProfSave"
-                        style="font-size:20px;" disabled>Save
-                    </button>
-                    <button type="submit" formaction="/custProfileUpdate" class="btn btn-outline-primary mb-4 ml-2"
-                        id="btnProfUpdate" style="font-size:20px;" disabled>Modify
-                    </button>
-
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
+    <script>
+        // Character counter event listeners
+        $('#txtAddProf').on('input', updateCharacterCounters);
+        $('#txtNumProf').on('input', updateCharacterCounters);
+    </script>
 </body>
 
 </html>

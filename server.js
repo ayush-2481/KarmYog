@@ -27,8 +27,42 @@ app.use(fileuploader());
 const mysql = mysql2.createConnection(obj);
 
 mysql.connect(function (err) {
-    if (err == null)
+    if (err == null) {
         console.log("Connected to database");
+        
+        // Update database schema to support longer addresses
+        console.log("Updating database schema for longer addresses...");
+        
+        // Update customprof table address column
+        mysql.query("ALTER TABLE customprof MODIFY COLUMN address TEXT", function(err, result) {
+            if (err == null) {
+                console.log("✅ customprof.address column updated to TEXT (65,535 chars)");
+            } else {
+                console.log("⚠️ customprof.address update:", err.message);
+            }
+        });
+        
+        // Update task table address column
+        mysql.query("ALTER TABLE task MODIFY COLUMN address TEXT", function(err, result) {
+            if (err == null) {
+                console.log("✅ task.address column updated to TEXT (65,535 chars)");
+            } else {
+                console.log("⚠️ task.address update:", err.message);
+            }
+        });
+        
+        // Check table structure to debug column lengths
+        mysql.query("DESCRIBE customprof", function(err, result) {
+            if (err == null) {
+                console.log("customprof table structure:", result);
+            }
+        });
+        mysql.query("DESCRIBE task", function(err, result) {
+            if (err == null) {
+                console.log("task table structure:", result);
+            }
+        });
+    }
     else
         console.log(err.message);
 })
@@ -148,10 +182,26 @@ app.post("/custProfileSave",async function (req, resp) {
     const Email = req.body.txtEmailProf;
     const Fname = req.body.txtNameProf;
     const Lname = req.body.txtLnameProf;
-    const address = req.body.txtAddProf;
-    const num = req.body.txtNumProf;
+    let address = req.body.txtAddProf;
+    let num = req.body.txtNumProf;
     const userState = req.body.txtStateProf;
     const city = req.body.txtCityProf;
+
+    // Validate and truncate address if too long (allowing up to 1000 chars)
+    if (address && address.length > 1000) {
+        console.log("Address truncated from", address.length, "to 1000 characters");
+        address = address.substring(0, 1000);
+    }
+
+    // Remove any problematic characters that might cause database issues
+    if (address) {
+        address = address.replace(/[^\w\s\.\,\-\#\/\(\)\'\"\&\:\;\@]/g, '').trim();
+    }
+
+    // Validate and truncate contact number if too long (assuming VARCHAR(15))
+    if (num && num.length > 15) {
+        num = num.substring(0, 15);
+    }
 
     let filename;
 
@@ -171,8 +221,22 @@ app.post("/custProfileSave",async function (req, resp) {
     mysql.query("insert into customprof values(?,?,?,?,?,?,?,?)", [Email, Fname, Lname, num, address, city, userState, filename], function (err) {
         if (err == null)
             resp.send("Record Saved Successfullyyy");
-        else
-            resp.send(err.message);
+        else {
+            console.log("Database Error:", err.message);
+            console.log("Address length:", address ? address.length : 0);
+            console.log("Address content preview:", address ? address.substring(0, 100) + "..." : "null");
+            console.log("All data lengths:", {
+                Email: Email ? Email.length : 0,
+                Fname: Fname ? Fname.length : 0,
+                Lname: Lname ? Lname.length : 0,
+                num: num ? num.length : 0,
+                address: address ? address.length : 0,
+                city: city ? city.length : 0,
+                userState: userState ? userState.length : 0,
+                filename: filename ? filename.length : 0
+            });
+            resp.send("Database Error: " + err.message + " | Please check server console for details.");
+        }
     })
 
 })
@@ -181,10 +245,26 @@ app.post("/custProfileUpdate", async function (req, resp) {
     const Email = req.body.txtEmailProf;
     const Fname = req.body.txtNameProf;
     const Lname = req.body.txtLnameProf;
-    const address = req.body.txtAddProf;
-    const num = req.body.txtNumProf;
+    let address = req.body.txtAddProf;
+    let num = req.body.txtNumProf;
     const userState = req.body.txtStateProf;
     const city = req.body.txtCityProf;
+
+    // Validate and truncate address if too long (allowing up to 1000 chars)
+    if (address && address.length > 1000) {
+        console.log("Address truncated from", address.length, "to 1000 characters");
+        address = address.substring(0, 1000);
+    }
+
+    // Remove any problematic characters that might cause database issues
+    if (address) {
+        address = address.replace(/[^\w\s\.\,\-\#\/\(\)\'\"\&\:\;\@]/g, '').trim();
+    }
+
+    // Validate and truncate contact number if too long (assuming VARCHAR(15))
+    if (num && num.length > 15) {
+        num = num.substring(0, 15);
+    }
 
     let filename;
     if (req.files == null) {
@@ -215,9 +295,46 @@ app.post("/custProfileUpdate", async function (req, resp) {
 })
 //---------------------------------
 app.get("/fetch-one", function (req, resp) {
-    mysql.query("select * from customprof where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
-        resp.send(resultJsonArray);
-    })
+    const email = req.query.kuchEmail;
+    console.log("Searching for email:", email);
+    
+    // First check if user exists in users table
+    mysql.query("select * from users where emailid=?", [email], function (err, userResult) {
+        if (err) {
+            console.log("Database error checking users table:", err.message);
+            resp.status(500).send({ error: "Database error: " + err.message });
+            return;
+        }
+        
+        if (userResult.length === 0) {
+            console.log("User not found in users table");
+            resp.status(404).send({ error: "User not registered. Please register first." });
+            return;
+        }
+        
+        console.log("User found in users table:", userResult[0]);
+        
+        // Check if user is a customer
+        if (userResult[0].usertype !== 'customer') {
+            resp.status(400).send({ error: "This email is not registered as a customer." });
+            return;
+        }
+        
+        // Now check if customer profile exists
+        mysql.query("select * from customprof where emailid=?", [email], function (err, resultJsonArray) {
+            if (err) {
+                console.log("Database error in customprof:", err.message);
+                resp.status(500).send({ error: "Database error: " + err.message });
+            } else {
+                console.log("Profile query result:", resultJsonArray);
+                if (resultJsonArray.length === 0) {
+                    resp.status(404).send({ error: "Customer profile not created yet. You can create a new profile." });
+                } else {
+                    resp.send(resultJsonArray);
+                }
+            }
+        });
+    });
 })
 //-----------------------------------------------
 app.get("/customerDash", function (req, resp) {
@@ -233,11 +350,21 @@ app.get("/customer-dash-save", function (req, resp) {
     const rid = 0;
     const Email = req.query.txtEmail;
     const task = req.query.txtTask;
-    const Address = req.query.txtAdd;
+    let Address = req.query.txtAdd;
     const City = req.query.txtCity;
     const Date = req.query.txtDate;
     const tasks = req.query.txttasks;
 
+    // Validate and truncate address if too long (allowing up to 1000 chars)
+    if (Address && Address.length > 1000) {
+        console.log("Task Address truncated from", Address.length, "to 1000 characters");
+        Address = Address.substring(0, 1000);
+    }
+
+    // Remove any problematic characters that might cause database issues
+    if (Address) {
+        Address = Address.replace(/[^\w\s\.\,\-\#\/\(\)\'\"\&\:\;\@]/g, '').trim();
+    }
 
     //console.log(req.query.txtEmailDash);
 
@@ -292,7 +419,7 @@ app.get("/fj", function (req, resp) {
 app.post("/provider-profile-save",async function (req, resp) {
     const emailadd = req.body.txtEmailProvider;
     const name = req.body.txtnamePro;
-    const contact = req.body.txtnumberPro;
+    let contact = req.body.txtnumberPro;
     const gender = req.body.txtgenderPro;
     const category = req.body.txtcategoryPro;
     const firm = req.body.txtfirmPro;
@@ -300,6 +427,11 @@ app.post("/provider-profile-save",async function (req, resp) {
     const location = req.body.txtfirmaddPro;
     const since = req.body.txtworkPro;
     const otherinfo = req.body.txtselectPro;
+
+    // Validate and truncate contact number if too long (assuming VARCHAR(15))
+    if (contact && contact.length > 15) {
+        contact = contact.substring(0, 15);
+    }
 
     let filename;
 
@@ -331,7 +463,7 @@ app.post("/Edit-Profile", async function (req, resp) {
     // console.log(req.body.txtnamePro);
     const EMAIL = req.body.txtEmailProvider;
     const name = req.body.txtnamePro;
-    const Contact = req.body.txtnumberPro;
+    let Contact = req.body.txtnumberPro;
     const Gender = req.body.txtgenderPro;
     const Category = req.body.txtcategoryPro;
     const Firm = req.body.txtfirmPro;
@@ -339,6 +471,11 @@ app.post("/Edit-Profile", async function (req, resp) {
     const Location = req.body.txtfirmaddPro;
     const Since = req.body.txtworkPro;
     const Otherinfo = req.body.txtselectPro;
+
+    // Validate and truncate contact number if too long (assuming VARCHAR(15))
+    if (Contact && Contact.length > 15) {
+        Contact = Contact.substring(0, 15);
+    }
 
     let filename;
 
