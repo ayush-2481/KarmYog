@@ -1,600 +1,510 @@
-<!-- <!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="en" ng-app="providerModule">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>KarmYog - Service Providers Directory</title>
+    
+    <!-- Core Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .provider-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .provider-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .provider-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e2e8f0;
+        }
+        
+        .search-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .filter-badge {
+            background: #0ea5e9;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            margin: 0.25rem;
+            display: inline-block;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+        
+        .provider-rating {
+            color: #fbbf24;
+        }
+        
+        .badge-category {
+            background: #10b981;
+            color: white;
+        }
+        
+        .badge-location {
+            background: #f59e0b;
+            color: white;
+        }
+    </style>
 </head>
-<script>
-    var module = angular.module("myModule", []);
-    var controller = module.controller("myController", function ($scope, $http) {
-        $scope.jsonRecordsArry = [];
-        $scope.doFetchAll = function () {
-            let url = "angular-fetchprovider-all";
-            $http.get(url).then(success, errors);
-            function success(response) {
-                $scope.jsonRecordsArry = response.data;
-            }
-            function errors(response) {
-                alert(response.data);
-            }
-        }
-       $scope.showDetails=function(details){
-        $scope.selectedDetails=details;
-        $('#detailsModal').modal('show');
-       }
-       $scope.doFetchDistinctproviderrcategory = function () {
-            let url = "angular-fetch-distinctprovider-category";
-            $http.get(url).then(success, errors);
-            function success(response) {
-                $scope.jsoncategoryArray = response.data;
-                // alert(JSON.stringify($scope.jsonCitiesArry))
-            }
-            function errors(response) {
-                alert(response.data);
-            }
-        }
-        //---------------------------
-        $scope.doShowprovidercategory=function()
-        {
-            let url = "/angular-fetchprovidercategory?category="+$scope.selcategory.category;
-            $http.get(url).then(success, errors);
-            function success(response) {
-                $scope.jsonRecordsArry = response.data;
-            }
-            function errors(response) {
-                alert(response.data);
-            }
-        }
-        $scope.doFetchDistinctproviderrlocation = function () {
-            let url = "angular-fetch-distinctprovider-location";
-            $http.get(url).then(success, errors);
-            function success(response) {
-                $scope.jsonlocationArray = response.data;
-                // alert(JSON.stringify($scope.jsonCitiesArry))
-            }
-            function errors(response) {
-                alert(response.data);
-            }
-        }
-        //---------------------------
-        $scope.doShowproviderlocation=function()
-        {
-let url = "/angular-fetchproviderlocation?location="+$scope.sellocation.location;
-            $http.get(url).then(success, errors);
-            function success(response) {
-                $scope.jsonRecordsArry = response.data;
-            }
-            function errors(response) {
-                alert(response.data);
-            }
-        }
-    })
-</script> 
 
-<!-- <body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll();doFetchDistinctproviderrcategory();doFetchDistinctproviderrlocation();"
-    style=" background-color: rgb(244, 230, 212); overflow: hidden;">
-    <center> -->
-<!-- <input type="button" value="Fetch All Records" ng-click="doFetchAll();"
-            style="margin-bottom: 20px; margin-top: 20px;"> -->
-<!-- <table class="table table-secondary table-bordered border-danger" width="700">
-            <tr>
-                <thead class="table-dark">
-                    <th>Email Id</th>
-                    <th>Name</th>
-                    <th>Contact</th>
-                    <th>Gender</th>
-                    <th>Category</th>
-                    <th>Firm</th>
-                    <th>Website</th>
-                    <th>Location</th>
-                    <th>Since</th>
-                    <th>Profile Pic</th>
-                    <th>Otherinfo</th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="obj in jsonRecordsArry">
-                    <td>{{obj.email}}</td>
-                    <td>{{obj.Fname}}</td>
-                    <td>{{obj.contact}}</td>
-                    <td>{{obj.gender}}</td>
-                    <td>{{obj.category}}</td>
-                    <td>{{obj.firm}}</td>
-                    <td>{{obj.website}}</td>
-                    <td>{{obj.location}}</td>
-                    <td>{{obj.since}}</td>
-                    <td>{{obj.profpic}}</td>
-                    <td>{{obj.otherinfo}}</td>
-                </tr>
-            </tbody>
-        </table>
-    </center> 
-    <div class="row">
-        <div class="col-md-12">
-<center>
-    <h1 style="background-color: rgb(4, 5, 5); margin-top: 20px; color: bisque;padding: 10px; ">
-        All Records of Providers
-        <select ng-options="obj.category for obj in jsoncategoryArray" ng-model="selcategory" ng-change="doShowprovidercategory();" class="form-select form-select-lg mb-3" aria-label="Large select example"
-          style=" background-color: rgb(229, 231, 232); width:240px;margin-top: 20px; margin-right: 10px; ">
-          <option value="">Distinct Categories</option>
-          </select>
-          <select ng-options="obj.location for obj in jsonlocationArray" ng-model="sellocation" ng-change="doShowproviderlocation();" class="form-select form-select-lg mb-3" aria-label="Large select example"
-          style=" background-color: rgb(229, 231, 232); width:240px;margin-top: 20px; margin-right: 10px; ">
-          <option value="">Distinct Locations</option>
-          </select>
-    </h1>
-</center>
-    </div>
-</div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4" ng-repeat="obj in jsonRecordsArry" style="margin-bottom: 30px; margin-top: 30px;">
-                <div class="card " style="width: 350px;height:450px; background-size: contain;margin-bottom: 20px;">
-                    <img src="uploads/{{obj.profpic}}" class="card-img-top" alt="..." style="height:10rem ; background-size:contain;">
-                    <div class="card-body">
-                      <p class="card-text">
-                           <h6>
-                            ~Email Id : {{obj.email}}<br><br>
-                            ~Name : {{obj.Fname}}<br><br>
-                            ~Contact : {{obj.contact}} <br><br>
-                            ~Address : {{obj.genger}} <br><br>
-                            ~Category : {{obj.category}}
-                    
-                            ~City Name : {{obj.city}} <br><br>
-                            ~State Name : {{obj.state}} <br><br>
-                            ~PicName : {{obj.picname}} <br><br> -->
-<!-- </h6>
-                        
-                </p>
-                <div class="modal"  id="detailsModal" tabindex="-1" role="dialog" >
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Details Of Providers</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body" class="col-md-3">
-                          <p>
-                            
-                                <img src="uploads/{{selectedDetails.profpic}}" alt="...">
-                                  <p>
-                                    <ol>
-                                        <h6>
-                                            ~Email Id : {{selectedDetails.email}}<br><br>
-                                            ~Name : {{selectedDetails.Fname}}<br><br>
-                                            ~Contact : {{selectedDetails.contact}} <br><br>
-                                            ~Gender : {{selectedDetails.gender}} <br><br>
-                                            ~Category : {{selectedDetails.category}} <br><br>
-                                            ~Firm : {{selectedDetails.firm}} <br><br>
-                                            ~Website : {{selectedDetails.website}} <br><br>
-                                            ~Location : {{selectedDetails.location}} <br><br>
-                                            ~Since : {{selectedDetails.since}} <br><br>
-                                            ~PicName : {{selectedDetails.profpic}} <br><br>
-                                            ~Other Info : {{selectedDetails.otherinfo}} <br><br>
-
-                                           </h6>
-                                    </ol>
-                                    </p>
-                          </p>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-            
-                      <button type="button" ng-click="showDetails(obj)"  class="btn btn-primary">Show All Details</button>
-                    </div>
-                  </div>
+<body ng-controller="providerController">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-hands-helping me-2"></i>KarmYog
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/customerDash">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
             </div>
         </div>
-    </div>
-    
+    </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-</body>
-
-</html> 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bootstrap demo</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-    <script>
-        var module = angular.module("myModule", []);
-        var controller = module.controller(
-            "myController",
-            function ($scope, $http) {
-                $scope.jsonRecordsAry = [];
-                $scope.jsoncategoryArray = [];
-                $scope.jsonlocationArray= [];
-                $scope.selectedcategory = ''; // Initialize selectedcategory
-                $scope.selectedlocation = ''; // Initialize selectedlocation
-
-
-                $scope.doFetchAll = function () {
-                    let url = "angular-fetchprovider-all";
-                    $http.get(url).then(success, errors);
-                    function success(response) {
-                        $scope.jsonRecordsAry = response.data;
-                    }
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };
-                // --------------uniquecategory--------------------------
-                $scope.doFetchDistinctproviderrcategory = function () {
-                    let url = "/angular-fetch-distinctprovider-category";
-                    $http.get(url).then(success, errors);
-
-                    function success(response) {
-                        $scope.jsoncategoryArray = response.data;
-
-                        if ($scope.selectedcategory) {
-                            $scope.doShowprovidercategory($scope.selectedcategory);
-                        } else {
-                            $scope.doFetchAll();
-                        }
-                    }
-
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };
-
-                $scope.doShowprovidercategory=function(selectedcategory)
-        {
-            let url = "/doShowprovidercategory?category="+selectedcategory;
-                    $http.get(url).then(success, errors);
-
-                    function success(response) {
-                        $scope.jsonRecordsAry = response.data;
-                    }
-
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };
-
-                //-----------------------------------------------------------------
-                $scope.doFetchDistinctproviderrlocation = function () {
-                    let url = "/angular-fetch-distinctprovider-location";
-                    $http.get(url).then(success, errors);
-
-                    function success(response) {
-                        $scope.jsonlocationArray = response.data;
-                        // console.log($scope.UniqueSercat);
-
-                        if ($scope.selectedlocation) {
-                            $scope.doShowproviderlocation($scope.selectedlocation);
-                        } else {
-                            $scope.doFetchAll();
-                        }
-                    }
-
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };
-
-                $scope.doShowproviderlocation = function (selectedlocation) {
-                    let url = "/doShowproviderlocation?location=" + selectedlocation;
-                    $http.get(url).then(success, errors);
-
-                    function success(response) {
-                        $scope.jsonRecordsAry = response.data;
-                    }
-
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };
-                //-----------------------------------------------------------------
-                $scope.showModal = function (selectedRecord) {
-                    $scope.selectedRecord = selectedRecord;
-                    $("#show").modal("show");
-                };
-            }
-        );
-    </script>
-</head>
-
-<body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll();">
-    <h1 style="margin-bottom: 30px;"><center>Records of Provider</center></h1>
-    <div class="container mt-2 d-flex justify-content-end">
-        <div class="col-md-4" style="margin-right: 20px; margin-bottom: 30px;">
-            <select class="form-select bg-light" ng-model="selectedcategory" ng-change="doFetchDistinctproviderrcategory()"
-                aria-label="Default select example" aria-placeholder="📍">
-                <option selected disabled value="">📍Choose service category...</option>
-                <option ng-repeat="obj in jsoncategoryArray" value="{{obj.category}}">
-                    {{obj.category}}
-                </option>
-            </select>
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="h2 fw-bold text-dark mb-2">Service Providers Directory</h1>
+                <p class="text-muted">Find trusted professionals for your service needs</p>
+            </div>
         </div>
-        <!-- --------------------------------------------------- 
-        <div class="col-md-3" style="margin-bottom: 30px;">
-            <select class="form-select bg-light" ng-model="selectedlocation" ng-change="doFetchDistinctproviderrlocation()"
-                aria-label="Default select example" aria-placeholder="📍">
-                <option selected disabled value="">
-                    📍Choose city ...
-                </option>
-                <option ng-repeat="obj in jsonlocationArray" value="{{obj.location}}">
-                    {{obj.location}}
-                </option>
-            </select>
-        </div>
-    </div>
 
-    <div class="container mt-2 mb-5">
-        <div class="row">
-            <div class="col-md-4 mt-3" ng-repeat="obj in jsonRecordsAry" style="margin-bottom: 30px; margin-top: 30px;">
-                <div class="card mb-3" style="align-items: center; width: 350px;height:450px; background-size: contain;margin-bottom: 20px;">
-                    <img ng-src="/uploads/{{obj.profpic}}" class="card-img-top rounded"
-                        style="height: 222px; width: 192px" /> 
-                    <div class="card-body">
-                        <h5 class="card-title">~Email Id : {{obj.email}}</h5>
-                        <p class="card-text">~Name : {{obj.Fname}}</p>
-                        <p class="card-text">~Contact : {{obj.contact}}</p>
-                        <p class="card-text">~Category : {{obj.category}}</p>
-
-                        <button class="btn btn-primary" ng-click="showModal(obj)">
-                            Show Full Details
-                        </button>
-
-                        <!--  -----------------------------------------------------------Modal-------------------------------------------------------... 
-
-                        <div class="modal fade" id="show" tabindex="-1" aria-labelledby="exampleModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">
-                                            Full Details
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>~Email Id : {{selectedRecord.email}}</p>
-                                        <p>~Name : {{selectedRecord.Fname}}</p>
-                                        <p>~Contact : {{selectedRecord.contact}}</p>
-                                        <p>~Gender : {{selectedRecord.gender}}</p>
-                                        <p>~Category : {{selectedRecord.category}}</p>
-                                        <p>~Firm : {{selectedRecord.firm}}</p>
-                                        <p>~Website : {{selectedRecord.website}}</p>
-                                        <p>~Location : {{selectedRecord.location}}</p>
-                                        <p>~Since : {{selectedRecord.since}}</p>
-                                        <p>~PicName : {{selectedRecord.profpic}}</p>
-                                        <p>~Other Info : {{selectedRecord.otherinfo}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                     ----------------------------------------------- 
-                    </div>
+        <!-- Stats -->
+        <div class="stats-card" ng-if="totalProviders > 0">
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <h3 class="fw-bold mb-0">{{totalProviders}}</h3>
+                    <small>Total Providers</small>
+                </div>
+                <div class="col-md-3 text-center">
+                    <h3 class="fw-bold mb-0">{{categories.length}}</h3>
+                    <small>Service Categories</small>
+                </div>
+                <div class="col-md-3 text-center">
+                    <h3 class="fw-bold mb-0">{{locations.length}}</h3>
+                    <small>Service Locations</small>
+                </div>
+                <div class="col-md-3 text-center">
+                    <h3 class="fw-bold mb-0">{{currentProviders.length}}</h3>
+                    <small>Showing Results</small>
                 </div>
             </div>
         </div>
-    </div>
 
-</body>
-
-</html>  -->
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>KarmYog</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-    <script>
-var module = angular.module("myModule", []);
-        var controller = module.controller(
-            "myController",
-            function ($scope, $http) {
-                $scope.jsonRecordsAry = [];
-                $scope.jsoncategoryArray = [];
-                $scope.jsonlocationArray= [];
-                $scope.selectedcategory = ''; // Initialize selectedcategory
-                $scope.selectedlocation = ''; // Initialize selectedlocation
-
-
-                $scope.doFetchAll = function () {
-                    let url = "angular-fetchprovider-all";
-                    $http.get(url).then(success, errors);
-                    function success(response) {
-                        $scope.jsonRecordsAry = response.data;
-                    }
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };                
-                // --------------uniquecity--------------------------
-                $scope.doFetchDistinctproviderrlocation = function () {
-                    let url = "/angular-fetch-distinctprovider-location";
-                    $http.get(url).then(success, errors);
-
-                    function success(response) {
-                        $scope.UniqueCities = response.data;
-                    }
-
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };
-
-
-                // //-----------------------------------------------------------------
-                $scope.doShowprovidercategory = function (selectedCity) {
-                    let url = "/doShowprovidercategory?location=" + selectedCity;
-                    $http.get(url).then(success, errors);
-
-                    function success(response) {
-                        $scope.UniqueSercat = response.data;
-                    }
-
-                    function errors(response) {
-                        alert(response.data);
-                    }
-                };
-
-                $scope.searchh = function () {
-
-                    let url = "/fetchcardbycityandsercat?city=" + $scope.selectedCity + "&cat=" + $scope.selectedsercat;
-
-                    $http.get(url).then(succ, errr);
-
-                    function succ(response) {
-
-
-                        $scope.jsonRecordsAry = response.data;
-
-                    }
-                    function errr(response) {
-                        alert(response.data);
-                    }
-                };
-
-
-                // //-----------------------------------------------------------------
-                $scope.showModal = function (selectedRecord) {
-                    $scope.selectedRecord = selectedRecord;
-                    $("#show").modal("show");
-                };
-            }
-        );
-    </script>
-</head>
-
-<body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll(); doFetchDistinctproviderrlocation();">
-
-    <div class="container mt-2 d-flex justify-content-end">
-        <div class="col-md-2" style="margin-right: 20px">
-            <select class="form-select bg-light" ng-model="selectedCity" ng-change="doShowprovidercategory(selectedCity)"
-                aria-label="Default select example">
-                <option selected disabled value="">📍Choose city...</option>
-                <option ng-repeat="obj in UniqueCities" value="{{obj.location}}">
-                    {{obj.location}}
-                </option>
-            </select>
+        <!-- Search and Filters -->
+        <div class="search-container">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Search Providers</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Search by name, email, category..." 
+                               ng-model="searchQuery" ng-change="doSearch()">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Category</label>
+                    <select class="form-select" ng-model="selectedCategory" ng-change="doFilter()">
+                        <option value="">All Categories</option>
+                        <option ng-repeat="cat in categories" value="{{cat.category}}">{{cat.category}}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Location</label>
+                    <select class="form-select" ng-model="selectedLocation" ng-change="doFilter()">
+                        <option value="">All Locations</option>
+                        <option ng-repeat="loc in locations" value="{{loc.location}}">{{loc.location}}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Sort By</label>
+                    <select class="form-select" ng-model="sortBy" ng-change="doFilter()">
+                        <option value="Fname">Name</option>
+                        <option value="category">Category</option>
+                        <option value="location">Location</option>
+                        <option value="since">Experience</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Active Filters -->
+            <div class="mt-3" ng-if="selectedCategory || selectedLocation || searchQuery">
+                <small class="text-muted me-2">Active filters:</small>
+                <span class="filter-badge" ng-if="searchQuery">
+                    Search: {{searchQuery}} <i class="fas fa-times ms-1" ng-click="clearSearch()"></i>
+                </span>
+                <span class="filter-badge" ng-if="selectedCategory">
+                    Category: {{selectedCategory}} <i class="fas fa-times ms-1" ng-click="clearCategory()"></i>
+                </span>
+                <span class="filter-badge" ng-if="selectedLocation">
+                    Location: {{selectedLocation}} <i class="fas fa-times ms-1" ng-click="clearLocation()"></i>
+                </span>
+                <button class="btn btn-sm btn-outline-secondary ms-2" ng-click="clearAllFilters()">
+                    <i class="fas fa-times me-1"></i>Clear All
+                </button>
+            </div>
         </div>
-        <!-- --------------------------------------------------- -->
-        <div class="col-md-3" style="margin-right: 15px">
-            <select class="form-select bg-light" ng-model="selectedsercat" aria-label="Default select example">
-                <option selected disabled value="">
-                    Choose service category ...
-                </option>
-                <option ng-repeat="ary in UniqueSercat" value="{{ary.category}}">
-                    {{ary.category}}
-                </option>
-            </select>
+
+        <!-- Loading State -->
+        <div class="loading" ng-if="isLoading">
+            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+            <p>Loading providers...</p>
         </div>
-        <div class="col-md-1">
-            <button type="button" ng-click="searchh()" class="btn btn-primary">
-                Search
+
+        <!-- Empty State -->
+        <div class="empty-state" ng-if="!isLoading && currentProviders.length === 0">
+            <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+            <h4>No providers found</h4>
+            <p>Try adjusting your search criteria or filters</p>
+            <button class="btn btn-primary" ng-click="clearAllFilters()">
+                <i class="fas fa-refresh me-1"></i>Clear Filters
             </button>
         </div>
-    </div>
 
-    <div class="container mt-2 mb-5">
-        <div class="row">
-            <div class="col-md-4 mt-5" ng-repeat="obj in jsonRecordsAry ">
-                <div class="card mb-3" style="
-              width: 300px;
-              height: 400px;
-              align-items: center;
-              
-            ">
-                    <img ng-src="/uploads/{{obj.profpic}}" class="card-img-top rounded" style="height: 222px; width: 192px"
-                        ng-click="showModal(obj)" />
-
+        <!-- Provider Cards -->
+        <div class="row" ng-if="!isLoading && currentProviders.length > 0">
+            <div class="col-lg-6 col-xl-4 mb-4" ng-repeat="provider in currentProviders">
+                <div class="card provider-card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">~Email Id : {{obj.email}}</h5>
-                        <p class="card-text">~Name : {{obj.Fname}}</p>
-                        <p class="card-text">~Contact : {{obj.contact}}</p>
-                        <p class="card-text">~Category : {{obj.category}}</p>
-                         <!-- <button class="btn btn-primary" ng-click="showModal(obj)">
-                Show Full Details
-              </button>  -->
-
-                        <!--  -----------------------------------------------------------Modal-------------------------------------------------------... -->
-
-                        <div class="modal fade" id="show" tabindex="-1" aria-labelledby="exampleModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">
-                                            Show Full Details
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="d-flex justify-content-center mb-2">
-                                            <img src="uploads/{{selectedRecord.profpic}}" style="height: 200px; width: 200px;">
-                                        </div>
-                                        <p>~Email Id : {{selectedRecord.email}}</p>
-                                        <p>~Name : {{selectedRecord.Fname}}</p>
-                                        <p>~Contact : {{selectedRecord.contact}}</p>
-                                        <p>~Gender : {{selectedRecord.gender}}</p>
-                                        <p>~Category : {{selectedRecord.category}}</p>
-                                        <p>~Firm : {{selectedRecord.firm}}</p>
-                                        <p>~Website : {{selectedRecord.website}}</p>
-                                        <p>~Location : {{selectedRecord.location}}</p>
-                                        <p>~Since : {{selectedRecord.since}}</p>
-                                        <p>~PicName : {{selectedRecord.profpic}}</p>
-                                        <p>~Other Info : {{selectedRecord.otherinfo}}</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                      </div>
+                        <div class="d-flex align-items-start mb-3">
+                            <img ng-src="{{getProviderImage(provider)}}" 
+                                 class="provider-image me-3" 
+                                 alt="{{provider.Fname}}"
+                                 onerror="this.src='public/pics/nopic.png'">
+                            <div class="flex-grow-1">
+                                <h5 class="card-title fw-bold mb-1">{{provider.Fname}}</h5>
+                                <div class="mb-2">
+                                    <span class="badge badge-category">{{provider.category}}</span>
+                                    <span class="badge badge-location ms-1">{{provider.location}}</span>
+                                </div>
+                                <div class="provider-rating mb-2">
+                                    <i class="fas fa-star" ng-repeat="star in [1,2,3,4,5]"></i>
+                                    <small class="text-muted ms-1">(4.5)</small>
                                 </div>
                             </div>
                         </div>
-
-
+                        
+                        <div class="provider-details">
+                            <p class="text-muted small mb-2" ng-if="provider.firm">
+                                <i class="fas fa-building me-1"></i>{{provider.firm}}
+                            </p>
+                            <p class="text-muted small mb-2">
+                                <i class="fas fa-envelope me-1"></i>{{provider.email}}
+                            </p>
+                            <p class="text-muted small mb-2">
+                                <i class="fas fa-phone me-1"></i>{{provider.contact}}
+                            </p>
+                            <p class="text-muted small mb-2" ng-if="provider.since">
+                                <i class="fas fa-calendar me-1"></i>Since {{provider.since}}
+                            </p>
+                            <p class="text-muted small mb-3" ng-if="provider.website">
+                                <i class="fas fa-globe me-1"></i>
+                                <a href="{{provider.website}}" target="_blank" class="text-decoration-none">Website</a>
+                            </p>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary btn-sm flex-grow-1" ng-click="viewDetails(provider)">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </button>
+                            <button class="btn btn-success btn-sm" ng-click="contactProvider(provider)">
+                                <i class="fas fa-phone me-1"></i>Contact
+                            </button>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper" ng-if="!isLoading && totalPages > 1">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item" ng-class="{disabled: currentPage <= 1}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage - 1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" ng-repeat="page in pageNumbers" ng-class="{active: page == currentPage}">
+                        <a class="page-link" href="#" ng-click="changePage(page)">{{page}}</a>
+                    </li>
+                    <li class="page-item" ng-class="{disabled: currentPage >= totalPages}">
+                        <a class="page-link" href="#" ng-click="changePage(currentPage + 1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Provider Details Modal -->
+    <div class="modal fade" id="providerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Provider Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" ng-if="selectedProvider">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img ng-src="{{getProviderImage(selectedProvider)}}" 
+                                 class="img-fluid rounded-circle mb-3" 
+                                 style="width: 150px; height: 150px; object-fit: cover;"
+                                 onerror="this.src='public/pics/nopic.png'">
+                            <h4>{{selectedProvider.Fname}}</h4>
+                            <div class="provider-rating mb-3">
+                                <i class="fas fa-star" ng-repeat="star in [1,2,3,4,5]"></i>
+                                <small class="text-muted d-block">(4.5 out of 5)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="fw-semibold">Email:</td>
+                                    <td>{{selectedProvider.email}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Contact:</td>
+                                    <td>{{selectedProvider.contact}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Category:</td>
+                                    <td><span class="badge badge-category">{{selectedProvider.category}}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Location:</td>
+                                    <td><span class="badge badge-location">{{selectedProvider.location}}</span></td>
+                                </tr>
+                                <tr ng-if="selectedProvider.firm">
+                                    <td class="fw-semibold">Company:</td>
+                                    <td>{{selectedProvider.firm}}</td>
+                                </tr>
+                                <tr ng-if="selectedProvider.since">
+                                    <td class="fw-semibold">Experience:</td>
+                                    <td>Since {{selectedProvider.since}}</td>
+                                </tr>
+                                <tr ng-if="selectedProvider.website">
+                                    <td class="fw-semibold">Website:</td>
+                                    <td><a href="{{selectedProvider.website}}" target="_blank" class="text-decoration-none">{{selectedProvider.website}}</a></td>
+                                </tr>
+                            </table>
+                            <div ng-if="selectedProvider.otherinfo">
+                                <h6 class="fw-semibold">Additional Information:</h6>
+                                <p class="text-muted">{{selectedProvider.otherinfo}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" ng-click="contactProvider(selectedProvider)">
+                        <i class="fas fa-phone me-1"></i>Contact Provider
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        angular.module('providerModule', [])
+        .controller('providerController', function($scope, $http, $timeout) {
+            $scope.currentProviders = [];
+            $scope.categories = [];
+            $scope.locations = [];
+            $scope.isLoading = false;
+            $scope.searchQuery = '';
+            $scope.selectedCategory = '';
+            $scope.selectedLocation = '';
+            $scope.sortBy = 'Fname';
+            $scope.currentPage = 1;
+            $scope.totalPages = 1;
+            $scope.totalProviders = 0;
+            $scope.selectedProvider = null;
 
-    </div>
+            // Initialize
+            $scope.init = function() {
+                $scope.loadCategories();
+                $scope.loadLocations();
+                $scope.loadProviders();
+            };
+
+            // Load all providers
+            $scope.loadProviders = function() {
+                $scope.isLoading = true;
+                
+                const params = {
+                    simple: 'true',
+                    search: $scope.searchQuery,
+                    category: $scope.selectedCategory,
+                    location: $scope.selectedLocation,
+                    sortBy: $scope.sortBy
+                };
+
+                $http.get('/angular-fetchprovider-all', { params: params })
+                .then(function(response) {
+                    $scope.currentProviders = response.data;
+                    $scope.totalProviders = response.data.length;
+                    $scope.isLoading = false;
+                })
+                .catch(function(error) {
+                    console.error('Error loading providers:', error);
+                    $scope.isLoading = false;
+                });
+            };
+
+            // Load categories
+            $scope.loadCategories = function() {
+                $http.get('/angular-fetch-distinctprovider-category')
+                .then(function(response) {
+                    $scope.categories = response.data;
+                })
+                .catch(function(error) {
+                    console.error('Error loading categories:', error);
+                });
+            };
+
+            // Load locations
+            $scope.loadLocations = function() {
+                $http.get('/angular-fetch-distinctprovider-location')
+                .then(function(response) {
+                    $scope.locations = response.data;
+                })
+                .catch(function(error) {
+                    console.error('Error loading locations:', error);
+                });
+            };
+
+            // Search functionality
+            $scope.doSearch = function() {
+                $timeout(function() {
+                    $scope.loadProviders();
+                }, 300);
+            };
+
+            // Filter functionality
+            $scope.doFilter = function() {
+                $scope.loadProviders();
+            };
+
+            // Clear filters
+            $scope.clearSearch = function() {
+                $scope.searchQuery = '';
+                $scope.loadProviders();
+            };
+
+            $scope.clearCategory = function() {
+                $scope.selectedCategory = '';
+                $scope.loadProviders();
+            };
+
+            $scope.clearLocation = function() {
+                $scope.selectedLocation = '';
+                $scope.loadProviders();
+            };
+
+            $scope.clearAllFilters = function() {
+                $scope.searchQuery = '';
+                $scope.selectedCategory = '';
+                $scope.selectedLocation = '';
+                $scope.sortBy = 'Fname';
+                $scope.loadProviders();
+            };
+
+            // View provider details
+            $scope.viewDetails = function(provider) {
+                $scope.selectedProvider = provider;
+                new bootstrap.Modal(document.getElementById('providerModal')).show();
+            };
+
+            // Contact provider
+            $scope.contactProvider = function(provider) {
+                if (provider.contact) {
+                    window.open(`tel:${provider.contact}`, '_self');
+                } else {
+                    alert('Contact information not available');
+                }
+            };
+
+            // Get provider image URL
+            $scope.getProviderImage = function(provider) {
+                if (!provider || !provider.profpic) {
+                    return 'public/pics/nopic.png';
+                }
+                
+                // If profpic starts with http/https, it's an external URL
+                if (provider.profpic.startsWith('http')) {
+                    return provider.profpic;
+                }
+                
+                // Otherwise, it's a local file in uploads folder
+                return 'uploads/' + provider.profpic;
+            };
+
+            // Initialize the app
+            $scope.init();
+        });
+    </script>
 </body>
-
 </html>

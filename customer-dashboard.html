@@ -4,43 +4,160 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>KarmYog</title>
+  <title>KarmYog - Customer Dashboard</title>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
     integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/modern-design-system.css">
+  <link rel="stylesheet" href="/css/modern-navbar.css">
+  
   <style>
-    .ok {
-      color: rgb(58, 228, 58);
+    .hover-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
-
-    .not-ok {
-      color: red;
+    
+    .transition {
+      transition: all 0.3s ease;
+    }
+    
+    .card {
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-overlay {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+    
+    .navbar-dropdown:hover .navbar-dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .navbar-dropdown-menu {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+    
+    /* Remove any background images */
+    body {
+      background: #f8fafc !important;
+      background-image: none !important;
+    }
+    
+    .bg-neutral {
+      background: #f8fafc !important;
+    }
+    
+    /* Improved button styles */
+    .btn {
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Enhanced form styles */
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+    
+    /* Loading animation */
+    .loading {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: loading 1.5s infinite;
+    }
+    
+    @keyframes loading {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+      .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      
+      .grid-cols-3 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .text-4xl {
+        font-size: 2rem;
+      }
+      
+      .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .grid-cols-4 {
+        grid-template-columns: 1fr;
+      }
+      
+      .card-body {
+        padding: 1rem;
+      }
     }
   </style>
+
   <script>
     $(document).ready(function () {
-      //email valid code
-      let user=localStorage.getItem("user")
-      alert(user);
-      $("#active").html(user);
+      // Get user from localStorage and display
+      let user = localStorage.getItem("user")
+      if (user) {
+        $("#active").html(user);
+        $("#userEmail").val(user);
+        $("#txtEmailDash").val(user);
+        $("#exampleInputEmail1").val(user);
+      }
+
+      // Email validation
       $("#txtEmailDash").keyup(function () {
         let emailiid = $("#txtEmailDash").val();
         var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
         if (r.test(emailiid) == false) {
-          $("#errEmail").html("(Invalid Email)").addClass("not-ok").removeClass("ok");
+          $("#errEmail").html("(Invalid Email)").addClass("text-error").removeClass("text-success");
         }
         else
-          $("#errEmail").html("(Valid Email)").addClass("ok").removeClass("not-ok");
-
+          $("#errEmail").html("(Valid Email)").addClass("text-success").removeClass("text-error");
       });
 
+      // Post task functionality
       $("#btntask").click(function () {
         let obj = {
-
           url: "/customer-dash-save",
           data: {
             txtEmail: $("#txtEmailDash").val(),
@@ -49,23 +166,25 @@
             txtCity: $("#txtCityDash").val(),
             txtDate: $("#txtDateDash").val(),
             txttasks: $("#txttasksDash").val(),
-
           }
         }
         $.ajax(obj).done(function (resp) {
-          $("#savedtaskbtn").html(resp);
-
+          $("#savedtaskbtn").html(resp).addClass("text-success");
+          // Clear form after successful submission
+          setTimeout(function() {
+            $("#Postbtn").modal('hide');
+            location.reload();
+          }, 2000);
         }).fail(function (err) {
-          alert(err);
+          $("#savedtaskbtn").html("Error posting task").addClass("text-error");
         })
-
       })
-      //-----------------------------------------
+
+      // Radio button functionality
       $("#txtradio2Dash").click(function () {
         if ($(this).val() === "otherLocation") {
           $("#txtAddDash").prop("disabled", false);
           $("#txtCityDash").prop("disabled", false);
-
           $("#txtAddDash").val("");
           $("#txtCityDash").val("");
         }
@@ -73,7 +192,6 @@
 
       $("#txtradio1Dash").click(function () {
         if ($(this).val() === "txtradio1Dash") {
-
           $("#txtAddDash").prop("disabled", true);
           $("#txtCityDash").prop("disabled", true);
 
@@ -84,289 +202,620 @@
             },
           };
           $.ajax(obj).done(function (arry) {
-
-            $("#txtAddDash").val(arry[0].address);
-            $("#txtCityDash").val(arry[0].city);
-
-          })
-            .fail(function (err) {
-              alert("Error=" + err);
-            });
+            if (arry.length > 0) {
+              $("#txtAddDash").val(arry[0].address);
+              $("#txtCityDash").val(arry[0].city);
+            }
+          }).fail(function (err) {
+            console.log("Error=" + err);
+          });
         }
       });
-      //for old password
+
+      // Password visibility toggles
       $(".eye1").mousedown(function () {
-                $("#oldPassword").prop("type", "text");
-                $(".eye1").addClass("fa-eye").removeClass("fa-eye-slash");
-            })
+        $("#oldPassword").prop("type", "text");
+        $(".eye1").addClass("fa-eye").removeClass("fa-eye-slash");
+      })
 
-            $(".eye1").mouseup(function () {
-                $("#oldPassword").prop("type", "password");
-                $(".eye1").addClass("fa-eye-slash").removeClass("fa-eye");
-            })
-//for new password
-            $(".eye2").mousedown(function () {
-                $("#newPassword").prop("type", "text");
-                $(".eye2").addClass("fa-eye").removeClass("fa-eye-slash");
-            })
+      $(".eye1").mouseup(function () {
+        $("#oldPassword").prop("type", "password");
+        $(".eye1").addClass("fa-eye-slash").removeClass("fa-eye");
+      })
 
-            $(".eye2").mouseup(function () {
-                $("#newPassword").prop("type", "password");
-                $(".eye2").addClass("fa-eye-slash").removeClass("fa-eye");
-            })
-//----------------------------------------
-$("#changepassword").click(function(){
-          let obj={
-            url:"/change-pass",
-            data:{
-              email:$("#exampleInputEmail1").val(),
-              oldpass:$("#oldPassword").val(),
-              newpass:$("#newPassword").val(),
-            }
+      $(".eye2").mousedown(function () {
+        $("#newPassword").prop("type", "text");
+        $(".eye2").addClass("fa-eye").removeClass("fa-eye-slash");
+      })
+
+      $(".eye2").mouseup(function () {
+        $("#newPassword").prop("type", "password");
+        $(".eye2").addClass("fa-eye-slash").removeClass("fa-eye");
+      })
+
+      // Change password functionality
+      $("#changepassword").click(function () {
+        let obj = {
+          url: "/change-pass",
+          data: {
+            email: $("#exampleInputEmail1").val(),
+            oldpass: $("#oldPassword").val(),
+            newpass: $("#newPassword").val(),
           }
-          $.ajax(obj).done(function(resp){
-            $("#changeErr").html(resp);
-          }).fail(function(err){
-            alert(err);
-          })
+        }
+        $.ajax(obj).done(function (resp) {
+          $("#changeErr").html(resp).addClass("text-success");
+          setTimeout(function() {
+            $("#Settingbtn").modal('hide');
+          }, 2000);
+        }).fail(function (err) {
+          $("#changeErr").html("Error changing password").addClass("text-error");
         })
-        $("#logOut").click(function(){
-        if(confirm("ARE YOU SURE TO LOG OUT?")==true)
-          {
-                localStorage.removeItem("user");
-                window.location.href="/";
-          }
-       })
+      })
+
+      // Logout functionality
+      $("#logOut").click(function () {
+        if (confirm("ARE YOU SURE TO LOG OUT?") == true) {
+          localStorage.removeItem("user");
+          window.location.href = "/";
+        }
+      })
+
+      // Load customer statistics
+      function loadCustomerStats() {
+        let email = localStorage.getItem("user");
+        if (email) {
+          $.get("/customer-stats", { email: email }).done(function (stats) {
+            $("#activeJobs").text(stats.activeJobs || 0);
+            $("#completedJobs").text(stats.completedJobs || 0);
+            $("#totalProviders").text(stats.providers || 0);
+            $("#thisMonth").text(stats.thisMonth || 0);
+          }).fail(function (err) {
+            console.log("Could not load customer statistics");
+            // Keep default values if API fails
+          });
+        }
+      }
+
+      // Load stats on page load
+      loadCustomerStats();
     });
   </script>
 </head>
 
-<body
-  style="background-image: url(https://www.hdwallpapers.in/download/white_aesthetic_lines_background_hd_white_aesthetic-HD.jpg); background-size: cover;">
-  <br>
-<center><h3>Welcome:<span id="active"></span></h1></center>
-  <div class="container text-center">
-    <div class="row">
-      <div class="col">
+<body class="bg-neutral">
+  <!-- Modern Navigation -->
+  <nav class="modern-navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-brand">
+        <div class="navbar-brand-icon">K</div>
+        KarmYog
+      </a>
 
-        <div class="card" style="width: 18rem; text-align: center;height:400px;">
-          <img src="https://cdn.pixabay.com/photo/2023/09/22/12/18/profile-8268938_640.png" class="card-img-top"
-            alt="..." height="290px">
-          <div class="card-body">
-            <h3 class="card-title">Profile</h3>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-            <a href="/customerprof" class="btn btn-primary"> VISIT PAGE</a>
+      <div class="navbar-actions">
+        <div class="navbar-dropdown">
+          <div class="navbar-user">
+            <div class="navbar-avatar" id="userInitial">C</div>
+            <div class="navbar-user-info">
+              <div class="navbar-user-name" id="active">Customer</div>
+              <div class="navbar-user-role">Customer</div>
+            </div>
+            <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: #94a3b8;"></i>
           </div>
-        </div>
-      </div>
-      <div class="col">
-
-        <div class="card" style="width: 18rem; text-align: center;height:400px;">
-          <img src="https://news.blr.com/app/uploads/sites/3/2016/03/BM_JobPosting-1.jpg" class="card-img-top" alt="..."
-            width="286" height="379">
-          <div class="card-body">
-            <h3 class="card-title">Post Jobs</h3>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-            <!-- <a href="#" class="btn btn-primary">VISIT PAGE</a> -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Postbtn">Visit
-              Page</button>
-
-          </div>
-        </div>
-      </div>
-      <div class="col">
-
-        <div class="card" style="width: 18rem; text-align: center; height:400px;">
-          <img src="https://i.pinimg.com/originals/74/90/bc/7490bc360ce1a5d10956f04105b2d284.jpg" class="card-img-top"
-            alt="..." width="286" height="379">
-          <div class="card-body">
-            <h3 class="card-title">Search Service Providers </h3>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-            <a href="/providerdash-table" class="btn btn-primary">VISIT PAGE</a>
+          <div class="navbar-dropdown-menu">
+            <a href="/customerprof" class="navbar-dropdown-item">
+              <i class="fas fa-user-circle" style="margin-right: 0.5rem;"></i>
+              Profile
+            </a>
+            <a href="#" class="navbar-dropdown-item" data-bs-toggle="modal" data-bs-target="#Settingbtn">
+              <i class="fas fa-cog" style="margin-right: 0.5rem;"></i>
+              Settings
+            </a>
+            <div class="navbar-dropdown-divider"></div>
+            <a href="#" class="navbar-dropdown-item" style="color: #ef4444;" id="logOut">
+              <i class="fas fa-sign-out-alt" style="margin-right: 0.5rem;"></i>
+              Logout
+            </a>
           </div>
         </div>
       </div>
     </div>
-    <br><br><br>
-    <div class="row">
-      <div class="col">
+  </nav>
 
-        <div class="card" style="width: 18rem; text-align: center;height:400px;">
-          <img
-            src="https://fjwp.s3.amazonaws.com/blog/wp-content/uploads/2022/09/26090837/What-Is-a-Flexible-Marketing-Manager-Job.jpg"
-            class="card-img-top" alt="..." width="286" height="379">
-          <div class="card-body">
-            <h3 class="card-title"> Jobs Manager </h3>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-            <a href="/jobmanagerdash-table" class="btn btn-primary">VISIT PAGE</a>
+  <!-- Main Content -->
+  <div class="container" style="padding-top: 2rem;">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-neutral-800 mb-2">Customer Dashboard</h1>
+      <p class="text-lg text-neutral-600">Welcome back! Manage your service requests and find providers</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-4 gap-4 mb-8">
+      <div class="card transition hover-lift" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; cursor: pointer;" onclick="window.location.href='/jobmanagerdash-table'">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm opacity-90">Active Jobs</p>
+              <p class="text-2xl font-bold" id="activeJobs">0</p>
+              <p class="text-xs opacity-75 mt-1">Click to manage</p>
+            </div>
+            <i class="fas fa-briefcase" style="font-size: 1.5rem; opacity: 0.8;"></i>
           </div>
         </div>
       </div>
-      <div class="col">
 
-        <div class="card" style="width: 18rem; text-align: center; height:400px;">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB-WQzKhZxpwK_pBj7I78jNfm6wOq52GoA9A&usqp=CAU" class="card-img-top"
-            alt="..." height="290px">
-          <div class="card-body">
-            <h3 class="card-title">Customer-Logout</h3>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-            <input type="button"value="LogOut" class="btn btn-primary" id="logOut">
+      <div class="card transition hover-lift" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; cursor: pointer;" onclick="window.location.href='/jobmanagerdash-table'">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm opacity-90">Completed</p>
+              <p class="text-2xl font-bold" id="completedJobs">0</p>
+              <p class="text-xs opacity-75 mt-1">Total completed</p>
+            </div>
+            <i class="fas fa-check-circle" style="font-size: 1.5rem; opacity: 0.8;"></i>
           </div>
         </div>
       </div>
-      <div class="col">
 
-        <div class="card" style="width: 18rem; text-align: center; height:400px;">
-          <img src="https://static1.makeuseofimages.com/wordpress/wp-content/uploads/2021/09/cant-open-settings-app.jpg"
-            class="card-img-top" alt="..." width="286" height="379">
-          <div class="card-body">
-            <h3 class="card-title">Settings</h3>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Settingbtn">Visit
-              Settings</button>
+      <div class="card transition hover-lift" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; cursor: pointer;" onclick="window.location.href='/providerdash-table'">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm opacity-90">Providers</p>
+              <p class="text-2xl font-bold" id="totalProviders">0</p>
+              <p class="text-xs opacity-75 mt-1">Available nearby</p>
+            </div>
+            <i class="fas fa-users" style="font-size: 1.5rem; opacity: 0.8;"></i>
+          </div>
+        </div>
+      </div>
 
+      <div class="card transition hover-lift" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm opacity-90">This Month</p>
+              <p class="text-2xl font-bold" id="thisMonth">0</p>
+              <p class="text-xs opacity-75 mt-1">Jobs this month</p>
+            </div>
+            <i class="fas fa-calendar-alt" style="font-size: 1.5rem; opacity: 0.8;"></i>
           </div>
         </div>
       </div>
     </div>
-    <br>
+
+    <!-- Main Actions Grid -->
+    <div class="grid grid-cols-3 gap-6">
+      <!-- Profile Card -->
+      <div class="card transition">
+        <div class="card-header">
+          <div class="flex items-center">
+            <div style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 0.75rem; border-radius: 0.5rem; margin-right: 1rem;">
+              <i class="fas fa-user-circle" style="font-size: 1.25rem;"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-neutral-800">My Profile</h3>
+              <p class="text-sm text-neutral-600">Manage your account details</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-neutral-600 mb-4">Update your personal information, contact details, and preferences to get better service recommendations.</p>
+          <div class="flex gap-2">
+            <span class="badge badge-primary">Personal Info</span>
+            <span class="badge badge-primary">Preferences</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="/customerprof" class="btn btn-primary btn-full">
+            <i class="fas fa-edit" style="margin-right: 0.5rem;"></i>
+            Edit Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- Post Jobs Card -->
+      <div class="card transition">
+        <div class="card-header">
+          <div class="flex items-center">
+            <div style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 0.75rem; border-radius: 0.5rem; margin-right: 1rem;">
+              <i class="fas fa-plus-circle" style="font-size: 1.25rem;"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-neutral-800">Post New Job</h3>
+              <p class="text-sm text-neutral-600">Create a service request</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-neutral-600 mb-4">Post your service requirements and connect with skilled professionals in your area. Get quick responses from verified providers.</p>
+          <div class="flex gap-2">
+            <span class="badge badge-success">Quick Response</span>
+            <span class="badge badge-success">Verified Providers</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="button" class="btn btn-success btn-full" data-bs-toggle="modal" data-bs-target="#Postbtn">
+            <i class="fas fa-briefcase" style="margin-right: 0.5rem;"></i>
+            Post Job
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Providers Card -->
+      <div class="card transition">
+        <div class="card-header">
+          <div class="flex items-center">
+            <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.75rem; border-radius: 0.5rem; margin-right: 1rem;">
+              <i class="fas fa-search" style="font-size: 1.25rem;"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-neutral-800">Find Providers</h3>
+              <p class="text-sm text-neutral-600">Browse service providers</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-neutral-600 mb-4">Search and discover service providers based on location, category, and ratings. Compare profiles and make informed decisions.</p>
+          <div class="flex gap-2">
+            <span class="badge badge-warning">Location Based</span>
+            <span class="badge badge-warning">Rated Providers</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="/providerdash-table" class="btn btn-warning btn-full">
+            <i class="fas fa-users" style="margin-right: 0.5rem;"></i>
+            Browse Providers
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Actions -->
+    <div class="grid grid-cols-2 gap-6 mt-6">
+      <!-- Jobs Manager Card -->
+      <div class="card transition">
+        <div class="card-header">
+          <div class="flex items-center">
+            <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 0.75rem; border-radius: 0.5rem; margin-right: 1rem;">
+              <i class="fas fa-tasks" style="font-size: 1.25rem;"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-neutral-800">Jobs Manager</h3>
+              <p class="text-sm text-neutral-600">Track your posted jobs</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-neutral-600 mb-4">Monitor the status of your posted jobs, communicate with interested providers, and manage your service requests efficiently.</p>
+          <div class="flex gap-2">
+            <span class="badge" style="background-color: rgba(139, 92, 246, 0.1); color: #7c3aed;">Job Tracking</span>
+            <span class="badge" style="background-color: rgba(139, 92, 246, 0.1); color: #7c3aed;">Communication</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="/jobmanagerdash-table" class="btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; width: 100%;">
+            <i class="fas fa-clipboard-list" style="margin-right: 0.5rem;"></i>
+            Manage Jobs
+          </a>
+        </div>
+      </div>
+
+      <!-- Account Settings Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="flex items-center">
+            <div style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); color: white; padding: 0.75rem; border-radius: 0.5rem; margin-right: 1rem;">
+              <i class="fas fa-cog" style="font-size: 1.25rem;"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-neutral-800">Account Settings</h3>
+              <p class="text-sm text-neutral-600">Manage your account</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-neutral-600 mb-4">Update your password, notification preferences, and other account settings to customize your experience.</p>
+          <div class="flex gap-2">
+            <span class="badge" style="background-color: rgba(100, 116, 139, 0.1); color: #475569;">Password</span>
+            <span class="badge" style="background-color: rgba(100, 116, 139, 0.1); color: #475569;">Security</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); color: white; width: 100%;" data-bs-toggle="modal" data-bs-target="#Settingbtn">
+            <i class="fas fa-cog" style="margin-right: 0.5rem;"></i>
+            Open Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="Postbtn" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="text-xl font-semibold text-neutral-800">Post Service Requirement</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('Postbtn')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="space-y-4">
+          <div class="form-group">
+            <label for="txtEmailDash" class="form-label">Email Address <span id="errEmail" class="text-sm">*</span></label>
+            <input type="email" class="form-input" id="txtEmailDash" name="txtEmailDash" required>
+          </div>
+
+          <div class="form-group">
+            <label for="txtTaskDash" class="form-label">Service Category</label>
+            <select id="txtTaskDash" name="txtTaskDash" class="form-select" required>
+              <option value="">Choose a service...</option>
+              <option value="Plumber">Plumber</option>
+              <option value="Electrician">Electrician</option>
+              <option value="Carpenter">Carpenter</option>
+              <option value="House Worker">House Worker</option>
+              <option value="Driver">Driver</option>
+              <option value="Painter">Painter</option>
+              <option value="Home Tutors">Home Tutors</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Location Preference</label>
+            <div class="flex gap-6 mt-2">
+              <label class="flex items-center cursor-pointer">
+                <input class="mr-2" type="radio" id="txtradio1Dash" name="txtradioDash" value="txtradio1Dash">
+                <span class="text-sm">Use Home Address</span>
+              </label>
+              <label class="flex items-center cursor-pointer">
+                <input class="mr-2" type="radio" id="txtradio2Dash" name="txtradioDash" value="otherLocation">
+                <span class="text-sm">Other Location</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="txtAddDash" class="form-label">Address</label>
+            <input type="text" class="form-input" id="txtAddDash" name="txtAddDash" required>
+          </div>
+
+          <div class="form-group">
+            <label for="txtCityDash" class="form-label">City</label>
+            <input type="text" class="form-input" id="txtCityDash" name="txtCityDash" required>
+          </div>
+
+          <div class="form-group">
+            <label for="txtDateDash" class="form-label">Preferred Date</label>
+            <input type="date" class="form-input" id="txtDateDash" name="txtDateDash" required>
+          </div>
+
+          <div class="form-group">
+            <label for="txttasksDash" class="form-label">Task Description</label>
+            <textarea class="form-textarea" id="txttasksDash" name="txttasksDash" rows="3" placeholder="Describe the task you need help with..." required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('Postbtn')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btntask">
+          <i class="fas fa-plus-circle" style="margin-right: 0.5rem;"></i>
+          Post Job
+        </button>
+        <span id="savedtaskbtn" class="text-sm ml-3"></span>
+      </div>
+    </div>
   </div>
 
-  <!-- modal for post reqirements -->
+  <!-- Modal for Settings -->
+  <div class="modal-overlay" id="Settingbtn" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="text-xl font-semibold text-neutral-800">Account Settings</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('Settingbtn')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="space-y-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1" class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="exampleInputEmail1" readonly style="background-color: #f8f9fa;">
+          </div>
 
-  <div class="modal" id="Postbtn" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content" style="background-color: rgb(238, 241, 245); color: rgb(10, 10, 9);">
-        <div class="modal-header">
+          <div class="form-group">
+            <label for="oldPassword" class="form-label">Current Password</label>
+            <div class="relative">
+              <input type="password" class="form-input" id="oldPassword" name="oldPassword" required>
+              <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 eye1">
+                <i class="fa-solid fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
 
-          <h3 class="modal-title"><b>Post Requirement</b></h3>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>
-          <form class="row g-3">
-            <div class="col-md-12">
-              <label for="txtEmailDash" class="form-label"><b>Email id</b> <span id="errEmail">*</span></label>
-              <input type="email" class="form-control" id="txtEmailDash" name="txtEmailDash">
+          <div class="form-group">
+            <label for="newPassword" class="form-label">New Password</label>
+            <div class="relative">
+              <input type="password" class="form-input" id="newPassword" name="newPassword" required>
+              <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 eye2">
+                <i class="fa-solid fa-eye-slash"></i>
+              </button>
             </div>
-            <div class="col-md-12" style="margin-top: 30px;">
-              <label for="txtTaskDash" class="form-label"><b>Task Category</b></label>
-              <select id="txtTaskDash" name="txtTaskDash" class="form-select">
-                <option selected>Choose</option>
-                <option>Plumber</option>
-                <option>Electrician</option>
-                <option>Carpanter</option>
-                <option>House Worker</option>
-                <option>Driver</option>
-                <option>Painter</option>
-                <option>Home Tutors</option>
-
-              </select>
-            </div>
-            <div class="col-md-4" style="margin-top: 30px;">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" id="txtradio1Dash" name="txtradioDash"
-                  value="txtradio1Dash">
-                <label class="form-check-label" for="txtradio1Dash">
-                  <b>Home</b>
-                </label>
-              </div>
-            </div>
-            <div class="col-md-5" style="margin-top: 30px;">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" id="txtradio2Dash" name="txtradioDash"
-                  value="otherLocation">
-                <label class="form-check-label" for="txtradio2Dash">
-                  <b>
-                    Other Loaction
-                  </b>
-                </label>
-              </div>
-            </div>
-            <div class="col-12" style="margin-top: 30px;">
-              <label for="txtAddDash" class="form-label"><b>Address</b></label>
-              <input type="text" class="form-control" id="txtAddDash" name="txtAddDash">
-            </div>
-            <div class="col-md-12" style="margin-top: 30px;">
-              <label for="txtCityDash" class="form-label"><b>City</b></label>
-              <input type="text" class="form-control" id="txtCityDash" name="txtCityDash">
-            </div>
-            <div class="col-md-12" style="margin-top: 30px;">
-              <label for="txtDateDash" class="form-label"><b>Date</b></label>
-              <input type="date" class="form-control" id="txtDateDash" name="txtDateDash">
-            </div>
-            <div class="col-md-12" style="margin-top: 30px;">
-              <label for="txttasksDash" class="form-label"><b>Task To Be Done</b></label>
-              <input type="text" class="form-control" id="txttasksDash" name="txttasksDash">
-            </div>
-          </form>
-          </p>
-        </div>
-        <div class="modal-footer" style="margin-top: 10px;">
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="margin-right: 5px;">Close</button>
-          <button type="button" class="btn btn-primary" id="btntask">Task Post</button><span
-            style="margin-right: 200px;" id="savedtaskbtn">*</span>
-
-        </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('Settingbtn')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="changepassword">
+          <i class="fas fa-key" style="margin-right: 0.5rem;"></i>
+          Change Password
+        </button>
+        <span id="changeErr" class="text-sm ml-3"></span>
       </div>
     </div>
   </div>
 
-  <!-- model of Settings -->
-  <div class="modal" id="Settingbtn" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content" style="background-color: rgb(238, 241, 245); color: rgb(10, 10, 9);">
-        <div class="modal-header">
-          <h3 class="modal-title"><b>Settings</b></h3>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>
-          <form>
-            <div class="mb-3 col-md-11">
-              <label for="exampleInputEmail1" class="form-label"><b>Email address</b></label>
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-              <div id="emailHelp" class="form-text"></div>
-            </div>
+  <script>
+    // Modal functionality with enhanced animations
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        modal.style.opacity = '1';
+        modal.querySelector('.modal').style.transform = 'scale(1)';
+      }, 10);
+    }
 
-            <div class="mb-3">
-              <label for="oldPassword" class="form-label"><b>Old Password</b></label>
-              <div class="col-md-12 d-flex align-items-center">
-                  <input type="password" class="form-control" id="oldPassword" name="oldPassword">
-                  <div class="col-md-1 ms-1">
-                      <i class="fa-solid fa-eye-slash fa-beat eye1"></i>
-                  </div>
-              </div>
-          </div>
-          
-          <div class="mb-3">
-              <label for="newPassword" class="form-label"><b>New Password</b></label>
-              <div class="col-md-12 d-flex align-items-center">
-                  <input type="password" class="form-control" id="newPassword" name="newPassword">
-                  <div class="col-md-1 ms-1">
-                      <i class="fa-solid fa-eye-slash fa-beat eye2"></i>
-                  </div>
-              </div>
-          </div>
-          
-          </form>
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" style="margin-right: 5px;">Close</button>
-          <button type="button" class="btn btn-primary" style="margin-right: 140px;" id="changepassword">Change Password</button><span id="changeErr">
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.style.opacity = '0';
+      modal.querySelector('.modal').style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
+    }
 
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
+    // Handle modal triggers
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add loading states to buttons
+      function addLoadingToButton(button, originalText, loadingText) {
+        button.innerHTML = `<i class="fas fa-spinner fa-spin" style="margin-right: 0.5rem;"></i>${loadingText}`;
+        button.disabled = true;
+        button.classList.add('loading');
+        
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.disabled = false;
+          button.classList.remove('loading');
+        }, 2000);
+      }
 
+      // Post job modal trigger
+      const postJobTrigger = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#Postbtn"]');
+      if (postJobTrigger) {
+        postJobTrigger.addEventListener('click', function(e) {
+          e.preventDefault();
+          openModal('Postbtn');
+        });
+      }
 
+      // Settings modal trigger
+      document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#Settingbtn"]').forEach(function(element) {
+        element.addEventListener('click', function(e) {
+          e.preventDefault();
+          openModal('Settingbtn');
+        });
+      });
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
+      // Close modals when clicking outside
+      document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) {
+            closeModal(overlay.id);
+          }
+        });
+      });
+
+      // Enhanced form validation
+      document.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('focused');
+        });
+
+        input.addEventListener('blur', function() {
+          if (!this.value) {
+            this.parentElement.classList.remove('focused');
+          }
+        });
+
+        input.addEventListener('input', function() {
+          this.parentElement.classList.toggle('has-value', this.value.length > 0);
+        });
+      });
+
+      // Add click effects to cards
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', function(e) {
+          if (this.onclick) {
+            this.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+              this.style.transform = '';
+            }, 150);
+          }
+        });
+      });
+
+      // Animate stats numbers on page load
+      function animateNumber(element, target, duration = 2000) {
+        const start = 0;
+        const increment = target / (duration / 16);
+        let current = start;
+        
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          element.textContent = Math.floor(current);
+        }, 16);
+      }
+
+      // Animate stats when they load
+      setTimeout(() => {
+        const activeJobs = document.getElementById('activeJobs');
+        const completedJobs = document.getElementById('completedJobs');
+        const totalProviders = document.getElementById('totalProviders');
+        const thisMonth = document.getElementById('thisMonth');
+        
+        if (activeJobs.textContent !== '0') animateNumber(activeJobs, parseInt(activeJobs.textContent));
+        if (completedJobs.textContent !== '0') animateNumber(completedJobs, parseInt(completedJobs.textContent));
+        if (totalProviders.textContent !== '0') animateNumber(totalProviders, parseInt(totalProviders.textContent));
+        if (thisMonth.textContent !== '0') animateNumber(thisMonth, parseInt(thisMonth.textContent));
+      }, 500);
+    });
+
+    // Update user initial in navbar with animation
+    $(document).ready(function() {
+      let user = localStorage.getItem("user");
+      if (user) {
+        let initial = user.charAt(0).toUpperCase();
+        const userInitial = $("#userInitial");
+        userInitial.text(initial);
+        
+        // Add a subtle animation
+        userInitial.css('transform', 'scale(0)');
+        setTimeout(() => {
+          userInitial.css({
+            'transform': 'scale(1)',
+            'transition': 'transform 0.3s ease'
+          });
+        }, 100);
+      }
+    });
+
+    // Add CSS for modal animations
+    const style = document.createElement('style');
+    style.textContent = `
+      .modal-overlay {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .modal {
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+      
+      .focused {
+        transform: translateY(-2px);
+      }
+      
+      .has-value {
+        border-color: #0ea5e9;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+
 </body>
-
 </html>

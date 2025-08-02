@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="KarmYog - India's premier platform connecting skilled service providers with customers. Find trusted professionals for home services, repairs, tutoring, and more." />
+    <meta name="author" content="KarmYog Team" />
+    <title>KarmYog - Your Trusted Service Marketplace</title>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/reset.css">
+    <link rel="stylesheet" href="/css/modern-design-system.css">
+    <link rel="stylesheet" href="/css/modern-navbar.css">
+    <link rel="stylesheet" href="/public/css/landing-page.css">
+    <link rel="stylesheet" href="/public/css/responsive.css">
+
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" style="stop-color:%230ea5e9;stop-opacity:0.05"/><stop offset="100%" style="stop-color:%230ea5e9;stop-opacity:0"/></radialGradient></defs><circle cx="200" cy="200" r="200" fill="url(%23a)"/><circle cx="800" cy="800" r="300" fill="url(%23a)"/></svg>');
+            pointer-events: none;
+        }
+
+        .service-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .service-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+        }
+
+        /* Enhanced Modal Styles */
+        .modal-overlay {
+            backdrop-filter: blur(4px);
+        }
+        
+        .text-error {
+            color: #ef4444 !important;
+        }
+        
+        .text-success {
+            color: #22c55e !important;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, transparent);
+            transform: translateY(-50%);
+        }
+
+        .step-item:last-child::after {
+            display: none;
+        }
+
+        .feature-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .feature-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .navbar-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-link:hover {
+            color: #0ea5e9;
+        }
+
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+        }
+
+        /* Mobile navbar menu */
+        .navbar-menu.mobile {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            flex-direction: column;
+            justify-content: center;
+            gap: 3rem;
+            z-index: 9999;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-menu.mobile.active {
+            transform: translateX(0);
+        }
+
+        .navbar-menu.mobile .navbar-link {
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu.mobile .navbar-link:hover {
+            background: rgba(14, 165, 233, 0.1);
+            transform: scale(1.05);
+        }
+
+        /* Close button for mobile menu */
+        .mobile-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .hero-section .grid-cols-2 {
+                gap: 4rem;
+            }
+            
+            .navbar-menu {
+                gap: 1.5rem;
+            }
+            
+            .navbar-actions {
+                gap: 0.75rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-menu {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .navbar-actions {
+                gap: 0.5rem;
+            }
+            
+            .navbar-actions .btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+            
+            .navbar-actions .btn i {
+                margin-right: 0.25rem !important;
+            }
+            
+            /* Hide text on very small screens, keep only icons */
+            @media (max-width: 480px) {
+                .navbar-actions .btn span {
+                    display: none;
+                }
+                
+                .navbar-actions .btn {
+                    padding: 0.5rem;
+                    min-width: auto;
+                }
+            }
+            
+            .hero-section .grid-cols-2 {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.5rem !important;
+            }
+        }
+
+        /* Dropdown Styles */
+        .dropdown-item:hover {
+            background-color: #f8fafc !important;
+        }
+
+        .dropdown-toggle::after {
+            content: none; /* Remove default bootstrap arrow */
+        }
+
+        .dropdown-menu {
+            border: 1px solid #e2e8f0;
+            animation: dropdownSlide 0.2s ease-out;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* User avatar styles */
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+      $(document).ready(function () {
+        // Email validation for signup
+        $("#signupEmail").keyup(function () {
+          let email = $("#signupEmail").val();
+          var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+          if (r.test(email) == false) {
+            $("#signuperr").html("(Invalid Email)").addClass("text-error").removeClass("text-success");
+          } else {
+            $("#signuperr").html("(Valid Email)").addClass("text-success").removeClass("text-error");
+          }
+        });
+
+        // Password validation for signup
+        $("#signupPass").keyup(function () {
+          let pass = $("#signupPass").val();
+          var r = /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+          if (r.test(pass) == false) {
+            $("#signuperrpass").html("(Invalid Password)").addClass("text-error").removeClass("text-success");
+          } else {
+            $("#signuperrpass").html("(Valid Password)").addClass("text-success").removeClass("text-error");
+          }
+        });
+
+        // Email validation for login
+        $("#loginEmail").keyup(function () {
+          let email = $("#loginEmail").val();
+          var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+          if (r.test(email) == false) {
+            $("#loginerr").html("(Invalid Email)").addClass("text-error").removeClass("text-success");
+          } else {
+            $("#loginerr").html("(Valid Email)").addClass("text-success").removeClass("text-error");
+          }
+        });
+
+        // Check login email when user leaves the field
+        $("#loginEmail").blur(function () {
+          let email = $("#loginEmail").val();
+          if (email) {
+            let obj = {
+              url: "/checkUserLogin",
+              method: "GET",
+              data: { kuchEmail: email },
+            };
+            $.ajax(obj).done(function (resp) {
+              $("#loginEmailCheck").html(resp);
+              if (resp === "Email exists") {
+                $("#loginEmailCheck").removeClass("text-error").addClass("text-success");
+              } else {
+                $("#loginEmailCheck").addClass("text-error").removeClass("text-success");
+              }
+            }).fail(function (err) {
+              console.error("Email check error:", err);
+            });
+          }
+        });
+
+        // Signup functionality
+        $("#signvalidid").click(function () {
+          if ($("#signupEmail").val() == "" || $("#signupPass").val() == "" || $("select[name='signupUser']").val() == "Select") {
+            alert("Please fill all fields!");
+            return;
+          }
+          
+          if ($("#signuperr").hasClass("text-error") || $("#signuperrpass").hasClass("text-error")) {
+            alert("Please enter valid data!");
+            return;
+          }
+
+          let Email = $("#signupEmail").val();
+          let Password = $("#signupPass").val();
+          let userType = $("select[name='signupUser']").val();
+
+          let obj = {
+            url: "/saveProfile",
+            data: { txtEmail: Email, txtPwd: Password, utype: userType },
+          };
+
+          $.ajax(obj).done(function (resp) {
+            $("#signstatus").html(resp).addClass("text-success");
+            if (resp.includes("Successfully")) {
+              // Set user session after successful signup
+              localStorage.setItem("User", Email);
+              localStorage.setItem("usertype", userType);
+              updateAuthState(); // Update navigation state
+              
+              setTimeout(function() {
+                closeModal('signupModal');
+                // Redirect based on user type
+                if (userType === "Service-Provider") {
+                  window.location.href = "/providerprof"; // Redirect to profile setup
+                } else if (userType === "Customer") {
+                  window.location.href = "/customerDash";
+                } else if (userType === "Admin") {
+                  window.location.href = "/admin";
+                }
+              }, 2000);
+            }
+          }).fail(function (err) {
+            $("#signstatus").html("Error occurred").addClass("text-error");
+          });
+        });
+
+        // Login functionality
+        $("#loginvalidid").click(function () {
+          // Clear previous error messages
+          $("#loginstatus").html("").removeClass("text-error text-success");
+          
+          if ($("#loginEmail").val() == "" || $("#loginPass").val() == "") {
+            $("#loginstatus").html("Please fill all fields!").addClass("text-error");
+            return;
+          }
+
+          let email = $("#loginEmail").val();
+          let password = $("#loginPass").val();
+
+          // Show loading state
+          $(this).html('<i class="fas fa-spinner fa-spin" style="margin-right: 0.5rem;"></i>Logging in...').prop('disabled', true);
+
+          let obj = {
+            url: "/profileLogin",
+            method: "POST",
+            data: { Email: email, Pass: password },
+          };
+
+          $.ajax(obj).done(function (resp) {
+            console.log("Login response:", resp); // Debug log
+            
+            if (resp == "Customer") {
+              localStorage.setItem("User", email);
+              localStorage.setItem("usertype", "Customer");
+              $("#loginstatus").html("Login successful! Redirecting...").addClass("text-success");
+              updateAuthState(); // Update navigation state
+              setTimeout(() => {
+                window.location.href = "/customerDash";
+              }, 1000);
+            } else if (resp == "Service-Provider") {
+              localStorage.setItem("User", email);
+              localStorage.setItem("usertype", "Service-Provider");
+              $("#loginstatus").html("Login successful! Redirecting...").addClass("text-success");
+              updateAuthState(); // Update navigation state
+              setTimeout(() => {
+                window.location.href = "/service-providerdashboard.html";
+              }, 1000);
+            } else if (resp == "Admin") {
+              localStorage.setItem("User", email);
+              localStorage.setItem("usertype", "Admin");
+              $("#loginstatus").html("Login successful! Redirecting...").addClass("text-success");
+              updateAuthState(); // Update navigation state
+              setTimeout(() => {
+                window.location.href = "/admin";
+              }, 1000);
+            } else {
+              $("#loginstatus").html(resp).addClass("text-error");
+            }
+          }).fail(function (err) {
+            console.error("Login error:", err); // Debug log
+            $("#loginstatus").html("Login failed. Please try again.").addClass("text-error");
+          }).always(function() {
+            // Reset button state
+            $("#loginvalidid").html('<i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i>Login').prop('disabled', false);
+          });
+        });
+
+        // Check email availability
+        $("#signupEmail").blur(function () {
+          let email = $("#signupEmail").val();
+          if (email) {
+            $.get("/check-User", { kuchEmail: email }).done(function (resp) {
+              if (resp.includes("already exists")) {
+                $("#emailCheck").html(resp).addClass("text-error");
+              } else {
+                $("#emailCheck").html(resp).addClass("text-success");
+              }
+            });
+          }
+        });
+
+        // Check login email
+        $("#loginEmail").blur(function () {
+          let email = $("#loginEmail").val();
+          if (email) {
+            $.get("/checkUserLogin", { kuchEmail: email }).done(function (resp) {
+              $("#loginEmailCheck").html(resp);
+            });
+          }
+        });
+
+        // Load platform statistics
+        function loadPlatformStats() {
+          $.get("/admin-stats").done(function (stats) {
+            if (stats.totalUsers) {
+              $("#totalUsers").text(stats.totalUsers + "+");
+            }
+            if (stats.totalProviders) {
+              $("#totalProviders").text(stats.totalProviders + "+");
+            }
+            if (stats.totalJobs) {
+              $("#totalJobs").text(stats.totalJobs + "+");
+            }
+          }).fail(function (err) {
+            console.log("Could not load platform statistics");
+          });
+        }
+
+        // Load stats on page load
+        loadPlatformStats();
+
+        // Smooth scroll for navigation
+        $('.scroll-to').on('click', function(e) {
+          e.preventDefault();
+          const target = $(this).attr('href');
+          $('html, body').animate({
+            scrollTop: $(target).offset().top - 80
+          }, 800);
+        });
+
+        // Service category hover effects
+        $('.service-item').hover(function() {
+          $(this).find('.service-icon').addClass('animate-bounce');
+        }, function() {
+          $(this).find('.service-icon').removeClass('animate-bounce');
+        });
+
+        // Authentication state management
+        function checkAuthState() {
+          const user = localStorage.getItem("User");
+          const userType = localStorage.getItem("usertype");
+          
+          if (user && userType) {
+            // User is logged in
+            showDashboardButtons(user, userType);
+          } else {
+            // User is not logged in
+            showAuthButtons();
+          }
+        }
+
+        function showDashboardButtons(user, userType) {
+          $("#authButtons").hide();
+          $("#dashboardButtons").show();
+          
+          // Set user name and avatar
+          $("#userName").text(user.split('@')[0]);
+          $("#userAvatar").text(user.charAt(0).toUpperCase());
+          
+          // Set dashboard link based on user type
+          if (userType === "Service-Provider" || userType === "Provider") {
+            $("#dashboardLink").attr("href", "/service-providerdashboard.html");
+          } else if (userType === "Customer") {
+            $("#dashboardLink").attr("href", "/customerDash");
+          } else if (userType === "Admin") {
+            $("#dashboardLink").attr("href", "/admin");
+          }
+        }
+
+        function showAuthButtons() {
+          $("#authButtons").show();
+          $("#dashboardButtons").hide();
+        }
+
+        // Dropdown toggle functionality
+        $(document).on('click', '#userDropdown', function(e) {
+          e.stopPropagation();
+          $("#dropdownMenu").toggle();
+        });
+
+        // Close dropdown when clicking outside
+        $(document).on('click', function() {
+          $("#dropdownMenu").hide();
+        });
+
+        // Logout functionality
+        window.logout = function() {
+          localStorage.removeItem("User");
+          localStorage.removeItem("usertype");
+          showAuthButtons();
+          $("#dropdownMenu").hide();
+          // Optionally redirect to home or reload page
+          window.location.reload();
+        };
+
+        // Check auth state on page load
+        checkAuthState();
+
+        // Update auth state after successful login
+        window.updateAuthState = function() {
+          checkAuthState();
+        };
+      });
+    </script>
+</head>
+
+<body class="bg-neutral">
+    <!-- Modern Navigation -->
+    <nav class="modern-navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <div class="navbar-brand-icon">K</div>
+                KarmYog
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="navbar-menu" id="navbarMenu">
+                <a href="#services" class="navbar-link scroll-to">Services</a>
+                <a href="#how-it-works" class="navbar-link scroll-to">How It Works</a>
+                <a href="#about" class="navbar-link scroll-to">About</a>
+                <a href="#testimonials" class="navbar-link scroll-to">Reviews</a>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div class="navbar-menu mobile" id="mobileMenu">
+                <button class="mobile-close" onclick="closeMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <a href="#services" class="navbar-link scroll-to" onclick="closeMobileMenu()">Services</a>
+                <a href="#how-it-works" class="navbar-link scroll-to" onclick="closeMobileMenu()">How It Works</a>
+                <a href="#about" class="navbar-link scroll-to" onclick="closeMobileMenu()">About</a>
+                <a href="#testimonials" class="navbar-link scroll-to" onclick="closeMobileMenu()">Reviews</a>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="navbar-actions" id="navbarActions">
+                    <!-- Default state: Login/Signup buttons -->
+                    <div id="authButtons">
+                        <button class="btn btn-secondary" onclick="openModal('loginModal')">
+                            <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i>
+                            <span>Login</span>
+                        </button>
+                        <button class="btn btn-primary" onclick="openModal('signupModal')">
+                            <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>
+                            <span>Join Now</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Logged in state: Dashboard buttons -->
+                    <div id="dashboardButtons" style="display: none;">
+                        <div class="dropdown" style="position: relative; display: inline-block;">
+                            <button class="btn btn-primary dropdown-toggle" id="userDropdown" style="display: flex; align-items: center;">
+                                <div id="userAvatar" style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; margin-right: 0.5rem; font-size: 14px;"></div>
+                                <span id="userName">User</span>
+                                <i class="fas fa-chevron-down" style="margin-left: 0.5rem; font-size: 12px;"></i>
+                            </button>
+                            <div class="dropdown-menu" id="dropdownMenu" style="display: none; position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 0.5rem 0; min-width: 200px; z-index: 1000; margin-top: 0.5rem;">
+                                <a href="#" id="dashboardLink" class="dropdown-item" style="display: flex; align-items: center; padding: 0.75rem 1rem; text-decoration: none; color: #374151; transition: background-color 0.2s;">
+                                    <i class="fas fa-tachometer-alt" style="margin-right: 0.75rem; color: #6b7280;"></i>
+                                    Dashboard
+                                </a>
+                                <a href="/providerprof" class="dropdown-item" style="display: flex; align-items: center; padding: 0.75rem 1rem; text-decoration: none; color: #374151; transition: background-color 0.2s;">
+                                    <i class="fas fa-user" style="margin-right: 0.75rem; color: #6b7280;"></i>
+                                    My Profile
+                                </a>
+                                <div class="dropdown-divider" style="border-top: 1px solid #e5e7eb; margin: 0.5rem 0;"></div>
+                                <a href="#" onclick="logout()" class="dropdown-item" style="display: flex; align-items: center; padding: 0.75rem 1rem; text-decoration: none; color: #ef4444; transition: background-color 0.2s;">
+                                    <i class="fas fa-sign-out-alt" style="margin-right: 0.75rem;"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" style="padding: 8rem 0 6rem;">
+        <div class="container">
+            <div class="grid grid-cols-2 items-center" style="gap: 5rem;">
+                <div style="z-index: 2; position: relative;">
+                    <h1 style="font-size: 3.5rem; font-weight: 900; line-height: 1.1; color: #1e293b; margin-bottom: 1.5rem;">
+                        Find Trusted <span style="color: #0ea5e9;">Service Providers</span> Near You
+                    </h1>
+                    <p style="font-size: 1.25rem; color: #64748b; margin-bottom: 2rem; line-height: 1.6;">
+                        Connect with skilled professionals for home services, repairs, tutoring, and more. 
+                        Quality work, transparent pricing, verified providers - all in one platform.
+                    </p>
+                    
+                    <!-- Search Bar -->
+                    <div style="background: white; padding: 1rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                        <div class="grid grid-cols-3 gap-3">
+                            <select class="form-select" style="border: none; background: transparent;">
+                                <option>Select Service</option>
+                                <option>Plumbing</option>
+                                <option>Electrical</option>
+                                <option>Carpentry</option>
+                                <option>Cleaning</option>
+                                <option>Painting</option>
+                                <option>Driver</option>
+                                <option>Tutoring</option>
+                            </select>
+                            <input type="text" placeholder="Enter your location" class="form-input" style="border: none; background: transparent;">
+                            <button class="btn btn-primary btn-full" onclick="openModal('signupModal')">
+                                <i class="fas fa-search" style="margin-right: 0.5rem;"></i>
+                                Find Providers
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button class="btn btn-primary btn-lg" onclick="openModal('signupModal')">
+                            <i class="fas fa-rocket" style="margin-right: 0.5rem;"></i>
+                            Get Started
+                        </button>
+                        <button class="btn btn-secondary btn-lg" onclick="openModal('loginModal')">
+                            <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i>
+                            Login
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="position: relative; z-index: 2;">
+                    <div style="background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); border-radius: 2rem; padding: 3rem; text-align: center; color: white; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                        <div style="position: absolute; bottom: -30px; left: -30px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                        
+                        <i class="fas fa-handshake" style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.9;"></i>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Trusted by Thousands</h3>
+                        <p style="opacity: 0.9; margin-bottom: 2rem;">Join our growing community of satisfied customers and skilled service providers</p>
+                        
+                        <!-- Platform Statistics -->
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div style="font-size: 2rem; font-weight: bold;" id="totalUsers">1000+</div>
+                                <div style="font-size: 0.875rem; opacity: 0.8;">Users</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 2rem; font-weight: bold;" id="totalProviders">500+</div>
+                                <div style="font-size: 0.875rem; opacity: 0.8;">Providers</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 2rem; font-weight: bold;" id="totalJobs">2000+</div>
+                                <div style="font-size: 0.875rem; opacity: 0.8;">Jobs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section" style="padding: 6rem 0; background: white;">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h2 style="font-size: 3rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem;">Popular Services</h2>
+                <p style="font-size: 1.25rem; color: #64748b; max-width: 600px; margin: 0 auto;">Discover the most trusted and in-demand services on our platform</p>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-6">
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-wrench" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Plumbing</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Professional plumbing services</p>
+                    </div>
+                </div>
+                
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-bolt" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Electrical</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Certified electrical services</p>
+                    </div>
+                </div>
+                
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-hammer" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Carpentry</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Custom carpentry work</p>
+                    </div>
+                </div>
+                
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-broom" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Cleaning</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Professional cleaning services</p>
+                    </div>
+                </div>
+                
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-paint-roller" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Painting</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Interior & exterior painting</p>
+                    </div>
+                </div>
+                
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-car" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Driver</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Professional driving services</p>
+                    </div>
+                </div>
+                
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-graduation-cap" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Tutoring</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Academic & skill tutoring</p>
+                    </div>
+                </div>
+                
+                <div class="service-item card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); color: white; padding: 1.5rem; border-radius: 1rem; width: 4rem; height: 4rem; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-plus" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">More...</h4>
+                        <p style="color: #64748b; font-size: 0.875rem;">Many more services available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="steps-section" style="padding: 6rem 0; background: #f8fafc;">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h2 style="font-size: 3rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem;">How It Works</h2>
+                <p style="font-size: 1.25rem; color: #64748b; max-width: 600px; margin: 0 auto;">Simple steps to connect with trusted service providers</p>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-8">
+                <div class="step-item">
+                    <div style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 1.5rem; border-radius: 50%; width: 4rem; height: 4rem; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">1</div>
+                    <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Post Your Job</h4>
+                    <p style="color: #64748b;">Describe your service needs and requirements in detail</p>
+                </div>
+                
+                <div class="step-item">
+                    <div style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 1.5rem; border-radius: 50%; width: 4rem; height: 4rem; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">2</div>
+                    <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Get Proposals</h4>
+                    <p style="color: #64748b;">Receive quotes and proposals from verified providers</p>
+                </div>
+                
+                <div class="step-item">
+                    <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 1.5rem; border-radius: 50%; width: 4rem; height: 4rem; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">3</div>
+                    <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Choose Provider</h4>
+                    <p style="color: #64748b;">Compare profiles, ratings, and select the best fit</p>
+                </div>
+                
+                <div class="step-item">
+                    <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 1.5rem; border-radius: 50%; width: 4rem; height: 4rem; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">4</div>
+                    <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Get It Done</h4>
+                    <p style="color: #64748b;">Work gets completed, you pay and rate the service</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="about" class="features-section" style="padding: 6rem 0; background: white;">
+        <div class="container">
+            <div class="grid grid-cols-3 gap-8">
+                <div class="feature-card text-center">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 2rem; border-radius: 1.5rem; width: 6rem; height: 6rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">For Customers</h3>
+                    <p style="color: #64748b; margin-bottom: 1.5rem;">Find trusted, verified service providers in your area. Post job requirements and get quick responses from qualified professionals with transparent pricing.</p>
+                    <div class="flex justify-center gap-2">
+                        <span class="badge badge-primary">Verified Providers</span>
+                        <span class="badge badge-primary">Quick Response</span>
+                    </div>
+                </div>
+
+                <div class="feature-card text-center">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 2rem; border-radius: 1.5rem; width: 6rem; height: 6rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-tools" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">For Providers</h3>
+                    <p style="color: #64748b; margin-bottom: 1.5rem;">Showcase your skills, build your reputation, and find new clients. Access a steady stream of job opportunities and grow your service business.</p>
+                    <div class="flex justify-center gap-2">
+                        <span class="badge badge-success">Steady Work</span>
+                        <span class="badge badge-success">Build Reputation</span>
+                    </div>
+                </div>
+
+                <div class="feature-card text-center">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 2rem; border-radius: 1.5rem; width: 6rem; height: 6rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-shield-alt" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">Secure & Reliable</h3>
+                    <p style="color: #64748b; margin-bottom: 1.5rem;">All service providers are background-verified. Secure communication, transparent pricing, and rating system ensure quality service delivery.</p>
+                    <div class="flex justify-center gap-2">
+                        <span class="badge badge-warning">Background Verified</span>
+                        <span class="badge badge-warning">Secure Platform</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials-section" style="padding: 6rem 0; background: #f8fafc;">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h2 style="font-size: 3rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem;">What Our Users Say</h2>
+                <p style="font-size: 1.25rem; color: #64748b;">Real feedback from our satisfied customers and providers</p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-8">
+                <div class="testimonial-card">
+                    <div class="flex items-center mb-4">
+                        <div style="width: 3rem; height: 3rem; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 1rem;">R</div>
+                        <div>
+                            <h4 style="font-weight: 600; color: #1e293b;">Rahul Sharma</h4>
+                            <p style="color: #64748b; font-size: 0.875rem;">Customer</p>
+                        </div>
+                    </div>
+                    <p style="color: #64748b; margin-bottom: 1rem;">"Found an excellent plumber through KarmYog. Professional service, fair pricing, and completed the work on time. Highly recommended!"</p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="flex items-center mb-4">
+                        <div style="width: 3rem; height: 3rem; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 1rem;">P</div>
+                        <div>
+                            <h4 style="font-weight: 600; color: #1e293b;">Priya Patel</h4>
+                            <p style="color: #64748b; font-size: 0.875rem;">Service Provider</p>
+                        </div>
+                    </div>
+                    <p style="color: #64748b; margin-bottom: 1rem;">"As a cleaning service provider, KarmYog has helped me find steady work and build my client base. Great platform for professionals!"</p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="flex items-center mb-4">
+                        <div style="width: 3rem; height: 3rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 1rem;">A</div>
+                        <div>
+                            <h4 style="font-weight: 600; color: #1e293b;">Amit Kumar</h4>
+                            <p style="color: #64748b; font-size: 0.875rem;">Customer</p>
+                        </div>
+                    </div>
+                    <p style="color: #64748b; margin-bottom: 1rem;">"The verification process gives me confidence in the service providers. Easy to use platform with reliable professionals."</p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="padding: 6rem 0; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white;">
+        <div class="container text-center">
+            <h2 style="font-size: 3rem; font-weight: 800; margin-bottom: 1rem;">Ready to Get Started?</h2>
+            <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">Join thousands of satisfied customers and service providers on KarmYog today</p>
+            
+            <div class="flex justify-center gap-4">
+                <button class="btn btn-primary btn-lg" onclick="openModal('signupModal')" style="background: white; color: #1e293b;">
+                    <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: #1e293b; color: white; padding: 3rem 0 2rem;">
+        <div class="container">
+            <div class="grid grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="navbar-brand-icon" style="background: #0ea5e9;">K</div>
+                        <span class="text-xl font-bold ml-2">KarmYog</span>
+                    </div>
+                    <p class="text-neutral-300 mb-4">Connecting service providers with customers for a better tomorrow.</p>
+                    <div class="flex gap-3">
+                        <a href="#" style="color: #94a3b8; font-size: 1.25rem;"><i class="fab fa-facebook"></i></a>
+                        <a href="#" style="color: #94a3b8; font-size: 1.25rem;"><i class="fab fa-twitter"></i></a>
+                        <a href="#" style="color: #94a3b8; font-size: 1.25rem;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="color: #94a3b8; font-size: 1.25rem;"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-neutral-300">
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Plumbing</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Electrical</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Carpentry</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Cleaning</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Painting</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-neutral-300">
+                        <li><a href="#about" style="color: inherit; text-decoration: none;">About Us</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Contact</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Privacy Policy</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-neutral-300">
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Help Center</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">FAQ</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Community</a></li>
+                        <li><a href="#" style="color: inherit; text-decoration: none;">Contact Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-8 pt-8 border-t border-neutral-600">
+                <p class="text-neutral-400">&copy; 2024 KarmYog. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal" style="background: white; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);">
+            <div class="modal-header" style="padding: 1.5rem 1.5rem 0; border-bottom: 1px solid #e2e8f0;">
+                <h3 class="text-xl font-semibold text-neutral-800" style="margin: 0;">Welcome Back</h3>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('loginModal')" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; border: none; background: #f1f5f9; border-radius: 6px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <form class="space-y-4">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="loginEmail" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address <span id="loginerr" class="text-sm">*</span></label>
+                        <input type="email" class="form-input" id="loginEmail" name="loginEmail" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 16px;">
+                        <span id="loginEmailCheck" class="text-sm"></span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="loginPass" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Password</label>
+                        <input type="password" class="form-input" id="loginPass" name="loginPass" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 16px;">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="padding: 0 1.5rem 1.5rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('loginModal')" style="padding: 0.75rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+                <button type="button" class="btn btn-primary" id="loginvalidid" style="padding: 0.75rem 1rem; background: #0ea5e9; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i>
+                    Login
+                </button>
+                <span id="loginstatus" class="text-sm ml-3" style="align-self: center;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="text-xl font-semibold text-neutral-800">Join KarmYog</h3>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('signupModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="space-y-4">
+                    <div class="form-group">
+                        <label for="signupEmail" class="form-label">Email Address <span id="signuperr" class="text-sm">*</span></label>
+                        <input type="email" class="form-input" id="signupEmail" name="signupEmail" required>
+                        <span id="emailCheck" class="text-sm"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPass" class="form-label">Password <span id="signuperrpass" class="text-sm">*</span></label>
+                        <input type="password" class="form-input" id="signupPass" name="signupPass" required>
+                        <p class="text-xs text-neutral-500 mt-1">Password must contain at least 8 characters with uppercase, lowercase, number, and special character</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupUser" class="form-label">Account Type</label>
+                        <select class="form-select" name="signupUser" id="signupUser" required>
+                            <option value="Select">Select Account Type</option>
+                            <option value="Customer">Customer - I need services</option>
+                            <option value="Provider">Service Provider - I offer services</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('signupModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" id="signvalidid">
+                    <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>
+                    Sign Up
+                </button>
+                <span id="signstatus" class="text-sm ml-3"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const toggleButton = document.getElementById('mobileMenuToggle');
+            const icon = toggleButton.querySelector('i');
+            
+            mobileMenu.classList.toggle('active');
+            
+            if (mobileMenu.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+                document.body.style.overflow = 'hidden';
+            } else {
+                icon.className = 'fas fa-bars';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const toggleButton = document.getElementById('mobileMenuToggle');
+            const icon = toggleButton.querySelector('i');
+            
+            mobileMenu.classList.remove('active');
+            icon.className = 'fas fa-bars';
+            document.body.style.overflow = '';
+        }
+
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Enhanced Landing Page Interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) {
+                        overlay.style.display = 'none';
+                    }
+                });
+            });
+
+            // Enhanced navbar scroll effect
+            const navbar = document.querySelector('.modern-navbar');
+            let lastScrollY = window.scrollY;
+
+            window.addEventListener('scroll', function() {
+                const currentScrollY = window.scrollY;
+                
+                if (currentScrollY > 100) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+
+                // Hide/show navbar on scroll
+                if (currentScrollY > lastScrollY && currentScrollY > 200) {
+                    navbar.style.transform = 'translateY(-100%)';
+                } else {
+                    navbar.style.transform = 'translateY(0)';
+                }
+                
+                lastScrollY = currentScrollY;
+            });
+
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Scroll animations for elements
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        
+                        // Stagger animations for children
+                        const children = entry.target.querySelectorAll('.service-item, .step-item, .feature-card, .testimonial-card');
+                        children.forEach((child, index) => {
+                            setTimeout(() => {
+                                child.style.opacity = '1';
+                                child.style.transform = 'translateY(0)';
+                            }, index * 150);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            // Observe sections for scroll animations
+            document.querySelectorAll('.services-section, .steps-section, .features-section, .testimonials-section').forEach(section => {
+                section.classList.add('animate-on-scroll');
+                observer.observe(section);
+            });
+
+            // Hero stats animation
+            function animateStats() {
+                const stats = [
+                    { element: 'total-customers', target: 25000, suffix: '+' },
+                    { element: 'total-providers', target: 5000, suffix: '+' },
+                    { element: 'completed-jobs', target: 100000, suffix: '+' },
+                    { element: 'customer-rating', target: 4.8, suffix: '/5', decimal: true }
+                ];
+
+                stats.forEach(stat => {
+                    const element = document.getElementById(stat.element);
+                    if (element) {
+                        animateNumber(element, 0, stat.target, 2000, stat.suffix, stat.decimal);
+                    }
+                });
+            }
+
+            function animateNumber(element, start, end, duration, suffix = '', decimal = false) {
+                const startTime = performance.now();
+                const range = end - start;
+
+                function updateNumber(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    const current = start + (range * easeOutQuart);
+                    
+                    if (decimal) {
+                        element.textContent = current.toFixed(1) + suffix;
+                    } else {
+                        element.textContent = Math.floor(current).toLocaleString() + suffix;
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(updateNumber);
+                    }
+                }
+
+                requestAnimationFrame(updateNumber);
+            }
+
+            // Start stats animation when hero is visible
+            const heroObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(animateStats, 500);
+                        heroObserver.unobserve(entry.target);
+                    }
+                });
+            });
+
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection) {
+                heroObserver.observe(heroSection);
+            }
+
+            // Enhanced button hover effects
+            document.querySelectorAll('.btn').forEach(button => {
+                button.addEventListener('mouseenter', function(e) {
+                    const ripple = document.createElement('span');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255,255,255,0.6);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                    `;
+                    
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = e.clientX - rect.left - size / 2 + 'px';
+                    ripple.style.top = e.clientY - rect.top - size / 2 + 'px';
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Service items hover effect
+            document.querySelectorAll('.service-item').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.background = 'linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%)';
+                });
+
+                item.addEventListener('mouseleave', function() {
+                    this.style.background = 'white';
+                });
+            });
+
+            // Parallax effect for hero background
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const heroElements = document.querySelectorAll('.hero-section::before, .hero-section::after');
+                
+                heroElements.forEach((element, index) => {
+                    const speed = 0.5 + (index * 0.2);
+                    element.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            });
+
+            // Loading animation for search results
+            const searchButton = document.querySelector('.hero-search .btn-primary');
+            if (searchButton) {
+                searchButton.addEventListener('click', function() {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                    this.disabled = true;
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }, 2000);
+                });
+            }
+
+            // Enhanced form validation
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.parentElement.classList.remove('focused');
+                    }
+                });
+
+                input.addEventListener('input', function() {
+                    this.parentElement.classList.toggle('has-value', this.value.length > 0);
+                });
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                const mobileMenu = document.getElementById('mobileMenu');
+                const toggleButton = document.getElementById('mobileMenuToggle');
+                
+                if (mobileMenu.classList.contains('active') && 
+                    !mobileMenu.contains(e.target) && 
+                    !toggleButton.contains(e.target)) {
+                    closeMobileMenu();
+                }
+            });
+
+            // Close mobile menu on window resize if desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMobileMenu();
+                }
+            });
+
+            // Add CSS for animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+
+                .focused {
+                    transform: translateY(-2px);
+                }
+
+                .has-value {
+                    border-color: #0ea5e9;
+                }
+
+                @media (max-width: 768px) {
+                    .mobile-menu-toggle {
+                        display: block !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+
+</body>
+</html>
