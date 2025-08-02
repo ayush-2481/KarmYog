@@ -3,6 +3,7 @@ const app = express();
 const mysql2 = require("mysql2")
 const fileuploader = require("express-fileupload");
 const path = require("path");
+const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
 // const obj = {
 //     host: "127.0.0.1",
@@ -63,21 +64,50 @@ mysql.connect(function (err) {
     }
     else {
         console.error("❌ Database connection failed:", err.message);
+        console.error("Database URL:", obj ? "Connected to cloud database" : "No database URL");
         console.error("Please check your database connection and try again.");
+        
+        // Continue running the server even if database connection fails
+        console.log("⚠️ Server will continue running without database functionality");
     }
 })
 
-app.listen(3004, function () {
+// For Render deployment - listen on the PORT environment variable
+const PORT = process.env.PORT || 3004;
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
+app.listen(PORT, HOST, function () {
     console.log("🚀 KarmYog Server is running!");
-    console.log("📍 Server URL: http://localhost:3004");
-    console.log("🏠 Home Page: http://localhost:3004/");
-    console.log("👨‍💼 Provider Dashboard: http://localhost:3004/providerdash");
-    console.log("🧪 Test Dashboard: http://localhost:3004/test-dashboard");
-    console.log("📊 Admin Panel: http://localhost:3004/admin");
+    console.log(`📍 Server running on: ${HOST}:${PORT}`);
+    console.log(`� Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log("🏠 Available Routes:");
+    console.log(`  GET / - Home Page`);
+    console.log(`  GET /providerdash - Provider Dashboard`);
+    console.log(`  GET /test-dashboard - Test Dashboard`);
+    console.log(`  GET /admin - Admin Panel`);
+    console.log(`  GET /health - Health Check`);
     console.log("===============================================");
     console.log("Server is ready to accept connections!");
 })
 app.use(express.static("public"));
+
+// Health check endpoint for Render
+app.get("/health", function (req, resp) {
+    resp.status(200).json({ 
+        status: "OK", 
+        message: "KarmYog Server is running",
+        timestamp: new Date().toISOString(),
+        routes: {
+            home: "/",
+            providerDashboard: "/providerdash",
+            testDashboard: "/test-dashboard",
+            admin: "/admin",
+            allProviders: "/all-providersdash-improved",
+            viewProviders: "/view-providers",
+            providersDashboard: "/providers-dashboard"
+        }
+    });
+});
 
 app.get("/", function (req, resp) {
     let filePath = process.cwd() + "/index-new.html";
@@ -399,13 +429,141 @@ app.get("/radioadd", function (req, resp) {
 })
 //------------------------------
 app.get("/providerdash", function (req, resp) {
-    let filePath3 = process.cwd() + "/service-providerdashboard.html";
-    resp.sendFile(filePath3);
+    console.log("📊 Provider Dashboard requested");
+    try {
+        let filePath3 = process.cwd() + "/service-providerdashboard.html";
+        console.log("📁 Serving file from:", filePath3);
+        
+        // Check if file exists
+        const fs = require('fs');
+        if (fs.existsSync(filePath3)) {
+            console.log("✅ Provider dashboard file found");
+            resp.sendFile(filePath3);
+        } else {
+            console.error("❌ Provider dashboard file not found at:", filePath3);
+            resp.status(404).send(`
+                <h1>Provider Dashboard Not Found</h1>
+                <p>The service provider dashboard file could not be found.</p>
+                <p>File path: ${filePath3}</p>
+                <p><a href="/">Go back to home</a></p>
+                <p><a href="/test-dashboard">Try test dashboard</a></p>
+            `);
+        }
+    } catch (error) {
+        console.error("❌ Error serving provider dashboard:", error);
+        resp.status(500).send(`
+            <h1>Server Error</h1>
+            <p>Error loading provider dashboard: ${error.message}</p>
+            <p><a href="/">Go back to home</a></p>
+        `);
+    }
 })
 
 app.get("/test-dashboard", function (req, resp) {
-    let filePath = process.cwd() + "/test-dashboard.html";
-    resp.sendFile(filePath);
+    console.log("🧪 Test Dashboard requested");
+    try {
+        let filePath = process.cwd() + "/test-dashboard.html";
+        console.log("📁 Serving test dashboard from:", filePath);
+        
+        if (fs.existsSync(filePath)) {
+            console.log("✅ Test dashboard file found");
+            resp.sendFile(filePath);
+        } else {
+            console.error("❌ Test dashboard file not found, creating temporary one");
+            // Create a temporary test dashboard inline
+            resp.send(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>KarmYog Test Dashboard</title>
+                    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; }
+                        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+                        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+                        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+                        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+                        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+                    </style>
+                </head>
+                <body>
+                    <h1>🧪 KarmYog Test Dashboard</h1>
+                    <div class="status info">
+                        <strong>Server Status:</strong> Running on Render<br>
+                        <strong>Current URL:</strong> <span id="currentUrl"></span><br>
+                        <strong>Environment:</strong> ${process.env.NODE_ENV || 'development'}
+                    </div>
+                    
+                    <h2>🔗 Available Routes:</h2>
+                    <ul>
+                        <li><a href="/">Home Page</a></li>
+                        <li><a href="/providerdash">Provider Dashboard</a></li>
+                        <li><a href="/all-providersdash-improved">All Providers (Improved)</a></li>
+                        <li><a href="/view-providers">View Providers</a></li>
+                        <li><a href="/admin">Admin Panel</a></li>
+                        <li><a href="/health">Health Check</a></li>
+                    </ul>
+                    
+                    <h2>🔧 Quick Tests:</h2>
+                    <button onclick="testHealth()">Test Health Check</button>
+                    <button onclick="testProviderStats()">Test Provider Stats</button>
+                    <button onclick="setTestUser()">Set Test User</button>
+                    <button onclick="testDashboard()">Go to Provider Dashboard</button>
+                    
+                    <div id="results"></div>
+                    
+                    <script>
+                        document.getElementById('currentUrl').textContent = window.location.href;
+                        
+                        function testHealth() {
+                            fetch('/health')
+                                .then(response => response.json())
+                                .then(data => {
+                                    document.getElementById('results').innerHTML = 
+                                        '<div class="status success">Health Check: ' + JSON.stringify(data, null, 2) + '</div>';
+                                })
+                                .catch(error => {
+                                    document.getElementById('results').innerHTML = 
+                                        '<div class="status error">Health Check Failed: ' + error.message + '</div>';
+                                });
+                        }
+                        
+                        function testProviderStats() {
+                            fetch('/provider-stats?email=test@example.com')
+                                .then(response => response.json())
+                                .then(data => {
+                                    document.getElementById('results').innerHTML = 
+                                        '<div class="status success">Provider Stats: ' + JSON.stringify(data, null, 2) + '</div>';
+                                })
+                                .catch(error => {
+                                    document.getElementById('results').innerHTML = 
+                                        '<div class="status error">Provider Stats Failed: ' + error.message + '</div>';
+                                });
+                        }
+                        
+                        function setTestUser() {
+                            localStorage.setItem("User", "provider@test.com");
+                            document.getElementById('results').innerHTML = 
+                                '<div class="status success">Test user set: provider@test.com</div>';
+                        }
+                        
+                        function testDashboard() {
+                            window.location.href = '/providerdash';
+                        }
+                    </script>
+                </body>
+                </html>
+            `);
+        }
+    } catch (error) {
+        console.error("❌ Error serving test dashboard:", error);
+        resp.status(500).send("Error loading test dashboard: " + error.message);
+    }
+})
+
+app.get("/logout", function (req, resp) {
+    // Simple logout redirect to home page
+    resp.redirect("/");
 })
 
 app.get("/providerprof", function (req, resp) {
@@ -850,6 +1008,31 @@ app.get("/angular-fetchproviderdash-all", function (req, resp) {
     })
 })
 app.get("/providerdash-table", function (req, resp) {
+    let filePath3 = process.cwd() + "/all-providersdash.html";
+    resp.sendFile(filePath3);
+})
+
+app.get("/all-providersdash-improved.html", function (req, resp) {
+    console.log("📊 Improved providers dashboard requested");
+    let filePath3 = process.cwd() + "/all-providersdash.html";
+    resp.sendFile(filePath3);
+})
+
+app.get("/all-providersdash-improved", function (req, resp) {
+    console.log("📊 Improved providers dashboard requested (clean URL)");
+    let filePath3 = process.cwd() + "/all-providersdash.html";
+    resp.sendFile(filePath3);
+})
+
+// Additional routes for provider dashboards
+app.get("/providers-dashboard", function (req, resp) {
+    console.log("📊 Providers dashboard requested");
+    let filePath3 = process.cwd() + "/all-providersdash.html";
+    resp.sendFile(filePath3);
+})
+
+app.get("/view-providers", function (req, resp) {
+    console.log("📊 View providers requested");
     let filePath3 = process.cwd() + "/all-providersdash.html";
     resp.sendFile(filePath3);
 })

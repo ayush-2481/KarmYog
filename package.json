@@ -9,13 +9,17 @@
     "path": "^0.12.7"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   },
   "name": "karmyog",
   "version": "1.0.0",
   "main": "server.js",
-  "keywords": [],
-  "author": "",
+  "keywords": ["service", "platform", "nodejs"],
+  "author": "KarmYog Team",
   "license": "ISC",
-  "description": ""
+  "description": "KarmYog Service Platform - Connecting service providers with customers"
 }
