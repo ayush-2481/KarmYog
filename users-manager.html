@@ -20,31 +20,53 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .table-responsive {
-            max-height: 600px;
+            max-height: 700px;
             overflow-y: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
+        
         .sticky-top {
             position: sticky;
             top: 0;
             z-index: 10;
+            backdrop-filter: blur(10px);
         }
+        
         .btn-group .btn {
-            margin: 0 2px;
+            margin: 0 1px;
+            border-radius: 0.25rem;
         }
+        
         .navbar-brand {
             font-weight: 600;
+            font-size: 1.5rem;
         }
+        
         .badge {
             font-size: 0.75em;
+            border-radius: 0.5rem;
         }
+        
         tbody tr:hover {
-            background-color: rgba(0,123,255,0.1);
+            background-color: rgba(0,123,255,0.08) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-in-out;
         }
+        
         .card-header {
             border-bottom: 3px solid #007bff;
+            background: linear-gradient(135deg, #343a40 0%, #495057 100%);
         }
+        
         .stats-card {
             border-left: 4px solid #007bff;
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-3px);
         }
         
         /* Additional improvements */
@@ -67,7 +89,249 @@
         }
         
         .action-buttons {
-            min-width: 120px;
+            min-width: 140px;
+        }
+        
+        /* Enhanced button styling */
+        .btn-outline-danger, .btn-outline-warning, .btn-outline-success {
+            border-width: 2px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.8rem;
+        }
+        
+        .btn-outline-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-outline-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-outline-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+        }
+        
+        /* Professional email styling */
+        .email-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .email-text {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        /* Status badge enhancement */
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Professional date styling */
+        .date-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        /* Service Provider Highlighting */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .pulse-text {
+            animation: pulse-text 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+            }
+        }
+        
+        @keyframes pulse-text {
+            0%, 100% {
+                transform: scale(1);
+                text-shadow: 0 0 5px rgba(255,255,255,0.5);
+            }
+            50% {
+                transform: scale(1.05);
+                text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            }
+        }
+        
+        /* Enhanced row highlighting for better user experience */
+        .table tbody tr.table-warning {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.12) 0%, rgba(255, 193, 7, 0.06) 100%) !important;
+            border-left: 4px solid #ffc107;
+            border-radius: 0.25rem;
+        }
+        
+        .table tbody tr.table-info {
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.12) 0%, rgba(23, 162, 184, 0.06) 100%) !important;
+            border-left: 4px solid #17a2b8;
+            border-radius: 0.25rem;
+        }
+        
+        .table tbody tr.table-success {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.12) 0%, rgba(40, 167, 69, 0.06) 100%) !important;
+            border-left: 4px solid #28a745;
+            border-radius: 0.25rem;
+        }
+        
+        .table tbody tr.table-primary {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.12) 0%, rgba(220, 53, 69, 0.06) 100%) !important;
+            border-left: 4px solid #dc3545;
+            border-radius: 0.25rem;
+        }
+        
+        .table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.2) 0%, rgba(0, 123, 255, 0.1) 100%) !important;
+            transition: all 0.3s ease-in-out;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        /* Enhanced badge styling */
+        .badge.fw-bold {
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            border: 2px solid rgba(255,255,255,0.4);
+            opacity: 1 !important;
+            font-weight: 700 !important;
+            background-clip: padding-box !important;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        /* User type specific highlighting */
+        .badge.bg-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            opacity: 1 !important;
+            border: 2px solid #1e7e34 !important;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.4) !important;
+        }
+        
+        .badge.bg-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #e91e63 100%) !important;
+            color: white !important;
+            opacity: 1 !important;
+            border: 2px solid #b02a37 !important;
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.4) !important;
+        }
+        
+        .badge.bg-warning {
+            background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%) !important;
+            color: #000 !important;
+            opacity: 1 !important;
+            border: 2px solid #e65100 !important;
+            box-shadow: 0 0 15px rgba(253, 126, 20, 0.4) !important;
+        }
+        
+        .badge.bg-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            opacity: 1 !important;
+            border: 2px solid #1e7e34 !important;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.4) !important;
+        }
+        
+        .badge.bg-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%) !important;
+            color: white !important;
+            opacity: 1 !important;
+            border: 2px solid #138496 !important;
+            box-shadow: 0 0 15px rgba(23, 162, 184, 0.4) !important;
+        }
+        
+        /* Enhanced icon styling */
+        .fa-briefcase.text-primary {
+            color: #28a745 !important;
+            text-shadow: 0 0 5px rgba(40, 167, 69, 0.6);
+            filter: drop-shadow(0 0 3px rgba(40, 167, 69, 0.4));
+        }
+        
+        .fa-user-circle.text-danger {
+            text-shadow: 0 0 5px rgba(220, 53, 69, 0.6);
+            filter: drop-shadow(0 0 3px rgba(220, 53, 69, 0.4));
+        }
+        
+        .fa-user-shield.text-info {
+            color: #17a2b8 !important;
+            text-shadow: 0 0 5px rgba(23, 162, 184, 0.6);
+            filter: drop-shadow(0 0 3px rgba(23, 162, 184, 0.4));
+        }
+        
+        .fa-briefcase.text-success {
+            color: #28a745 !important;
+            text-shadow: 0 0 5px rgba(40, 167, 69, 0.6);
+            filter: drop-shadow(0 0 3px rgba(40, 167, 69, 0.4));
+        }
+        
+        /* Enhanced table styling */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        
+        .table tbody tr {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody td {
+            border: none;
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+        }
+        
+        .table tbody td:first-child {
+            border-top-left-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
+        
+        .table tbody td:last-child {
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+        
+        /* Ensure service provider badges are never transparent */
+        .badge[ng-class*="'bg-primary': obj.usertype == 'Provider'"] {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            opacity: 1 !important;
+        }
+        
+        /* Additional styling to force visibility */
+        span.badge.fw-bold.bg-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.4) !important;
         }
     </style>
 </head>
@@ -160,6 +424,7 @@
                                     <div>
                                         <h6 class="card-title">Total Users</h6>
                                         <h3>{{jsonRecordsArry.length}}</h3>
+                                        <small class="opacity-75">All registered users</small>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="fas fa-users fa-2x"></i>
@@ -169,15 +434,32 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card text-white bg-success">
+                        <div class="card text-white bg-info">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h6 class="card-title">Active Users</h6>
-                                        <h3>{{(jsonRecordsArry | filter:{status:'1'}).length}}</h3>
+                                        <h6 class="card-title">Service Providers</h6>
+                                        <h3>{{(jsonRecordsArry | filter:{usertype:'Provider'}).length}}</h3>
+                                        <small class="opacity-75">Active: {{(jsonRecordsArry | filter:{usertype:'Provider', status:'1'}).length}}</small>
                                     </div>
                                     <div class="align-self-center">
-                                        <i class="fas fa-user-check fa-2x"></i>
+                                        <i class="fas fa-user-tie fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Customers</h6>
+                                        <h3>{{(jsonRecordsArry | filter:{usertype:'Customer'}).length}}</h3>
+                                        <small class="opacity-75">Service seekers</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-user-friends fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
@@ -190,24 +472,10 @@
                                     <div>
                                         <h6 class="card-title">Blocked Users</h6>
                                         <h3>{{(jsonRecordsArry | filter:{status:'0'}).length}}</h3>
+                                        <small class="opacity-75">Requiring attention</small>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="fas fa-user-times fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-info">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="card-title">Providers</h6>
-                                        <h3>{{(jsonRecordsArry | filter:{usertype:'Provider'}).length}}</h3>
-                                    </div>
-                                    <div class="align-self-center">
-                                        <i class="fas fa-briefcase fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
@@ -244,54 +512,92 @@
                         
                         <!-- Data Table -->
                         <div ng-if="!loading && jsonRecordsArry.length > 0" class="table-responsive">
-                            <table class="table table-hover table-striped mb-0">
-                                <thead class="table-dark sticky-top">
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">
-                                            <i class="fas fa-envelope me-1"></i>Email Id
+                            <table class="table table-hover mb-0" style="border-collapse: separate; border-spacing: 0 8px;">
+                                <thead class="table-dark sticky-top" style="border-radius: 0.5rem;">
+                                    <tr style="border-radius: 0.5rem;">
+                                        <th scope="col" style="border-top-left-radius: 0.5rem; padding: 1rem 0.75rem;">
+                                            <i class="fas fa-hashtag me-1"></i>#
                                         </th>
-                                        <th scope="col">
-                                            <i class="fas fa-key me-1"></i>Password
+                                        <th scope="col" style="padding: 1rem 0.75rem;">
+                                            <i class="fas fa-envelope me-1"></i>Email Address
                                         </th>
-                                        <th scope="col">
+                                        <th scope="col" style="padding: 1rem 0.75rem;">
+                                            <i class="fas fa-shield-alt me-1"></i>Password
+                                        </th>
+                                        <th scope="col" style="padding: 1rem 0.75rem;">
                                             <i class="fas fa-user-tag me-1"></i>User Type
                                         </th>
-                                        <th scope="col">
-                                            <i class="fas fa-calendar me-1"></i>Date of SignUp
+                                        <th scope="col" style="padding: 1rem 0.75rem;">
+                                            <i class="fas fa-calendar-plus me-1"></i>Registration Date
                                         </th>
-                                        <th scope="col">
-                                            <i class="fas fa-toggle-on me-1"></i>Status
+                                        <th scope="col" style="padding: 1rem 0.75rem;">
+                                            <i class="fas fa-toggle-on me-1"></i>Account Status
                                         </th>
-                                        <th scope="col" class="text-center">Actions</th>
+                                        <th scope="col" class="text-center" style="border-top-right-radius: 0.5rem; padding: 1rem 0.75rem;">
+                                            <i class="fas fa-cogs me-1"></i>Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="obj in jsonRecordsArry" 
-                                        ng-class="{'table-success': obj.status == '1', 'table-warning': obj.status == '0'}">
+                                        ng-class="{
+                                            'table-warning': obj.status == '0',
+                                            'table-info': obj.usertype == 'Admin',
+                                            'table-success': obj.usertype == 'Provider',
+                                            'table-primary': obj.usertype == 'Customer'
+                                        }">
                                         <td class="fw-bold">{{$index + 1}}</td>
                                         <td>
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-user-circle text-primary me-2"></i>
-                                                {{obj.emailid}}
+                                            <div class="email-container">
+                                                <i class="fas" 
+                                                   ng-class="{
+                                                       'fa-briefcase text-success': obj.usertype == 'Provider',
+                                                       'fa-user-circle text-danger': obj.usertype == 'Customer', 
+                                                       'fa-user-shield text-info': obj.usertype == 'Admin'
+                                                   }" 
+                                                   style="font-size: 1.3rem;"
+                                                   class="me-2"></i>
+                                                <span class="email-text">{{obj.emailid}}</span>
+                                                <!-- Additional visual indicator for user type -->
+                                                <span ng-if="obj.usertype == 'Provider'" class="badge bg-success ms-2" style="font-size: 0.7rem; border-radius: 50px;">
+                                                    <i class="fas fa-tools me-1"></i>SERVICE
+                                                </span>
+                                                <span ng-if="obj.usertype == 'Customer'" class="badge bg-danger ms-2" style="font-size: 0.7rem; border-radius: 50px;">
+                                                    <i class="fas fa-user me-1"></i>CLIENT
+                                                </span>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary">••••••••</span>
+                                            <span class="badge bg-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 50px;">
+                                                <i class="fas fa-lock me-1"></i>••••••••
+                                            </span>
                                         </td>
                                         <td>
-                                            <span class="badge" 
-                                                  ng-class="{'bg-info': obj.usertype == 'Customer', 'bg-primary': obj.usertype == 'Provider', 'bg-success': obj.usertype == 'Admin'}">
+                                            <span class="badge fw-bold" 
+                                                  ng-class="{
+                                                      'bg-danger': obj.usertype == 'Customer', 
+                                                      'bg-success': obj.usertype == 'Provider',
+                                                      'bg-info text-white': obj.usertype == 'Admin'
+                                                  }"
+                                                  style="font-size: 0.85rem; padding: 0.5rem 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                <i class="fas me-1" 
+                                                   ng-class="{
+                                                       'fa-briefcase': obj.usertype == 'Provider',
+                                                       'fa-user': obj.usertype == 'Customer', 
+                                                       'fa-crown': obj.usertype == 'Admin'
+                                                   }"></i>
                                                 {{obj.usertype}}
                                             </span>
                                         </td>
                                         <td>
-                                            <small class="text-muted">{{obj.dos}}</small>
+                                            <span class="date-text">
+                                                <i class="fas fa-calendar-alt me-1"></i>{{obj.dos}}
+                                            </span>
                                         </td>
                                         <td>
-                                            <span class="badge" 
+                                            <span class="badge status-badge" 
                                                   ng-class="{'bg-success': obj.status == '1', 'bg-danger': obj.status == '0'}">
-                                                <i class="fas" ng-class="{'fa-check': obj.status == '1', 'fa-times': obj.status == '0'}"></i>
+                                                <i class="fas me-1" ng-class="{'fa-check-circle': obj.status == '1', 'fa-times-circle': obj.status == '0'}"></i>
                                                 {{obj.status == '1' ? 'Active' : 'Blocked'}}
                                             </span>
                                         </td>
@@ -302,7 +608,7 @@
                                                         class="btn btn-outline-danger btn-sm"
                                                         title="Delete User"
                                                         data-bs-toggle="tooltip">
-                                                    <i class="fas fa-trash"></i>
+                                                    <i class="fas fa-trash-alt me-1"></i>Delete
                                                 </button>
                                                 <button type="button" 
                                                         ng-click="doBlock(obj.emailid);" 
@@ -310,7 +616,7 @@
                                                         ng-if="obj.status == '1'"
                                                         title="Block User"
                                                         data-bs-toggle="tooltip">
-                                                    <i class="fas fa-ban"></i>
+                                                    <i class="fas fa-ban me-1"></i>Block
                                                 </button>
                                                 <button type="button" 
                                                         ng-click="doResume(obj.emailid);" 
@@ -318,7 +624,7 @@
                                                         ng-if="obj.status == '0'"
                                                         title="Resume User"
                                                         data-bs-toggle="tooltip">
-                                                    <i class="fas fa-check-circle"></i>
+                                                    <i class="fas fa-check-circle me-1"></i>Resume
                                                 </button>
                                             </div>
                                         </td>

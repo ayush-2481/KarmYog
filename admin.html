@@ -19,9 +19,11 @@
             function loadAdminStats() {
                 $.get("/admin-stats").done(function (stats) {
                     $("#totalUsers").text(stats.totalUsers || 0);
-                    $("#totalProviders").text(stats.totalProviders || 0);
+                    $("#activeProviders").text(stats.activeProviders || 0);
                     $("#totalJobs").text(stats.totalJobs || 0);
-                    $("#newUsers").text(stats.newUsers || 0);
+                    $("#newThisMonth").text(stats.newThisMonth || 0);
+                    $("#totalCustomers").text(stats.totalCustomers || 0);
+                    $("#pendingJobs").text(stats.pendingJobs || 0);
                 }).fail(function (err) {
                     console.log("Could not load admin statistics");
                     // Keep default values if API fails
@@ -89,6 +91,7 @@
                         <div>
                             <p class="text-sm opacity-90">Total Users</p>
                             <p class="text-3xl font-bold" id="totalUsers">0</p>
+                            <p class="text-xs opacity-75 mt-1">All registered users</p>
                         </div>
                         <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.75rem;">
                             <i class="fas fa-users" style="font-size: 1.5rem;"></i>
@@ -102,7 +105,8 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm opacity-90">Active Providers</p>
-                            <p class="text-3xl font-bold" id="totalProviders">0</p>
+                            <p class="text-3xl font-bold" id="activeProviders">0</p>
+                            <p class="text-xs opacity-75 mt-1">Active service providers</p>
                         </div>
                         <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.75rem;">
                             <i class="fas fa-user-tie" style="font-size: 1.5rem;"></i>
@@ -117,6 +121,7 @@
                         <div>
                             <p class="text-sm opacity-90">Total Jobs</p>
                             <p class="text-3xl font-bold" id="totalJobs">0</p>
+                            <p class="text-xs opacity-75 mt-1">All posted jobs</p>
                         </div>
                         <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.75rem;">
                             <i class="fas fa-briefcase" style="font-size: 1.5rem;"></i>
@@ -130,10 +135,44 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm opacity-90">New This Month</p>
-                            <p class="text-3xl font-bold" id="newUsers">0</p>
+                            <p class="text-3xl font-bold" id="newThisMonth">0</p>
+                            <p class="text-xs opacity-75 mt-1">New registrations</p>
                         </div>
                         <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.75rem;">
                             <i class="fas fa-user-friends" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Stats Row -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="card" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white;">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-90">Total Customers</p>
+                            <p class="text-3xl font-bold" id="totalCustomers">0</p>
+                            <p class="text-xs opacity-75 mt-1">Registered customers</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.75rem;">
+                            <i class="fas fa-user-friends" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-90">Pending Jobs</p>
+                            <p class="text-3xl font-bold" id="pendingJobs">0</p>
+                            <p class="text-xs opacity-75 mt-1">Jobs awaiting completion</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.75rem;">
+                            <i class="fas fa-clock" style="font-size: 1.5rem;"></i>
                         </div>
                     </div>
                 </div>

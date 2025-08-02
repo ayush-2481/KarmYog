@@ -683,7 +683,21 @@ app.get("/customer-table", function (req, resp) {
     resp.sendFile(filePath3);
 })
 app.get("/angular-fetchproviderdash-all", function (req, resp) {
+    console.log("Provider endpoint called");
     mysql.query("select * from provider ", function (err, resultJsonArray) {
+        if (err) {
+            console.error("Provider query error:", err);
+            resp.status(500).json({ error: err.message });
+            return;
+        }
+        console.log("Provider query success, rows:", resultJsonArray ? resultJsonArray.length : 0);
+        
+        // Debug: Log the first provider's structure to understand column names
+        if (resultJsonArray && resultJsonArray.length > 0) {
+            console.log("First provider data structure:", resultJsonArray[0]);
+            console.log("Column names:", Object.keys(resultJsonArray[0]));
+        }
+        
         resp.send(resultJsonArray);
     })
 })
@@ -708,12 +722,39 @@ app.get("/debug-providers", function (req, resp) {
             
             resp.json({
                 totalCount: countResult[0].count,
-                sampleProviders: providers,
-                tableExists: true
+                sampleData: providers,
+                timestamp: new Date().toISOString()
             });
         });
     });
-})
+});
+
+// Simple connectivity test
+app.get("/test-db", function (req, resp) {
+    mysql.query("SELECT 1 as test", function (err, result) {
+        if (err) {
+            resp.json({ status: "error", message: err.message });
+        } else {
+            resp.json({ status: "success", result: result, timestamp: new Date() });
+        }
+    });
+});
+
+// Endpoint to describe provider table structure
+app.get("/describe-provider-table", function (req, resp) {
+    mysql.query("DESCRIBE provider", function (err, resultJsonArray) {
+        if (err) {
+            console.error("Provider describe error:", err);
+            resp.status(500).json({ error: err.message });
+            return;
+        }
+        console.log("Provider table structure:", resultJsonArray);
+        resp.json({
+            success: true,
+            tableStructure: resultJsonArray
+        });
+    });
+});
 
 // Endpoint to create sample provider data for testing
 app.get("/create-sample-providers", function (req, resp) {
@@ -924,15 +965,15 @@ app.get("/admin-stats", function (req, resp) {
         }
         stats.totalUsers = result[0].totalUsers;
         
-        // Count total providers
-        mysql.query("SELECT COUNT(*) as totalProviders FROM provider", function (err, result) {
+        // Count active providers (from users table with usertype = 'Provider')
+        mysql.query("SELECT COUNT(*) as activeProviders FROM users WHERE usertype = 'Provider' AND status = '1'", function (err, result) {
             if (err) {
-                stats.totalProviders = 0;
+                stats.activeProviders = 0;
             } else {
-                stats.totalProviders = result[0].totalProviders;
+                stats.activeProviders = result[0].activeProviders;
             }
             
-            // Count total jobs
+            // Count total jobs/tasks
             mysql.query("SELECT COUNT(*) as totalJobs FROM task", function (err, result) {
                 if (err) {
                     stats.totalJobs = 0;
@@ -940,15 +981,33 @@ app.get("/admin-stats", function (req, resp) {
                     stats.totalJobs = result[0].totalJobs;
                 }
                 
-                // Count new users this month
-                mysql.query("SELECT COUNT(*) as newUsers FROM users WHERE MONTH(STR_TO_DATE(dor, '%Y-%m-%d')) = MONTH(CURDATE()) AND YEAR(STR_TO_DATE(dor, '%Y-%m-%d')) = YEAR(CURDATE())", function (err, result) {
+                // Count new registrations this month (both customers and providers)
+                mysql.query("SELECT COUNT(*) as newThisMonth FROM users WHERE MONTH(STR_TO_DATE(dos, '%Y-%m-%d')) = MONTH(CURDATE()) AND YEAR(STR_TO_DATE(dos, '%Y-%m-%d')) = YEAR(CURDATE())", function (err, result) {
                     if (err) {
-                        stats.newUsers = 0;
+                        stats.newThisMonth = 0;
                     } else {
-                        stats.newUsers = result[0].newUsers;
+                        stats.newThisMonth = result[0].newThisMonth;
                     }
                     
-                    resp.send(stats);
+                    // Additional stats for more insights
+                    mysql.query("SELECT COUNT(*) as totalCustomers FROM users WHERE usertype = 'Customer'", function (err, result) {
+                        if (err) {
+                            stats.totalCustomers = 0;
+                        } else {
+                            stats.totalCustomers = result[0].totalCustomers;
+                        }
+                        
+                        // Count pending jobs
+                        mysql.query("SELECT COUNT(*) as pendingJobs FROM task WHERE status = 'pending'", function (err, result) {
+                            if (err) {
+                                stats.pendingJobs = 0;
+                            } else {
+                                stats.pendingJobs = result[0].pendingJobs;
+                            }
+                            
+                            resp.send(stats);
+                        });
+                    });
                 });
             });
         });

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Provider Debug</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <h1>Provider Debug Page</h1>
+    <button onclick="testDBConnection()">Test DB Connection</button>
+    <button onclick="testProviderAPI()">Test Provider API</button>
+    <button onclick="testDebugAPI()">Test Debug API</button>
+    
+    <div id="results" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;"></div>
+    
+    <script>
+        function testDBConnection() {
+            console.log("Testing database connection...");
+            document.getElementById('results').innerHTML = "Testing database connection...";
+            
+            fetch('/test-db')
+                .then(response => {
+                    console.log('DB Test Status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('DB Test Data:', data);
+                    document.getElementById('results').innerHTML = 
+                        '<h3>Database Connection Test:</h3>' +
+                        '<p>Status: ' + data.status + '</p>' +
+                        '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                })
+                .catch(error => {
+                    console.error('DB Test Error:', error);
+                    document.getElementById('results').innerHTML = 
+                        '<h3>Database Connection Error:</h3>' +
+                        '<p style="color: red;">' + error.message + '</p>';
+                });
+        }
+        function testProviderAPI() {
+            console.log("Testing provider API...");
+            document.getElementById('results').innerHTML = "Testing provider API...";
+            
+            fetch('/angular-fetchproviderdash-all')
+                .then(response => {
+                    console.log('Provider API Status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Provider API Data:', data);
+                    document.getElementById('results').innerHTML = 
+                        '<h3>Provider API Results:</h3>' +
+                        '<p>Status: Success</p>' +
+                        '<p>Data Type: ' + typeof data + '</p>' +
+                        '<p>Is Array: ' + Array.isArray(data) + '</p>' +
+                        '<p>Length: ' + (data ? data.length : 'null') + '</p>' +
+                        '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                })
+                .catch(error => {
+                    console.error('Provider API Error:', error);
+                    document.getElementById('results').innerHTML = 
+                        '<h3>Provider API Error:</h3>' +
+                        '<p style="color: red;">' + error.message + '</p>';
+                });
+        }
+        
+        function testDebugAPI() {
+            console.log("Testing debug API...");
+            document.getElementById('results').innerHTML = "Testing debug API...";
+            
+            fetch('/debug-providers')
+                .then(response => {
+                    console.log('Debug API Status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Debug API Data:', data);
+                    document.getElementById('results').innerHTML = 
+                        '<h3>Debug API Results:</h3>' +
+                        '<p>Status: Success</p>' +
+                        '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                })
+                .catch(error => {
+                    console.error('Debug API Error:', error);
+                    document.getElementById('results').innerHTML = 
+                        '<h3>Debug API Error:</h3>' +
+                        '<p style="color: red;">' + error.message + '</p>';
+                });
+        }
+        
+        // Auto-test on page load
+        window.onload = function() {
+            testDBConnection();
+        };
+    </script>
+</body>
+</html>

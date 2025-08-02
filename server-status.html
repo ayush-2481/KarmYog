@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KarmYog Server Status</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status-box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { border-color: green; background-color: #f0fff0; }
+        .error { border-color: red; background-color: #fff0f0; }
+        .warning { border-color: orange; background-color: #fffaf0; }
+        .loading { border-color: blue; background-color: #f0f0ff; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🚀 KarmYog Server Status Dashboard</h1>
+    
+    <div class="status-box">
+        <h3>🔧 Quick Actions</h3>
+        <button onclick="testAll()">🔍 Test All Endpoints</button>
+        <button onclick="createSampleData()">📊 Create Sample Providers</button>
+        <button onclick="clearResults()">🧹 Clear Results</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        async function testEndpoint(name, url) {
+            const resultDiv = document.getElementById('results');
+            const testBox = document.createElement('div');
+            testBox.className = 'status-box loading';
+            testBox.innerHTML = `<h3>🔄 Testing ${name}...</h3><p>URL: ${url}</p>`;
+            resultDiv.appendChild(testBox);
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                testBox.className = 'status-box success';
+                testBox.innerHTML = `
+                    <h3>✅ ${name} - SUCCESS</h3>
+                    <p><strong>URL:</strong> ${url}</p>
+                    <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                    <p><strong>Data Type:</strong> ${Array.isArray(data) ? 'Array' : typeof data}</p>
+                    ${Array.isArray(data) ? `<p><strong>Count:</strong> ${data.length} items</p>` : ''}
+                    <details>
+                        <summary>📋 Response Data</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+            } catch (error) {
+                testBox.className = 'status-box error';
+                testBox.innerHTML = `
+                    <h3>❌ ${name} - ERROR</h3>
+                    <p><strong>URL:</strong> ${url}</p>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        async function testAll() {
+            clearResults();
+            
+            await testEndpoint('Database Connection', '/test-db');
+            await testEndpoint('Provider Debug Info', '/debug-providers');
+            await testEndpoint('Provider Data (Main)', '/angular-fetchproviderdash-all');
+            await testEndpoint('Customer Data', '/angular-fetchcustomer-all');
+        }
+
+        async function createSampleData() {
+            const resultDiv = document.getElementById('results');
+            const testBox = document.createElement('div');
+            testBox.className = 'status-box loading';
+            testBox.innerHTML = `<h3>🔄 Creating Sample Provider Data...</h3>`;
+            resultDiv.appendChild(testBox);
+
+            try {
+                const response = await fetch('/create-sample-providers');
+                const data = await response.json();
+                
+                testBox.className = 'status-box success';
+                testBox.innerHTML = `
+                    <h3>✅ Sample Data Creation - SUCCESS</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <details>
+                        <summary>📋 Result</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+                
+                // After creating data, test the provider endpoint again
+                setTimeout(() => testEndpoint('Provider Data (After Sample Creation)', '/angular-fetchproviderdash-all'), 1000);
+                
+            } catch (error) {
+                testBox.className = 'status-box error';
+                testBox.innerHTML = `
+                    <h3>❌ Sample Data Creation - ERROR</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // Auto-run tests on page load
+        window.onload = function() {
+            testAll();
+        };
+    </script>
+</body>
+</html>

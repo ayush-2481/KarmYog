@@ -76,23 +76,128 @@
     var controller = module.controller("myController", function ($scope, $http) {
         $scope.jsonRecordsArry = [];
         $scope.loading = true; // Add loading state
+        $scope.currentTime = new Date(); // Add current time for display
+        
+        // Function to get correct image source
+        $scope.getImageSrc = function(picname) {
+            if (!picname || picname.trim() === '') {
+                return null;
+            }
+            
+            // If it's already a full URL (like Unsplash), return it directly
+            if (picname.startsWith('http://') || picname.startsWith('https://')) {
+                return picname;
+            }
+            
+            // For local files, check if they have common image extensions
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+            const hasExtension = imageExtensions.some(ext => picname.toLowerCase().endsWith(ext));
+            
+            if (hasExtension) {
+                // It's a local filename, prepend uploads/
+                return 'uploads/' + picname;
+            } else {
+                // If no extension, might be a URL without protocol, try as URL
+                return picname.startsWith('images.') ? 'https://' + picname : 'uploads/' + picname;
+            }
+        };
         
         $scope.doFetchAll = function () {
+            console.log("Fetching provider data...");
             $scope.loading = true;
+            $scope.jsonRecordsArry = []; // Clear existing data
+            
             let url = "angular-fetchproviderdash-all";
             $http.get(url).then(success, errors);
+            
             function success(response) {
+                console.log("Provider data received:", response.data);
+                console.log("Response status:", response.status);
+                console.log("Response headers:", response.headers());
+                console.log("Number of providers:", response.data ? response.data.length : 0);
+                
+                // Check if response.data is valid
+                if (!response.data) {
+                    console.error("No data received from server");
+                    $scope.jsonRecordsArry = [];
+                    $scope.loading = false;
+                    return;
+                }
+                
+                // Check if response.data is an array
+                if (!Array.isArray(response.data)) {
+                    console.error("Data is not an array:", typeof response.data, response.data);
+                    $scope.jsonRecordsArry = [];
+                    $scope.loading = false;
+                    return;
+                }
+                
+                // Debug image names
+                if (response.data.length > 0) {
+                    response.data.forEach((provider, index) => {
+                        console.log(`Provider ${index + 1}:`, {
+                            email: provider.email,
+                            name: provider.Fname,
+                            profpic: provider.profpic
+                        });
+                    });
+                } else {
+                    console.warn("No providers found in response");
+                }
+                
                 $scope.jsonRecordsArry = response.data;
                 $scope.loading = false;
+                $scope.currentTime = new Date(); // Update timestamp
+                
+                // Force Angular to update the view
+                $scope.$apply();
             }
+            
             function errors(response) {
-                alert("Error fetching data: " + response.data);
+                console.error("Error fetching provider data:");
+                console.error("Status:", response.status);
+                console.error("Data:", response.data);
+                console.error("Full response:", response);
+                
+                alert("Error fetching data: " + (response.data || response.statusText || "Unknown error"));
+                $scope.jsonRecordsArry = [];
                 $scope.loading = false;
             }
         }
        $scope.showDetails=function(details){
-        $scope.selectedDetails=details;
-        $('#detailsModal').modal('show');
+            console.log("Opening modal for provider:", details);
+            console.log("All provider fields:", Object.keys(details));
+            console.log("Provider image info:", {
+                profpic: details.profpic,
+                imageSrc: $scope.getImageSrc(details.profpic),
+                hasImage: !!(details.profpic && details.profpic.trim() !== '')
+            });
+            
+            // Check if profpic field exists or if it's named differently
+            const imageFields = ['profpic', 'picname', 'filename', 'image', 'photo'];
+            imageFields.forEach(field => {
+                if (details[field]) {
+                    console.log(`Found image in field '${field}':`, details[field]);
+                }
+            });
+            
+            $scope.selectedDetails = details;
+            $scope.currentTime = new Date();
+            
+            // Use Bootstrap 5 modal API
+            setTimeout(function() {
+                var modalElement = document.getElementById('detailsModal');
+                if (modalElement) {
+                    var myModal = new bootstrap.Modal(modalElement, {
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    myModal.show();
+                    console.log("Modal shown successfully");
+                } else {
+                    console.error("Modal element not found");
+                }
+            }, 100);
        }
        
        $scope.getUniqueCategories = function() {
@@ -104,10 +209,28 @@
             });
             return categories;
        }
+       
+       // Debug function to test API endpoint directly
+       $scope.testAPI = function() {
+           console.log("Testing API endpoint...");
+           fetch('/angular-fetchproviderdash-all')
+               .then(response => {
+                   console.log('API Response status:', response.status);
+                   return response.json();
+               })
+               .then(data => {
+                   console.log('API Response data:', data);
+                   console.log('Data type:', typeof data);
+                   console.log('Is array:', Array.isArray(data));
+               })
+               .catch(error => {
+                   console.error('API Error:', error);
+               });
+       }
     })
 </script>
 
-<body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll();"
+<body ng-app="myModule" ng-controller="myController" ng-init="doFetchAll(); testAPI();"
     style="background-color: rgb(250, 248, 246); min-height: 100vh;">
     
     <!-- Navigation Header -->
@@ -119,6 +242,9 @@
             </span>
             <div class="d-flex align-items-center">
                 <span class="badge bg-info fs-6 me-3">Total Providers: {{jsonRecordsArry.length}}</span>
+                <button class="btn btn-sm btn-warning me-2" ng-click="testAPI()">
+                    <i class="fas fa-bug"></i> Test API
+                </button>
             </div>
         </div>
     </nav>
@@ -293,9 +419,18 @@
                                             <small class="text-muted">{{obj.since}}</small>
                                         </td>
                                         <td>
-                                            <img ng-if="obj.profpic" src="uploads/{{obj.profpic}}" 
-                                                 class="rounded-circle" width="30" height="30" alt="Profile">
-                                            <span ng-if="!obj.profpic" class="text-muted">No pic</span>
+                                            <img ng-if="obj.profpic && getImageSrc(obj.profpic)" 
+                                                 ng-src="{{getImageSrc(obj.profpic)}}" 
+                                                 class="rounded-circle border" 
+                                                 width="30" 
+                                                 height="30" 
+                                                 alt="Profile"
+                                                 style="object-fit: cover;"
+                                                 onload="console.log('✓ Provider image loaded:', this.src)"
+                                                 onerror="console.log('✗ Provider image failed:', this.src); this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                            <span ng-if="!obj.profpic || !getImageSrc(obj.profpic)" class="text-muted">
+                                                <i class="fas fa-user-circle fa-lg"></i>
+                                            </span>
                                         </td>
                                         <td class="action-buttons">
                                             <div class="btn-group" role="group">
@@ -304,7 +439,7 @@
                                                         class="btn btn-outline-info btn-sm"
                                                         title="View Details"
                                                         data-bs-toggle="tooltip">
-                                                    <i class="fas fa-eye"></i>
+                                                    <i class="fas fa-eye"></i> View
                                                 </button>
                                             </div>
                                         </td>
@@ -318,7 +453,7 @@
                             <div class="col">
                                 <small class="text-muted">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    Showing {{jsonRecordsArry.length}} providers. Last updated: {{new Date() | date:'medium'}}
+                                    Showing {{jsonRecordsArry.length}} providers. Last updated: {{currentTime | date:'medium'}}
                                 </small>
                             </div>
                             <div class="col-auto">
@@ -332,6 +467,135 @@
             </div>
         </div>
     </div>
+
+    <!-- Provider Details Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="providerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="providerModalLabel">
+                        <i class="fas fa-briefcase me-2"></i>Provider Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-4 bg-light p-4 text-center">
+                            <!-- Single image container that handles both cases -->
+                            <div ng-if="selectedDetails.profpic && getImageSrc(selectedDetails.profpic)" class="image-container mb-3">
+                                <img ng-src="{{getImageSrc(selectedDetails.profpic)}}" 
+                                     class="img-fluid rounded-circle border" 
+                                     style="max-width: 180px; height: 180px; object-fit: cover;"
+                                     alt="{{selectedDetails.Fname}}"
+                                     onload="console.log('✓ Modal provider image loaded:', this.src);"
+                                     onerror="console.log('✗ Modal provider image failed:', this.src); this.parentElement.innerHTML='<div class=&quot;bg-secondary rounded-circle mx-auto d-flex align-items-center justify-content-center border&quot; style=&quot;max-width: 180px; height: 180px;&quot;><i class=&quot;fas fa-user fa-4x text-white&quot; title=&quot;Image failed to load&quot;></i></div>';">
+                            </div>
+                            
+                            <!-- Fallback icon when no image -->
+                            <div ng-if="!selectedDetails.profpic || !getImageSrc(selectedDetails.profpic)"
+                                 class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center border" 
+                                 style="max-width: 180px; height: 180px;">
+                                <i class="fas fa-user fa-4x text-white" title="No profile picture"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8 p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-bold bg-light" style="width: 35%;">
+                                                <i class="fas fa-envelope text-primary me-2"></i>Email ID
+                                            </td>
+                                            <td>{{selectedDetails.email}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-user text-success me-2"></i>Name
+                                            </td>
+                                            <td>{{selectedDetails.Fname}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-phone text-info me-2"></i>Contact Number
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info fs-6">{{selectedDetails.contact}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-venus-mars text-warning me-2"></i>Gender
+                                            </td>
+                                            <td>
+                                                <span class="badge" 
+                                                      ng-class="{'bg-primary': selectedDetails.gender == 'Male', 'bg-warning': selectedDetails.gender == 'Female'}">
+                                                    <i class="fas" ng-class="{'fa-mars': selectedDetails.gender == 'Male', 'fa-venus': selectedDetails.gender == 'Female'}"></i>
+                                                    {{selectedDetails.gender}}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-tag text-secondary me-2"></i>Category
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{selectedDetails.category}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-building text-danger me-2"></i>Firm
+                                            </td>
+                                            <td>{{selectedDetails.firm}}</td>
+                                        </tr>
+                                        <tr ng-if="selectedDetails.website">
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-globe text-info me-2"></i>Website
+                                            </td>
+                                            <td>
+                                                <a href="{{selectedDetails.website}}" target="_blank" class="text-decoration-none">
+                                                    <i class="fas fa-external-link-alt me-1"></i>{{selectedDetails.website}}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-map-marker-alt text-warning me-2"></i>Location
+                                            </td>
+                                            <td>{{selectedDetails.location}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-calendar text-success me-2"></i>Since
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">{{selectedDetails.since}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr ng-if="selectedDetails.otherinfo">
+                                            <td class="fw-bold bg-light">
+                                                <i class="fas fa-info-circle text-primary me-2"></i>Other Info
+                                            </td>
+                                            <td>{{selectedDetails.otherinfo}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Close
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i> Edit Provider
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
