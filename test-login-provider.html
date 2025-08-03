@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login & Provider Profile</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        input { padding: 8px; margin: 5px; width: 300px; border: 1px solid #ddd; border-radius: 4px; }
+        .current-user { font-weight: bold; color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 KarmYog Login & Provider Profile Test</h1>
+        
+        <div class="section">
+            <h2>Current Status</h2>
+            <div id="current-status" class="result info">Checking current login status...</div>
+        </div>
+        
+        <div class="section">
+            <h2>Step 1: Login Simulation</h2>
+            <p>Simulate logging in as different users to test the provider profile system:</p>
+            
+            <button onclick="loginAs('robert.mechanic@gmail.com')">Login as Robert (Mechanic)</button>
+            <button onclick="loginAs('demo@provider.com')">Login as Demo Provider</button>
+            <button onclick="loginAs('john.plumber@gmail.com')">Login as John (Plumber)</button>
+            <button onclick="logout()">Logout</button>
+            
+            <div id="login-result" class="result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Step 2: Test Provider Profile</h2>
+            <p>After logging in, test the provider profile functionality:</p>
+            
+            <button onclick="testProviderProfile()">Open Provider Profile</button>
+            <button onclick="checkProviderExists()">Check if Provider Profile Exists</button>
+            
+            <div id="profile-result" class="result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Step 3: Database Setup</h2>
+            <p>Ensure test data exists in the database:</p>
+            
+            <button onclick="createRobertProvider()">Create Robert Provider Data</button>
+            <button onclick="createSampleProviders()">Create All Sample Providers</button>
+            <button onclick="listProviders()">List All Providers</button>
+            
+            <div id="database-result" class="result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Step 4: Test Search</h2>
+            <p>Test the search functionality directly:</p>
+            
+            <input type="email" id="searchEmail" placeholder="Enter email to search" value="robert.mechanic@gmail.com">
+            <button onclick="testSearch()">Test Search</button>
+            
+            <div id="search-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus() {
+            const currentUser = localStorage.getItem("User");
+            const userType = localStorage.getItem("usertype");
+            
+            if (currentUser) {
+                $("#current-status").html(`
+                    <div class="success">
+                        ✅ <strong>Logged in as:</strong> <span class="current-user">${currentUser}</span><br>
+                        <strong>User Type:</strong> ${userType || 'Not specified'}
+                    </div>
+                `);
+            } else {
+                $("#current-status").html(`
+                    <div class="warning">
+                        ⚠️ <strong>Not logged in</strong> - Please login first
+                    </div>
+                `);
+            }
+        }
+        
+        function loginAs(email) {
+            localStorage.setItem("User", email);
+            localStorage.setItem("usertype", "Service-Provider");
+            
+            $("#login-result").html(`
+                <div class="success">
+                    ✅ Successfully logged in as: <strong>${email}</strong>
+                </div>
+            `);
+            
+            updateStatus();
+        }
+        
+        function logout() {
+            localStorage.removeItem("User");
+            localStorage.removeItem("usertype");
+            
+            $("#login-result").html(`
+                <div class="info">
+                    📤 Successfully logged out
+                </div>
+            `);
+            
+            updateStatus();
+        }
+        
+        function testProviderProfile() {
+            const currentUser = localStorage.getItem("User");
+            
+            if (!currentUser) {
+                $("#profile-result").html(`
+                    <div class="error">
+                        ❌ Please login first before accessing provider profile
+                    </div>
+                `);
+                return;
+            }
+            
+            // Open provider profile in new tab
+            window.open('/providerprof', '_blank');
+            
+            $("#profile-result").html(`
+                <div class="success">
+                    🚀 Opening provider profile for: <strong>${currentUser}</strong><br>
+                    The email field should be auto-filled and readonly.<br>
+                    The system should automatically search for existing profile data.
+                </div>
+            `);
+        }
+        
+        function checkProviderExists() {
+            const currentUser = localStorage.getItem("User");
+            
+            if (!currentUser) {
+                $("#profile-result").html(`<div class="error">❌ Please login first</div>`);
+                return;
+            }
+            
+            $("#profile-result").html("Checking...");
+            
+            $.get("/fetch-providerprofile", { KuchEmail: currentUser })
+                .done(function(data) {
+                    $("#profile-result").html(`
+                        <div class="success">
+                            ✅ <strong>Provider profile found for ${currentUser}</strong><br>
+                            <strong>Name:</strong> ${data[0].Fname}<br>
+                            <strong>Category:</strong> ${data[0].category}<br>
+                            <strong>Location:</strong> ${data[0].location}
+                        </div>
+                    `);
+                })
+                .fail(function(xhr) {
+                    if (xhr.status === 404) {
+                        $("#profile-result").html(`
+                            <div class="warning">
+                                📝 <strong>No provider profile found for ${currentUser}</strong><br>
+                                You can create a new profile using the provider profile form.
+                            </div>
+                        `);
+                    } else {
+                        $("#profile-result").html(`
+                            <div class="error">
+                                ❌ Error checking provider: ${xhr.responseJSON?.error || 'Unknown error'}
+                            </div>
+                        `);
+                    }
+                });
+        }
+        
+        function createRobertProvider() {
+            $("#database-result").html("Creating Robert provider...");
+            
+            $.get("/create-robert-provider")
+                .done(function(data) {
+                    $("#database-result").html(`
+                        <div class="success">
+                            ✅ ${data.message}<br>
+                            <strong>Email:</strong> ${data.email || 'robert.mechanic@gmail.com'}
+                        </div>
+                    `);
+                })
+                .fail(function(xhr) {
+                    $("#database-result").html(`
+                        <div class="error">
+                            ❌ Error creating Robert provider: ${xhr.responseJSON?.error || 'Unknown error'}
+                        </div>
+                    `);
+                });
+        }
+        
+        function createSampleProviders() {
+            $("#database-result").html("Creating sample providers...");
+            
+            $.get("/create-sample-providers")
+                .done(function(data) {
+                    $("#database-result").html(`
+                        <div class="success">
+                            ✅ ${data.message}<br>
+                            <strong>Providers created:</strong> ${data.providersCreated}
+                        </div>
+                    `);
+                })
+                .fail(function(xhr) {
+                    $("#database-result").html(`
+                        <div class="error">
+                            ❌ Error creating sample providers: ${xhr.responseJSON?.error || 'Unknown error'}
+                        </div>
+                    `);
+                });
+        }
+        
+        function listProviders() {
+            $("#database-result").html("Loading providers...");
+            
+            $.get("/angular-fetchprovider-all", { simple: 'true', limit: 10 })
+                .done(function(data) {
+                    const providers = Array.isArray(data) ? data : data.providers || [];
+                    let html = `<div class="success">📋 <strong>Found ${providers.length} providers:</strong><br><br>`;
+                    
+                    providers.forEach(function(provider) {
+                        html += `• <strong>${provider.Fname}</strong> (${provider.email}) - ${provider.category} in ${provider.location}<br>`;
+                    });
+                    
+                    html += "</div>";
+                    $("#database-result").html(html);
+                })
+                .fail(function(xhr) {
+                    $("#database-result").html(`
+                        <div class="error">
+                            ❌ Error loading providers: ${xhr.responseJSON?.error || 'Unknown error'}
+                        </div>
+                    `);
+                });
+        }
+        
+        function testSearch() {
+            const email = $("#searchEmail").val();
+            
+            if (!email) {
+                $("#search-result").html(`<div class="error">❌ Please enter an email address</div>`);
+                return;
+            }
+            
+            $("#search-result").html("Searching...");
+            
+            $.get("/fetch-providerprofile", { KuchEmail: email })
+                .done(function(data) {
+                    $("#search-result").html(`
+                        <div class="success">
+                            ✅ <strong>Search successful for ${email}</strong><br>
+                            <strong>Results:</strong> ${data.length} provider(s) found<br>
+                            <strong>Name:</strong> ${data[0]?.Fname || 'N/A'}<br>
+                            <strong>Category:</strong> ${data[0]?.category || 'N/A'}<br>
+                            <strong>Location:</strong> ${data[0]?.location || 'N/A'}
+                        </div>
+                    `);
+                })
+                .fail(function(xhr) {
+                    const response = xhr.responseJSON || { error: xhr.responseText };
+                    $("#search-result").html(`
+                        <div class="error">
+                            ❌ <strong>Search failed for ${email}</strong><br>
+                            <strong>Status:</strong> ${xhr.status}<br>
+                            <strong>Error:</strong> ${response.error || 'Unknown error'}
+                        </div>
+                    `);
+                });
+        }
+        
+        // Initialize page
+        $(document).ready(function() {
+            updateStatus();
+            console.log("Test page loaded. Use the buttons to test the login and provider profile system.");
+        });
+    </script>
+</body>
+</html>

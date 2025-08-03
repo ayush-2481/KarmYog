@@ -803,194 +803,6 @@
             }
         });
 
-        // Global functions (outside document.ready for accessibility)
-        
-        // Form validation function
-        function validateForm() {
-            let isValid = true;
-            const requiredFields = ['txtEmailProvider', 'txtnamePro', 'txtnumberPro', 'txtgenderPro', 'txtcategoryPro', 'txtfirmaddPro'];
-            
-            requiredFields.forEach(fieldId => {
-                const field = $("#" + fieldId);
-                if (!field.val() || field.val().trim() === '') {
-                    field.addClass('border-error');
-                    isValid = false;
-                } else {
-                    field.removeClass('border-error');
-                }
-            });
-            
-            if (!isValid) {
-                showAlert("Please fill in all required fields.", "error");
-            }
-            
-            return isValid;
-        }
-
-        // Function to show alerts
-        function showAlert(message, type) {
-            const alertHtml = `
-                <div class="alert alert-${type}" style="position: fixed; top: 100px; right: 20px; z-index: 9999; max-width: 400px;">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                    ${message}
-                </div>
-            `;
-            
-            $('body').append(alertHtml);
-            
-            setTimeout(() => {
-                $('.alert').fadeOut(() => {
-                    $('.alert').remove();
-                });
-            }, 5000);
-        }
-
-        // Search function that can be called from button or automatically
-        function searchProviderProfile(email) {
-            if (!email || email.trim() === '') {
-                showAlert("Please enter an email address to search", "error");
-                return;
-            }
-            
-            console.log("Searching for provider profile:", email);
-            
-            // Show loading state
-            const searchBtn = $("#btnSearchProvider");
-            const originalContent = searchBtn.html();
-            searchBtn.prop("disabled", true).html('<span class="loading-spinner"></span> Searching...');
-            
-            let obj = {
-                url: "/fetch-providerprofile",
-                data: {
-                    KuchEmail: email.trim(),
-                }
-            }
-            
-            $.ajax(obj).done(function (respJsonArray) {
-                console.log("Search result:", respJsonArray);
-                
-                if (respJsonArray && respJsonArray.length > 0) {
-                    // Populate the form with found data
-                    populateForm(respJsonArray[0]);
-                    
-                    // Switch to edit mode
-                    $("#saveProfileBtn").hide();
-                    $("#editProfileBtn").show();
-                    
-                    showAlert("Profile loaded successfully! You can now edit your information.", "success");
-                    console.log("✅ Provider profile loaded successfully!");
-                } else {
-                    console.log("❌ No provider profile found");
-                    showAlert("No existing profile found. Please fill out the form to create your profile.", "info");
-                }
-            }).fail(function (xhr, status, error) {
-                console.error("Search failed:", xhr.responseText || error);
-                
-                if (xhr.status === 404) {
-                    console.log("📝 Provider profile not found - user can create new profile");
-                    showAlert("No existing profile found. Please fill out the form to create your profile.", "info");
-                } else if (xhr.status === 400) {
-                    showAlert("Please enter a valid email address.", "error");
-                } else {
-                    showAlert("Error searching for provider: " + (xhr.responseJSON?.error || error), "error");
-                }
-            }).always(function() {
-                // Re-enable the search button
-                searchBtn.prop("disabled", false).html(originalContent);
-            });
-        }
-
-        // Function to populate form with existing data
-        function populateForm(data) {
-            $("#txtEmailProvider").val(data.email);
-            $("#txtnamePro").val(data.Fname);
-            $("#txtnumberPro").val(data.contact);
-            $("#txtgenderPro").val(data.gender);
-            $("#txtcategoryPro").val(data.category);
-            $("#txtfirmPro").val(data.firm);
-            $("#txtwebsitePro").val(data.website);
-            $("#txtfirmaddPro").val(data.location);
-            $("#txtworkPro").val(data.since);
-            $("#txtselectPro").val(data.otherinfo);
-            
-            // Update character counters
-            $("#contactCounterPro").text(15 - (data.contact ? data.contact.length : 0));
-            $("#aboutCounter").text(data.otherinfo ? data.otherinfo.length : 0);
-            
-            // Handle profile picture
-            if (data.profpic) {
-                const imgElement = $("#prevpic2");
-                if (data.profpic.startsWith('http')) {
-                    // Cloudinary URL
-                    imgElement.attr("src", data.profpic);
-                } else {
-                    // Local file
-                    imgElement.attr("src", "uploads/" + data.profpic);
-                }
-                imgElement.show();
-                $("#photoPlaceholder").hide();
-            }
-        }
-
-        // Function to submit edit form
-        function submitEditForm() {
-            console.log("🔄 Submit Edit Form called"); // Debug log
-            
-            if (!$("#providerForm")[0].checkValidity()) {
-                $("#providerForm")[0].reportValidity();
-                return;
-            }
-            
-            if (!validateForm()) {
-                return false;
-            }
-            
-            // Show loading state
-            const editBtn = $("#editProfileBtn");
-            const originalContent = editBtn.html();
-            editBtn.prop("disabled", true).html('<span class="loading-spinner"></span> Updating...');
-            
-            // Create FormData object for file upload
-            const formData = new FormData(document.getElementById('providerForm'));
-            
-            console.log("📤 Submitting edit form to /Edit-Profile"); // Debug log
-            
-            // Submit edit form via AJAX
-            $.ajax({
-                url: '/Edit-Profile',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    console.log("✅ Edit response:", response); // Debug log
-                    if (response.success) {
-                        showAlert(response.message || "Profile updated successfully! Your changes have been saved.", "success");
-                        console.log("✅ Profile updated successfully", response.data);
-                    } else {
-                        showAlert(response.message || "Error updating profile", "error");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("❌ Update failed:", xhr.responseText || error);
-                    let errorMessage = "Error updating profile";
-                    
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        errorMessage = errorResponse.message || errorMessage;
-                    } catch (e) {
-                        errorMessage = xhr.responseText || error;
-                    }
-                    
-                    showAlert(errorMessage, "error");
-                },
-                complete: function() {
-                    // Re-enable the edit button
-                    editBtn.prop("disabled", false).html(originalContent);
-                }
-            });
-        }
-
         $(document).ready(function () {
             // Get logged-in user's email and auto-fill
             let loggedInEmail = localStorage.getItem("User");
@@ -1005,8 +817,8 @@
                 
                 console.log("Auto-filled email from logged-in user:", loggedInEmail);
                 
-                // Show info message that user can search for existing profile
-                showAlert("Email auto-filled from your account. Click 'Search Profile' to load existing data or fill the form to create a new profile.", "info");
+                // Automatically search for existing profile
+                searchProviderProfile(loggedInEmail);
             } else {
                 console.log("No logged-in user found in localStorage");
                 showAlert("Please login first to access provider profile", "error");
@@ -1026,23 +838,103 @@
                 }
             });
 
+            // Search function that can be called from button or automatically
+            function searchProviderProfile(email) {
+                if (!email || email.trim() === '') {
+                    showAlert("Please enter an email address to search", "error");
+                    return;
+                }
+                
+                console.log("Searching for provider profile:", email);
+                
+                // Show loading state
+                const searchBtn = $("#btnSearchProvider");
+                const originalContent = searchBtn.html();
+                searchBtn.prop("disabled", true).html('<span class="loading-spinner"></span> Searching...');
+                
+                let obj = {
+                    url: "/fetch-providerprofile",
+                    data: {
+                        KuchEmail: email.trim(),
+                    }
+                }
+                
+                $.ajax(obj).done(function (respJsonArray) {
+                    console.log("Search result:", respJsonArray);
+                    
+                    if (respJsonArray && respJsonArray.length > 0) {
+                        // Populate the form with found data
+                        populateForm(respJsonArray[0]);
+                        
+                        // Switch to edit mode
+                        $("#saveProfileBtn").hide();
+                        $("#editProfileBtn").show();
+                        
+                        showAlert("Profile loaded successfully! You can now edit your information.", "success");
+                        console.log("✅ Provider profile loaded successfully!");
+                    } else {
+                        console.log("❌ No provider profile found");
+                        showAlert("No existing profile found. Please fill out the form to create your profile.", "info");
+                    }
+                }).fail(function (xhr, status, error) {
+                    console.error("Search failed:", xhr.responseText || error);
+                    
+                    if (xhr.status === 404) {
+                        console.log("📝 Provider profile not found - user can create new profile");
+                        showAlert("No existing profile found. Please fill out the form to create your profile.", "info");
+                    } else if (xhr.status === 400) {
+                        showAlert("Please enter a valid email address.", "error");
+                    } else {
+                        showAlert("Error searching for provider: " + (xhr.responseJSON?.error || error), "error");
+                    }
+                }).always(function() {
+                    // Re-enable the search button
+                    searchBtn.prop("disabled", false).html(originalContent);
+                });
+            }
+
+            // Function to populate form with existing data
+            function populateForm(data) {
+                $("#txtEmailProvider").val(data.email);
+                $("#txtnamePro").val(data.Fname);
+                $("#txtnumberPro").val(data.contact);
+                $("#txtgenderPro").val(data.gender);
+                $("#txtcategoryPro").val(data.category);
+                $("#txtfirmPro").val(data.firm);
+                $("#txtwebsitePro").val(data.website);
+                $("#txtfirmaddPro").val(data.location);
+                $("#txtworkPro").val(data.since);
+                $("#txtselectPro").val(data.otherinfo);
+                
+                // Update character counters
+                $("#contactCounterPro").text(15 - (data.contact ? data.contact.length : 0));
+                $("#aboutCounter").text(data.otherinfo ? data.otherinfo.length : 0);
+                
+                // Handle profile picture
+                if (data.profpic) {
+                    const imgElement = $("#prevpic2");
+                    if (data.profpic.startsWith('http')) {
+                        // Cloudinary URL
+                        imgElement.attr("src", data.profpic);
+                    } else {
+                        // Local file
+                        imgElement.attr("src", "uploads/" + data.profpic);
+                    }
+                    imgElement.show();
+                    $("#photoPlaceholder").hide();
+                }
+            }
+
             // Search button click handler
             $("#btnSearchProvider").click(function () {
                 let email = $("#txtEmailProvider").val();
                 searchProviderProfile(email);
             });
 
-            // Additional edit button click handler as backup
-            $("#editProfileBtn").click(function() {
-                console.log("🔄 Edit button clicked!"); // Debug log
-                submitEditForm();
-            });
-
             // Form submission
             $("#providerForm").on('submit', function(e) {
-                e.preventDefault(); // Prevent normal form submission
-                
                 if (!validateForm()) {
+                    e.preventDefault();
                     return false;
                 }
                 
@@ -1051,47 +943,48 @@
                 const originalContent = submitBtn.html();
                 submitBtn.prop("disabled", true).html('<span class="loading-spinner"></span> Saving...');
                 
-                // Create FormData object for file upload
-                const formData = new FormData(this);
+                // Form will submit normally
+            });
+
+            // Form validation
+            function validateForm() {
+                let isValid = true;
+                const requiredFields = ['txtEmailProvider', 'txtnamePro', 'txtnumberPro', 'txtgenderPro', 'txtcategoryPro', 'txtfirmaddPro'];
                 
-                // Submit form via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response.success) {
-                            showAlert(response.message || "Profile saved successfully! Your provider profile has been created.", "success");
-                            console.log("✅ Profile saved successfully", response.data);
-                            
-                            // Switch to edit mode after successful save
-                            $("#saveProfileBtn").hide();
-                            $("#editProfileBtn").show();
-                        } else {
-                            showAlert(response.message || "Error saving profile", "error");
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Save failed:", xhr.responseText || error);
-                        let errorMessage = "Error saving profile";
-                        
-                        try {
-                            const errorResponse = JSON.parse(xhr.responseText);
-                            errorMessage = errorResponse.message || errorMessage;
-                        } catch (e) {
-                            errorMessage = xhr.responseText || error;
-                        }
-                        
-                        showAlert(errorMessage, "error");
-                    },
-                    complete: function() {
-                        // Re-enable the submit button
-                        submitBtn.prop("disabled", false).html(originalContent);
+                requiredFields.forEach(fieldId => {
+                    const field = $("#" + fieldId);
+                    if (!field.val() || field.val().trim() === '') {
+                        field.addClass('border-error');
+                        isValid = false;
+                    } else {
+                        field.removeClass('border-error');
                     }
                 });
-            });
+                
+                if (!isValid) {
+                    showAlert("Please fill in all required fields.", "error");
+                }
+                
+                return isValid;
+            }
+
+            // Function to show alerts
+            function showAlert(message, type) {
+                const alertHtml = `
+                    <div class="alert alert-${type}" style="position: fixed; top: 100px; right: 20px; z-index: 9999; max-width: 400px;">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                        ${message}
+                    </div>
+                `;
+                
+                $('body').append(alertHtml);
+                
+                setTimeout(() => {
+                    $('.alert').fadeOut(() => {
+                        $('.alert').remove();
+                    });
+                }, 5000);
+            }
 
             // Make search function globally accessible
             window.searchProviderProfile = searchProviderProfile;
@@ -1104,51 +997,9 @@
                 return;
             }
             
-            if (!validateForm()) {
-                return false;
-            }
-            
-            // Show loading state
-            const editBtn = $("#editProfileBtn");
-            const originalContent = editBtn.html();
-            editBtn.prop("disabled", true).html('<span class="loading-spinner"></span> Updating...');
-            
-            // Create FormData object for file upload
-            const formData = new FormData(document.getElementById('providerForm'));
-            
-            // Submit edit form via AJAX
-            $.ajax({
-                url: '/Edit-Profile',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    if (response.success) {
-                        showAlert(response.message || "Profile updated successfully! Your changes have been saved.", "success");
-                        console.log("✅ Profile updated successfully", response.data);
-                    } else {
-                        showAlert(response.message || "Error updating profile", "error");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Update failed:", xhr.responseText || error);
-                    let errorMessage = "Error updating profile";
-                    
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        errorMessage = errorResponse.message || errorMessage;
-                    } catch (e) {
-                        errorMessage = xhr.responseText || error;
-                    }
-                    
-                    showAlert(errorMessage, "error");
-                },
-                complete: function() {
-                    // Re-enable the edit button
-                    editBtn.prop("disabled", false).html(originalContent);
-                }
-            });
+            const form = $("#providerForm");
+            form.attr('action', '/Edit-Profile');
+            form.submit();
         }
 
         // Add CSS for form validation

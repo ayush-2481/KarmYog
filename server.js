@@ -5,15 +5,6 @@ const fileuploader = require("express-fileupload");
 const path = require("path");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
-// const obj = {
-//     host: "127.0.0.1",
-//     user: "root",
-//     password: "Ayush@2481",
-//     database: "project",
-//     dateStrings: true // challange of time showing in IST
-// }
-
-// Online Database
 
 cloudinary.config({ 
     cloud_name: 'dgzqwxjyz', 
@@ -21,15 +12,28 @@ cloudinary.config({
     api_secret: 'KZarjThqQeWnOBY5FdMafXk__Yc' 
 });
 
-const obj = "mysql://avnadmin:AVNS_Y9MOkNSWqRrG5hKLoNZ@mysql-31b481bf-ayushsingla5552-f5ef.g.aivencloud.com:24567/defaultdb?ssl-mode=REQUIRED";
-app.use(express.urlencoded({ extended: true }));
-app.use(fileuploader());
+// Database configuration with connection pooling
+const dbConfig = {
+    connectionLimit: 10,
+    host: 'mysql-31b481bf-ayushsingla5552-f5ef.g.aivencloud.com',
+    port: 24567,
+    user: 'avnadmin',
+    password: 'AVNS_Y9MOkNSWqRrG5hKLoNZ',
+    database: 'defaultdb',
+    ssl: {
+        rejectUnauthorized: false
+    },
+    dateStrings: true
+};
 
-const mysql = mysql2.createConnection(obj);
+// Create connection pool instead of single connection
+const mysql = mysql2.createPool(dbConfig);
 
-mysql.connect(function (err) {
+// Test the connection pool
+mysql.getConnection((err, connection) => {
     if (err == null) {
         console.log("✅ Connected to database successfully");
+        connection.release(); // Release the connection back to the pool
         console.log("🔄 Updating database schema for longer addresses...");
         
         // Update customprof table address column
@@ -64,13 +68,37 @@ mysql.connect(function (err) {
     }
     else {
         console.error("❌ Database connection failed:", err.message);
-        console.error("Database URL:", obj ? "Connected to cloud database" : "No database URL");
+        console.error("Database URL:", dbConfig ? "Connected to cloud database" : "No database config");
         console.error("Please check your database connection and try again.");
         
         // Continue running the server even if database connection fails
         console.log("⚠️ Server will continue running without database functionality");
     }
-})
+});
+
+app.use(express.urlencoded({ extended: true }));
+app.use(fileuploader());
+
+// Helper function to execute queries with proper connection handling
+function executeQuery(query, params, callback) {
+    mysql.getConnection((err, connection) => {
+        if (err) {
+            console.error("❌ Database connection error:", err.message);
+            return callback(err, null);
+        }
+        
+        connection.query(query, params, (queryErr, results) => {
+            connection.release(); // Always release the connection
+            
+            if (queryErr) {
+                console.error("❌ Query execution error:", queryErr.message);
+                return callback(queryErr, null);
+            }
+            
+            callback(null, results);
+        });
+    });
+}
 
 // For Render deployment - listen on the PORT environment variable
 const PORT = process.env.PORT || 3004;
@@ -99,12 +127,34 @@ app.get("/health", function (req, resp) {
         timestamp: new Date().toISOString(),
         routes: {
             home: "/",
+            providerAccess: "/provider-access",
             providerDashboard: "/providerdash",
+            providerDashboardDirect: "/service-providerdashboard.html",
+            providerProfile: "/providerprof",
             testDashboard: "/test-dashboard",
+            debugDashboard: "/debug-dashboard",
             admin: "/admin",
             allProviders: "/all-providersdash-improved",
             viewProviders: "/view-providers",
-            providersDashboard: "/providers-dashboard"
+            providersDashboard: "/providers-dashboard",
+            createDemoProvider: "/create-demo-provider",
+            createRobertProvider: "/create-robert-provider",
+            testProvider: "/test-provider",
+            testProviderSearch: "/test-provider-search",
+            customerProfile: "/profile-customer.html",
+            customerDashboard: "/customerDash",
+            testCustomerSearch: "/test-customer-search",
+            fixCustomerSearch: "/fix-customer-search",
+            createTestCustomer: "/create-test-customer",
+            debugCustomer: "/debug-customer",
+            sampleData: "/sample-data",
+            testSignupNavigation: "/test-signup-navigation"
+        },
+        tips: {
+            loginIssue: "If dashboard shows login required, use Demo Mode or enter email: demo@provider.com",
+            demoUser: "Visit /create-demo-provider to create test data",
+            customerSearchIssue: "If customer search fails, visit /fix-customer-search to diagnose and fix",
+            testCustomer: "Use /create-test-customer to create test customer data"
         }
     });
 });
@@ -135,18 +185,22 @@ app.get("/saveProfile", function (req, resp) {
     const usertype = req.query.utype;
     const status = 1;
 
-    mysql.query("Insert into users values(?,?,?,current_date(),?)", [email, password, usertype, status], function (err) {
+    executeQuery("Insert into users values(?,?,?,current_date(),?)", [email, password, usertype, status], function (err) {
         if (err == null) {
             resp.send("Sign Up Successfully!!!");
         }
         else {
-            resp.send(err.message)
+            resp.send("Database error: " + err.message)
         }
     })
 })
 //------------------------------------------------
 app.get("/check-User", function (req, resp) {
-    mysql.query("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
+    executeQuery("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
+        if (err) {
+            resp.send("Database error: " + err.message);
+            return;
+        }
         if (resultJsonArray.length == 1)
             resp.send("Email already exists");
         else
@@ -157,7 +211,11 @@ app.get("/check-User", function (req, resp) {
 
 //-------------------------------------------------
 app.get("/checkUserLogin", function (req, resp) {
-    mysql.query("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
+    executeQuery("select * from users where emailid=?", [req.query.kuchEmail], function (err, resultJsonArray) {
+        if (err) {
+            resp.send("Database error: " + err.message);
+            return;
+        }
         if (resultJsonArray.length == 1)
             resp.send("Email exists");
         else
@@ -171,12 +229,12 @@ app.get("/change-pass", function (req, resp) {
     const oldpass = req.query.oldpass;
     const newpass = req.query.newpass;
 
-    mysql.query("update users set pwd=? where emailid=? and pwd=?", [newpass, email, oldpass], function (err) {
+    executeQuery("update users set pwd=? where emailid=? and pwd=?", [newpass, email, oldpass], function (err) {
         if (err == null) {
             resp.send("PASSWORD CHANGED SUCCESSFULLY");
         }
         else {
-            resp.send(err.message);
+            resp.send("Database error: " + err.message);
         }
     })
 })
@@ -184,9 +242,9 @@ app.get("/change-pass", function (req, resp) {
 app.post("/profileLogin", function (req, resp) {
     const email = req.body.Email;
     const password = req.body.Pass;
-    mysql.query("select * from users where emailid=? and pwd=?", [email, password], function (err, resultJsonArray) {
+    executeQuery("select * from users where emailid=? and pwd=?", [email, password], function (err, resultJsonArray) {
         if (err) {
-            resp.send(err.message);
+            resp.send("Database error: " + err.message);
             return;
         }
         if (resultJsonArray.length == 1) {
@@ -254,7 +312,7 @@ app.post("/custProfileSave",async function (req, resp) {
     req.body.photo = filename;
     console.log(req.body.txtEmailProf);
 
-    mysql.query("insert into customprof values(?,?,?,?,?,?,?,?)", [Email, Fname, Lname, num, address, city, userState, filename], function (err) {
+    executeQuery("insert into customprof (emailid, Fname, Lname, contact, address, city, state, picname) values(?,?,?,?,?,?,?,?)", [Email, Fname, Lname, num, address, city, userState, filename], function (err) {
         if (err == null)
             resp.send("Record Saved Successfullyyy");
         else {
@@ -320,7 +378,7 @@ app.post("/custProfileUpdate", async function (req, resp) {
     // resp.send(filename);
     console.log(filename);
 
-    mysql.query("update customprof set Fname=?,Lname=?,contact=?,address=?,city=?,state=?,picname=? where emailid=?", [Fname, Lname, num, address, city, userState, filename, Email], function (err) {
+    executeQuery("update customprof set Fname=?,Lname=?,contact=?,address=?,city=?,state=?,picname=? where emailid=?", [Fname, Lname, num, address, city, userState, filename, Email], function (err) {
         if (err == null) {
             resp.send("Record Modified Successfullyyy");
         }
@@ -332,45 +390,365 @@ app.post("/custProfileUpdate", async function (req, resp) {
 //---------------------------------
 app.get("/fetch-one", function (req, resp) {
     const email = req.query.kuchEmail;
-    console.log("Searching for email:", email);
     
-    // First check if user exists in users table
-    mysql.query("select * from users where emailid=?", [email], function (err, userResult) {
+    // Enhanced debugging
+    console.log("🔍 fetch-one: === DEBUG START ===");
+    console.log("🔍 fetch-one: Raw query parameters:", req.query);
+    console.log("🔍 fetch-one: kuchEmail parameter:", email);
+    console.log("🔍 fetch-one: Email type:", typeof email);
+    console.log("🔍 fetch-one: Email length:", email ? email.length : 'undefined');
+    console.log("🔍 fetch-one: Email trimmed:", email ? email.trim() : 'undefined');
+    console.log("🔍 fetch-one: Email trimmed length:", email ? email.trim().length : 'undefined');
+    console.log("🔍 fetch-one: === DEBUG END ===");
+    
+    // More robust email validation
+    if (!email) {
+        console.log("❌ fetch-one: Email parameter is missing");
+        resp.status(400).json({ error: "Email parameter (kuchEmail) is required" });
+        return;
+    }
+    
+    const trimmedEmail = email.trim();
+    if (trimmedEmail === '') {
+        console.log("❌ fetch-one: Email parameter is empty after trimming");
+        resp.status(400).json({ error: "Email parameter cannot be empty" });
+        return;
+    }
+    
+    // Basic email format validation
+    if (!trimmedEmail.includes('@')) {
+        console.log("❌ fetch-one: Email parameter does not contain @ symbol");
+        resp.status(400).json({ error: "Invalid email format - missing @ symbol" });
+        return;
+    }
+    
+    console.log("✅ fetch-one: Email validation passed, proceeding with search");
+    console.log("🔍 fetch-one: Searching for customer profile with email:", trimmedEmail);
+    
+    // Search directly in customprof table (just like provider profile search)
+    executeQuery("select * from customprof where emailid=?", [trimmedEmail], function (err, resultJsonArray) {
         if (err) {
-            console.log("Database error checking users table:", err.message);
-            resp.status(500).send({ error: "Database error: " + err.message });
+            console.log("❌ fetch-one: Database error in customprof:", err.message);
+            resp.status(500).json({ error: "Database error: " + err.message });
+            return;
+        }
+        
+        console.log("🔍 fetch-one: customprof query result:", resultJsonArray.length, "records found");
+        
+        if (resultJsonArray.length === 0) {
+            console.log("📝 fetch-one: No customer profile found for email:", trimmedEmail);
+            // Return empty array with 200 status (same as successful search with no results)
+            resp.json([]);
+        } else {
+            console.log("✅ fetch-one: Customer profile found, sending data");
+            resp.json(resultJsonArray);
+        }
+    });
+})
+//-----------------------------------------------
+// Debug endpoint to check database contents
+app.get("/debug-customer", function (req, resp) {
+    const email = req.query.email;
+    console.log("🔧 Debug: Checking database for email:", email);
+    
+    if (!email) {
+        resp.json({ error: "Email parameter required" });
+        return;
+    }
+    
+    // Check users table
+    executeQuery("select emailid, usertype from users where emailid=?", [email], function (err, userResult) {
+        if (err) {
+            resp.json({ error: "Database error in users table: " + err.message });
+            return;
+        }
+        
+        // Check customprof table
+        executeQuery("select emailid, Fname, Lname from customprof where emailid=?", [email], function (err2, profileResult) {
+            if (err2) {
+                resp.json({ error: "Database error in customprof table: " + err2.message });
+                return;
+            }
+            
+            resp.json({
+                email: email,
+                userTableResult: userResult,
+                profileTableResult: profileResult,
+                summary: {
+                    userExists: userResult.length > 0,
+                    userType: userResult.length > 0 ? userResult[0].usertype : null,
+                    profileExists: profileResult.length > 0,
+                    canFetchProfile: userResult.length > 0 && userResult[0].usertype === 'customer' && profileResult.length > 0
+                }
+            });
+        });
+    });
+})
+//-----------------------------------------------
+// Sample data endpoint to check what's in the database
+app.get("/sample-data", function (req, resp) {
+    console.log("🔧 Getting sample data from database");
+    
+    // Get some users
+    mysql.query("select emailid, usertype from users limit 5", function (err, users) {
+        if (err) {
+            resp.json({ error: "Error fetching users: " + err.message });
+            return;
+        }
+        
+        // Get some customer profiles
+        mysql.query("select emailid, Fname, Lname from customprof limit 5", function (err2, profiles) {
+            if (err2) {
+                resp.json({ error: "Error fetching profiles: " + err2.message });
+                return;
+            }
+            
+            resp.json({
+                users: users,
+                profiles: profiles,
+                userCount: users.length,
+                profileCount: profiles.length
+            });
+        });
+    });
+})
+//-----------------------------------------------
+// Table structure endpoint
+app.get("/table-structure", function (req, resp) {
+    console.log("🔧 Getting table structure");
+    
+    mysql.query("DESCRIBE users", function (err, usersStructure) {
+        if (err) {
+            resp.json({ error: "Error describing users table: " + err.message });
+            return;
+        }
+        
+        mysql.query("DESCRIBE customprof", function (err2, profStructure) {
+            if (err2) {
+                resp.json({ error: "Error describing customprof table: " + err2.message });
+                return;
+            }
+            
+            resp.json({
+                users: usersStructure,
+                customprof: profStructure
+            });
+        });
+    });
+})
+//-----------------------------------------------
+// Create test customer endpoint
+app.get("/create-test-customer", function (req, resp) {
+    const testEmail = "testcustomer@example.com";
+    const testPassword = "test123";
+    
+    console.log("🧪 Creating test customer:", testEmail);
+    
+    // First check if user already exists
+    executeQuery("select * from users where emailid=?", [testEmail], function (err, existing) {
+        if (err) {
+            resp.json({ error: "Database error checking existing user: " + err.message });
+            return;
+        }
+        
+        function createProfile() {
+            // Check if profile already exists
+            executeQuery("select * from customprof where emailid=?", [testEmail], function (err, existingProfile) {
+                if (err) {
+                    resp.json({ error: "Database error checking existing profile: " + err.message });
+                    return;
+                }
+                
+                if (existingProfile.length > 0) {
+                    resp.json({
+                        success: true,
+                        message: "Test customer and profile already exist",
+                        user: existing[0],
+                        profile: existingProfile[0]
+                    });
+                    return;
+                }
+                
+                // Create customer profile
+                executeQuery("insert into customprof (emailid, Fname, Lname, contact, address, city, state, picname) values(?,?,?,?,?,?,?,?)", 
+                    [testEmail, "Test", "Customer", "9999999999", "123 Test Street, Test City", "Test City", "Test State", "https://via.placeholder.com/150"], 
+                    function (err) {
+                        if (err) {
+                            resp.json({ error: "Error creating customer profile: " + err.message });
+                            return;
+                        }
+                        
+                        resp.json({
+                            success: true,
+                            message: "Test customer profile created successfully",
+                            email: testEmail,
+                            userType: "customer"
+                        });
+                    });
+            });
+        }
+        
+        if (existing.length > 0) {
+            console.log("✅ Test user already exists, checking/creating profile");
+            createProfile();
+        } else {
+            // Create user first
+            executeQuery("Insert into users values(?,?,?,current_date(),?)", [testEmail, testPassword, "customer", 1], function (err) {
+                if (err) {
+                    resp.json({ error: "Error creating test user: " + err.message });
+                    return;
+                }
+                
+                console.log("✅ Test user created, creating profile");
+                createProfile();
+            });
+        }
+    });
+})
+//-----------------------------------------------
+// Test customer search page
+app.get("/test-customer-search", function (req, resp) {
+    let filePath = process.cwd() + "/test-customer-search.html";
+    resp.sendFile(filePath);
+})
+//-----------------------------------------------
+// Fix customer search page
+app.get("/fix-customer-search", function (req, resp) {
+    let filePath = process.cwd() + "/fix-customer-search.html";
+    resp.sendFile(filePath);
+})
+//-----------------------------------------------
+// Endpoint to fix user type
+app.get("/fix-user-type", function (req, resp) {
+    const email = req.query.email;
+    const newUserType = req.query.usertype || 'customer';
+    
+    if (!email) {
+        resp.status(400).json({ error: "Email parameter is required" });
+        return;
+    }
+    
+    console.log("🔧 Fixing user type for:", email, "to:", newUserType);
+    
+    // First check if user exists
+    executeQuery("select * from users where emailid=?", [email], function (err, userResult) {
+        if (err) {
+            resp.status(500).json({ error: "Database error: " + err.message });
             return;
         }
         
         if (userResult.length === 0) {
-            console.log("User not found in users table");
-            resp.status(404).send({ error: "User not registered. Please register first." });
+            resp.status(404).json({ error: "User not found with email: " + email });
             return;
         }
         
-        console.log("User found in users table:", userResult[0]);
+        const currentUserType = userResult[0].usertype;
         
-        // Check if user is a customer
-        if (userResult[0].usertype !== 'customer') {
-            resp.status(400).send({ error: "This email is not registered as a customer." });
+        if (currentUserType === newUserType) {
+            resp.json({
+                success: true,
+                message: `User is already set as ${newUserType}`,
+                email: email,
+                userType: currentUserType
+            });
             return;
         }
         
-        // Now check if customer profile exists
-        mysql.query("select * from customprof where emailid=?", [email], function (err, resultJsonArray) {
+        // Update user type
+        executeQuery("update users set usertype=? where emailid=?", [newUserType, email], function (err) {
             if (err) {
-                console.log("Database error in customprof:", err.message);
-                resp.status(500).send({ error: "Database error: " + err.message });
-            } else {
-                console.log("Profile query result:", resultJsonArray);
-                if (resultJsonArray.length === 0) {
-                    resp.status(404).send({ error: "Customer profile not created yet. You can create a new profile." });
-                } else {
-                    resp.send(resultJsonArray);
-                }
+                resp.status(500).json({ error: "Error updating user type: " + err.message });
+                return;
             }
+            
+            resp.json({
+                success: true,
+                message: `User type updated successfully from '${currentUserType}' to '${newUserType}'`,
+                email: email,
+                oldUserType: currentUserType,
+                newUserType: newUserType
+            });
         });
     });
+})
+//-----------------------------------------------
+// Quick fix for customer profile search issues
+app.get("/quick-fix-customer", function (req, resp) {
+    const email = req.query.email;
+    
+    if (!email) {
+        resp.status(400).json({ error: "Email parameter is required" });
+        return;
+    }
+    
+    console.log("🔧 Quick fix for customer:", email);
+    
+    // First check if user exists
+    executeQuery("select * from users where emailid=?", [email], function (err, userResult) {
+        if (err) {
+            resp.status(500).json({ error: "Database error: " + err.message });
+            return;
+        }
+        
+        if (userResult.length === 0) {
+            // User doesn't exist, create as customer
+            console.log("👤 Creating new customer user:", email);
+            executeQuery("Insert into users values(?,?,?,current_date(),?)", [email, "temp123", "Customer", 1], function (err) {
+                if (err) {
+                    resp.status(500).json({ error: "Error creating user: " + err.message });
+                    return;
+                }
+                
+                resp.json({
+                    success: true,
+                    action: "created",
+                    message: "New customer user created successfully",
+                    email: email,
+                    userType: "Customer",
+                    tempPassword: "temp123",
+                    note: "User created with temporary password 'temp123'. Please update the password."
+                });
+            });
+        } else {
+            // User exists, check/fix user type
+            const currentUserType = userResult[0].usertype;
+            console.log("👤 User exists with type:", currentUserType);
+            
+            if (currentUserType.toLowerCase() === 'customer') {
+                resp.json({
+                    success: true,
+                    action: "already_customer",
+                    message: "User is already a customer",
+                    email: email,
+                    userType: currentUserType
+                });
+            } else {
+                // Convert to customer
+                console.log("🔄 Converting user to customer type");
+                executeQuery("update users set usertype=? where emailid=?", ["Customer", email], function (err) {
+                    if (err) {
+                        resp.status(500).json({ error: "Error updating user type: " + err.message });
+                        return;
+                    }
+                    
+                    resp.json({
+                        success: true,
+                        action: "converted",
+                        message: `User type updated from '${currentUserType}' to 'Customer'`,
+                        email: email,
+                        oldUserType: currentUserType,
+                        newUserType: "Customer"
+                    });
+                });
+            }
+        }
+    });
+})
+//-----------------------------------------------
+// Test signup and navigation changes page
+app.get("/test-signup-navigation", function (req, resp) {
+    let filePath = process.cwd() + "/test-signup-navigation.html";
+    resp.sendFile(filePath);
 })
 //-----------------------------------------------
 app.get("/customerDash", function (req, resp) {
@@ -428,6 +806,19 @@ app.get("/radioadd", function (req, resp) {
     })
 })
 //------------------------------
+app.get("/provider-access", function (req, resp) {
+    console.log("🚪 Provider Access page requested");
+    let filePath = process.cwd() + "/provider-access.html";
+    resp.sendFile(filePath);
+})
+
+//Route for direct file access
+app.get("/service-providerdashboard.html", function (req, resp) {
+    console.log("📊 Provider Dashboard requested (direct file access)");
+    let filePath3 = process.cwd() + "/service-providerdashboard.html";
+    resp.sendFile(filePath3);
+})
+
 app.get("/providerdash", function (req, resp) {
     console.log("📊 Provider Dashboard requested");
     try {
@@ -457,6 +848,12 @@ app.get("/providerdash", function (req, resp) {
             <p><a href="/">Go back to home</a></p>
         `);
     }
+})
+
+app.get("/debug-dashboard", function (req, resp) {
+    console.log("🔍 Debug Dashboard requested");
+    let filePath = process.cwd() + "/debug-dashboard.html";
+    resp.sendFile(filePath);
 })
 
 app.get("/test-dashboard", function (req, resp) {
@@ -586,95 +983,221 @@ app.get("/fj", function (req, resp) {
   });
   //----------------------//
 app.post("/provider-profile-save",async function (req, resp) {
-    const emailadd = req.body.txtEmailProvider;
-    const name = req.body.txtnamePro;
-    let contact = req.body.txtnumberPro;
-    const gender = req.body.txtgenderPro;
-    const category = req.body.txtcategoryPro;
-    const firm = req.body.txtfirmPro;
-    const website = req.body.txtwebsitePro;
-    const location = req.body.txtfirmaddPro;
-    const since = req.body.txtworkPro;
-    const otherinfo = req.body.txtselectPro;
+    try {
+        const emailadd = req.body.txtEmailProvider;
+        const name = req.body.txtnamePro;
+        let contact = req.body.txtnumberPro;
+        const gender = req.body.txtgenderPro;
+        const category = req.body.txtcategoryPro;
+        const firm = req.body.txtfirmPro;
+        const website = req.body.txtwebsitePro;
+        const location = req.body.txtfirmaddPro;
+        const since = req.body.txtworkPro;
+        const otherinfo = req.body.txtselectPro;
 
-    // Validate and truncate contact number if too long (assuming VARCHAR(15))
-    if (contact && contact.length > 15) {
-        contact = contact.substring(0, 15);
+        // Validate and truncate contact number if too long (assuming VARCHAR(15))
+        if (contact && contact.length > 15) {
+            contact = contact.substring(0, 15);
+        }
+
+        let filename = '';
+
+        // Handle file upload if file is provided
+        if (req.files && req.files.txtpicPro) {
+            filename = req.files.txtpicPro.name;
+            let path = process.cwd() + "/public/uploads/" + filename;
+            req.files.txtpicPro.mv(path);//to store pic in uploads folder 
+
+            req.body.txtpicPro = filename;
+            await cloudinary.uploader.upload(path)
+            .then(result=>{
+                filename = result.url;
+            })
+            .catch(err=>{
+                console.error("Cloudinary upload error:", err);
+                filename = 'uploads/' + req.files.txtpicPro.name; // fallback to local path
+            });
+        }
+
+        mysql.query("insert into provider values(?,?,?,?,?,?,?,?,?,?,?)", [emailadd, name, contact, gender, category, firm, website, location, since, filename, otherinfo], function (err) {
+            if (err == null) {
+                resp.json({ 
+                    success: true, 
+                    message: "Profile saved successfully!",
+                    data: {
+                        email: emailadd,
+                        name: name,
+                        category: category,
+                        location: location
+                    }
+                });
+            } else {
+                console.error("Provider profile save error:", err.message);
+                resp.status(500).json({ 
+                    success: false, 
+                    message: "Error saving profile: " + err.message 
+                });
+            }
+        });
+    } catch (error) {
+        console.error("Provider profile save exception:", error);
+        resp.status(500).json({ 
+            success: false, 
+            message: "Server error: " + error.message 
+        });
     }
-
-    let filename;
-
-    filename = req.files.txtpicPro.name;
-    let path = process.cwd() + "/public/uploads/" + filename;
-    req.files.txtpicPro.mv(path);//to store pic in uploads folder 
-
-    req.body.txtpicPro = filename;
-    await cloudinary.uploader.upload(path)
-    .then(result=>{
-        filename = result.url;
-    })
-    .catch(err=>{
-
-    });
-    //console.log(req.query.txtEmailDash);
-
-    mysql.query("insert into provider values(?,?,?,?,?,?,?,?,?,?,?)", [emailadd, name, contact, gender, category, firm, website, location, since, filename, otherinfo], function (err) {
-        if (err == null)
-            resp.send("Uploaded Successfully");
-        else
-            resp.send(err.message);
-
-    })
-
 })
 //---------------------------------------
 app.post("/Edit-Profile", async function (req, resp) {
-    // console.log(req.body.txtnamePro);
-    const EMAIL = req.body.txtEmailProvider;
-    const name = req.body.txtnamePro;
-    let Contact = req.body.txtnumberPro;
-    const Gender = req.body.txtgenderPro;
-    const Category = req.body.txtcategoryPro;
-    const Firm = req.body.txtfirmPro;
-    const Website = req.body.txtwebsitePro;
-    const Location = req.body.txtfirmaddPro;
-    const Since = req.body.txtworkPro;
-    const Otherinfo = req.body.txtselectPro;
+    try {
+        const EMAIL = req.body.txtEmailProvider;
+        const name = req.body.txtnamePro;
+        let Contact = req.body.txtnumberPro;
+        const Gender = req.body.txtgenderPro;
+        const Category = req.body.txtcategoryPro;
+        const Firm = req.body.txtfirmPro;
+        const Website = req.body.txtwebsitePro;
+        const Location = req.body.txtfirmaddPro;
+        const Since = req.body.txtworkPro;
+        const Otherinfo = req.body.txtselectPro;
 
-    // Validate and truncate contact number if too long (assuming VARCHAR(15))
-    if (Contact && Contact.length > 15) {
-        Contact = Contact.substring(0, 15);
-    }
-
-    let filename;
-
-    filename = req.files.txtpicPro.name;
-    let path = process.cwd() + "/public/uploads/" + filename;
-    req.files.txtpicPro.mv(path);//to store pic in uploads folder 
-    await cloudinary.uploader.upload(path)
-    .then(result=>{
-        filename = result.url;
-    })
-    .catch(err=>{
-
-    });
-    req.body.txtpicPro = filename;
-
-    mysql.query("update provider set Fname=?,contact=?,gender=?,category=?,firm=?,website=?,location=?,since=?,profpic=?,otherinfo=? where email=?", [name, Contact, Gender, Category, Firm, Website, Location, Since, filename, Otherinfo, EMAIL], function (err) {
-        if (err == null) {
-            resp.send("Record edited Successfullyyy");
+        // Validate and truncate contact number if too long (assuming VARCHAR(15))
+        if (Contact && Contact.length > 15) {
+            Contact = Contact.substring(0, 15);
         }
-        else
-            resp.send(err.message);
-    })
 
+        let filename;
+
+        // Handle file upload if new file is provided
+        if (req.files && req.files.txtpicPro && req.files.txtpicPro.name) {
+            filename = req.files.txtpicPro.name;
+            let path = process.cwd() + "/public/uploads/" + filename;
+            req.files.txtpicPro.mv(path);//to store pic in uploads folder 
+            await cloudinary.uploader.upload(path)
+            .then(result=>{
+                filename = result.url;
+            })
+            .catch(err=>{
+                console.error("Cloudinary upload error:", err);
+                filename = 'uploads/' + req.files.txtpicPro.name; // fallback to local path
+            });
+            req.body.txtpicPro = filename;
+            
+            // Update with new photo
+            mysql.query("update provider set Fname=?,contact=?,gender=?,category=?,firm=?,website=?,location=?,since=?,profpic=?,otherinfo=? where email=?", [name, Contact, Gender, Category, Firm, Website, Location, Since, filename, Otherinfo, EMAIL], function (err) {
+                if (err == null) {
+                    resp.json({ 
+                        success: true, 
+                        message: "Profile updated successfully!",
+                        data: {
+                            email: EMAIL,
+                            name: name,
+                            category: Category,
+                            location: Location
+                        }
+                    });
+                } else {
+                    console.error("Provider profile update error:", err.message);
+                    resp.status(500).json({ 
+                        success: false, 
+                        message: "Error updating profile: " + err.message 
+                    });
+                }
+            });
+        } else {
+            // Update without changing photo
+            mysql.query("update provider set Fname=?,contact=?,gender=?,category=?,firm=?,website=?,location=?,since=?,otherinfo=? where email=?", [name, Contact, Gender, Category, Firm, Website, Location, Since, Otherinfo, EMAIL], function (err) {
+                if (err == null) {
+                    resp.json({ 
+                        success: true, 
+                        message: "Profile updated successfully!",
+                        data: {
+                            email: EMAIL,
+                            name: name,
+                            category: Category,
+                            location: Location
+                        }
+                    });
+                } else {
+                    console.error("Provider profile update error:", err.message);
+                    resp.status(500).json({ 
+                        success: false, 
+                        message: "Error updating profile: " + err.message 
+                    });
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Provider profile update exception:", error);
+        resp.status(500).json({ 
+            success: false, 
+            message: "Server error: " + error.message 
+        });
+    }
 })
 //------------------------------
 app.get("/fetch-providerprofile", function (req, resp) {
-    mysql.query("select * from provider where email=?", [req.query.KuchEmail], function (err, resultJsonArray) {
+    const email = req.query.KuchEmail;
+    
+    if (!email) {
+        resp.status(400).send({ error: "Email parameter is required" });
+        return;
+    }
+    
+    console.log("Searching for provider profile with email:", email);
+    
+    mysql.query("select * from provider where email=?", [email], function (err, resultJsonArray) {
+        if (err) {
+            console.error("Database error in fetch-providerprofile:", err.message);
+            resp.status(500).send({ error: "Database error: " + err.message });
+            return;
+        }
+        
+        console.log("Provider query result:", resultJsonArray.length, "records found");
+        
+        if (resultJsonArray.length === 0) {
+            resp.status(404).send({ error: "Provider profile not found for email: " + email });
+            return;
+        }
+        
         resp.send(resultJsonArray);
     })
 })
+
+// Test endpoint for specific provider
+app.get("/test-provider", function (req, resp) {
+    const testEmail = "robert.mechanic@gmail.com";
+    
+    mysql.query("SELECT * FROM provider WHERE email = ?", [testEmail], function (err, result) {
+        if (err) {
+            resp.json({ 
+                error: err.message,
+                email: testEmail,
+                timestamp: new Date()
+            });
+        } else {
+            resp.json({ 
+                found: result.length > 0,
+                count: result.length,
+                email: testEmail,
+                data: result,
+                timestamp: new Date()
+            });
+        }
+    });
+});
+
+// Test page for provider search
+app.get("/test-provider-search", function (req, resp) {
+    let filePath = process.cwd() + "/test-provider-search.html";
+    resp.sendFile(filePath);
+});
+
+// Test page for login and provider profile workflow
+app.get("/test-login-provider", function (req, resp) {
+    let filePath = process.cwd() + "/test-login-provider.html";
+    resp.sendFile(filePath);
+});
 
 //-------------------------
 app.get("/angular-fetch-all", function (req, resp) {
@@ -1086,6 +1609,100 @@ app.get("/describe-provider-table", function (req, resp) {
         });
     });
 });
+
+// Add endpoint to create demo provider for testing
+app.get("/create-demo-provider", function (req, resp) {
+    const demoProvider = [
+        'demo@provider.com', 
+        'Demo Provider', 
+        '9999999999', 
+        'Male', 
+        'General Services', 
+        'Demo Services Ltd', 
+        'www.demoservices.com', 
+        'Demo City', 
+        '2020', 
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', 
+        'This is a demo provider account for testing purposes'
+    ];
+
+    // First check if demo provider already exists
+    mysql.query("SELECT * FROM provider WHERE email = ?", ['demo@provider.com'], function (err, result) {
+        if (err) {
+            resp.json({ error: err.message });
+            return;
+        }
+        
+        if (result.length > 0) {
+            resp.json({ 
+                success: true, 
+                message: "Demo provider already exists",
+                provider: result[0]
+            });
+            return;
+        }
+        
+        // Create demo provider
+        mysql.query("INSERT INTO provider VALUES (?,?,?,?,?,?,?,?,?,?,?)", demoProvider, function (err) {
+            if (err) {
+                resp.json({ error: err.message });
+            } else {
+                resp.json({ 
+                    success: true, 
+                    message: "Demo provider created successfully",
+                    email: 'demo@provider.com'
+                });
+            }
+        });
+    });
+})
+
+// Add endpoint to create the specific robert.mechanic provider for testing
+app.get("/create-robert-provider", function (req, resp) {
+    const robertProvider = [
+        'robert.mechanic@gmail.com', 
+        'Robert Taylor', 
+        '9876543216', 
+        'Male', 
+        'Automobile', 
+        'Taylor Auto Repair', 
+        '', 
+        'Kolkata', 
+        '2015', 
+        'https://images.unsplash.com/photo-1507038732509-8b1a3cd5a71c?w=400', 
+        'Car and bike repair services'
+    ];
+
+    // First check if robert provider already exists
+    mysql.query("SELECT * FROM provider WHERE email = ?", ['robert.mechanic@gmail.com'], function (err, result) {
+        if (err) {
+            resp.json({ error: err.message });
+            return;
+        }
+        
+        if (result.length > 0) {
+            resp.json({ 
+                success: true, 
+                message: "Robert provider already exists",
+                provider: result[0]
+            });
+            return;
+        }
+        
+        // Create robert provider
+        mysql.query("INSERT INTO provider VALUES (?,?,?,?,?,?,?,?,?,?,?)", robertProvider, function (err) {
+            if (err) {
+                resp.json({ error: err.message });
+            } else {
+                resp.json({ 
+                    success: true, 
+                    message: "Robert provider created successfully",
+                    email: 'robert.mechanic@gmail.com'
+                });
+            }
+        });
+    });
+})
 
 // Endpoint to create sample provider data for testing
 app.get("/create-sample-providers", function (req, resp) {

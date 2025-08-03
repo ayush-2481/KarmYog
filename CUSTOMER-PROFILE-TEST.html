@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧪 Customer Profile - Complete Functionality Test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f7fa; }
+        .test-container { max-width: 1200px; margin: 0 auto; }
+        .test-header { text-align: center; margin-bottom: 30px; }
+        .test-section { background: white; margin: 20px 0; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .test-card { border: 2px solid #e0e6ed; border-radius: 8px; padding: 15px; }
+        .test-card.success { border-color: #22c55e; background: #f0fdf4; }
+        .test-card.error { border-color: #ef4444; background: #fef2f2; }
+        .test-card.pending { border-color: #f59e0b; background: #fffbeb; }
+        .test-card.info { border-color: #3b82f6; background: #eff6ff; }
+        
+        .test-button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .test-button.primary { background: #3b82f6; color: white; }
+        .test-button.secondary { background: #6b7280; color: white; }
+        .test-button.success { background: #22c55e; color: white; }
+        .test-button.danger { background: #ef4444; color: white; }
+        .test-button:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        .status-icon { font-size: 24px; margin-right: 10px; }
+        .success-icon { color: #22c55e; }
+        .error-icon { color: #ef4444; }
+        .pending-icon { color: #f59e0b; }
+        .info-icon { color: #3b82f6; }
+        
+        .result-text { margin: 10px 0; padding: 10px; border-radius: 5px; font-family: monospace; }
+        .result-success { background: #dcfce7; color: #166534; }
+        .result-error { background: #fee2e2; color: #991b1b; }
+        .result-info { background: #dbeafe; color: #1e40af; }
+        
+        .overall-status { text-align: center; padding: 20px; margin: 20px 0; border-radius: 10px; font-size: 18px; font-weight: bold; }
+        .iframe-container { margin: 20px 0; border: 2px solid #e0e6ed; border-radius: 10px; overflow: hidden; }
+        .iframe-container iframe { width: 100%; height: 600px; border: none; }
+        
+        .test-info { background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Customer Profile - Complete Functionality Test</h1>
+            <p>Testing all buttons, forms, and features in the customer profile page</p>
+            <div id="overallStatus" class="overall-status">⏳ Test Status: Ready to start testing</div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="test-section">
+            <h2>🚀 Quick Test Actions</h2>
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="test-button primary" onclick="runAllTests()">🔥 RUN ALL TESTS</button>
+                <button class="test-button secondary" onclick="openCustomerProfile()">📄 OPEN CUSTOMER PROFILE</button>
+                <button class="test-button success" onclick="checkServerStatus()">🌐 CHECK SERVER STATUS</button>
+                <button class="test-button danger" onclick="resetAllTests()">🔄 RESET TESTS</button>
+            </div>
+        </div>
+
+        <!-- Test Results Grid -->
+        <div class="test-section">
+            <h2>📊 Test Results</h2>
+            <div class="test-grid" id="testGrid">
+                <!-- Test cards will be populated here -->
+            </div>
+        </div>
+
+        <!-- Customer Profile Page Embed -->
+        <div class="test-section">
+            <h2>📋 Customer Profile Page (Live)</h2>
+            <div class="test-info">
+                <strong>📍 Instructions:</strong> Use this embedded page to manually test buttons while the automated tests run above.
+                The page will automatically load with the current server port.
+            </div>
+            <div class="iframe-container">
+                <iframe id="profileFrame" src="about:blank"></iframe>
+            </div>
+        </div>
+
+        <!-- Detailed Test Log -->
+        <div class="test-section">
+            <h2>📝 Detailed Test Log</h2>
+            <div id="testLog" style="background: #1f2937; color: #f9fafb; padding: 20px; border-radius: 8px; font-family: monospace; height: 300px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Test configuration
+        const serverPorts = [3005, 3006, 3004]; // Try these ports in order
+        let currentServerURL = '';
+        let testResults = {};
+
+        // Test definitions
+        const tests = [
+            {
+                id: 'server_connection',
+                name: '🌐 Server Connection',
+                description: 'Check if the server is running and accessible'
+            },
+            {
+                id: 'page_load',
+                name: '📄 Page Load',
+                description: 'Verify customer profile page loads correctly'
+            },
+            {
+                id: 'search_functionality',
+                name: '🔍 Search Button',
+                description: 'Test customer search with existing email'
+            },
+            {
+                id: 'search_empty_email',
+                name: '📧 Empty Email Search',
+                description: 'Test search with empty email (should show error)'
+            },
+            {
+                id: 'search_nonexistent',
+                name: '🚫 Non-existent Customer Search',
+                description: 'Test search for customer that doesn\'t exist'
+            },
+            {
+                id: 'form_validation',
+                name: '✅ Form Validation',
+                description: 'Test form field validation and requirements'
+            },
+            {
+                id: 'reset_button',
+                name: '🔄 Reset Button',
+                description: 'Test form reset functionality'
+            },
+            {
+                id: 'save_button',
+                name: '💾 Save Button',
+                description: 'Test profile save functionality'
+            },
+            {
+                id: 'update_button',
+                name: '📝 Update Button',
+                description: 'Test profile update functionality'
+            },
+            {
+                id: 'email_validation',
+                name: '📧 Email Validation',
+                description: 'Test email format validation'
+            },
+            {
+                id: 'terms_checkbox',
+                name: '📋 Terms & Conditions',
+                description: 'Test terms and conditions checkbox'
+            },
+            {
+                id: 'character_counters',
+                name: '🔢 Character Counters',
+                description: 'Test character count displays for text areas'
+            }
+        ];
+
+        // Initialize the page
+        $(document).ready(function() {
+            log('🚀 Customer Profile Test Suite Initialized');
+            initializeTestGrid();
+            findWorkingServer();
+        });
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('testLog');
+            logElement.innerHTML += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function initializeTestGrid() {
+            const grid = document.getElementById('testGrid');
+            grid.innerHTML = '';
+            
+            tests.forEach(test => {
+                const card = document.createElement('div');
+                card.className = 'test-card pending';
+                card.id = `test-${test.id}`;
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <span class="status-icon pending-icon" id="icon-${test.id}">⏳</span>
+                        <strong>${test.name}</strong>
+                    </div>
+                    <p>${test.description}</p>
+                    <div class="result-text result-info" id="result-${test.id}">Ready to test</div>
+                    <button class="test-button primary" onclick="runSingleTest('${test.id}')">Test Now</button>
+                `;
+                grid.appendChild(card);
+                
+                testResults[test.id] = { status: 'pending', message: 'Not tested yet' };
+            });
+        }
+
+        function updateTestResult(testId, status, message) {
+            testResults[testId] = { status, message };
+            
+            const card = document.getElementById(`test-${testId}`);
+            const icon = document.getElementById(`icon-${testId}`);
+            const result = document.getElementById(`result-${testId}`);
+            
+            // Update card styling
+            card.className = `test-card ${status}`;
+            
+            // Update icon
+            const icons = {
+                success: { icon: '✅', class: 'success-icon' },
+                error: { icon: '❌', class: 'error-icon' },
+                pending: { icon: '⏳', class: 'pending-icon' },
+                info: { icon: 'ℹ️', class: 'info-icon' }
+            };
+            
+            const iconInfo = icons[status] || icons.info;
+            icon.textContent = iconInfo.icon;
+            icon.className = `status-icon ${iconInfo.class}`;
+            
+            // Update result text
+            result.textContent = message;
+            result.className = `result-text result-${status}`;
+            
+            log(`${icons[status].icon} ${tests.find(t => t.id === testId).name}: ${message}`);
+            updateOverallStatus();
+        }
+
+        function updateOverallStatus() {
+            const totalTests = tests.length;
+            const passedTests = Object.values(testResults).filter(r => r.status === 'success').length;
+            const failedTests = Object.values(testResults).filter(r => r.status === 'error').length;
+            const pendingTests = totalTests - passedTests - failedTests;
+            
+            const statusElement = document.getElementById('overallStatus');
+            
+            if (pendingTests === 0) {
+                if (failedTests === 0) {
+                    statusElement.textContent = `🎉 All Tests Passed! (${passedTests}/${totalTests})`;
+                    statusElement.style.background = '#dcfce7';
+                    statusElement.style.color = '#166534';
+                } else {
+                    statusElement.textContent = `⚠️ Tests Complete: ${passedTests} passed, ${failedTests} failed`;
+                    statusElement.style.background = '#fef3c7';
+                    statusElement.style.color = '#92400e';
+                }
+            } else {
+                statusElement.textContent = `⏳ Testing in Progress: ${passedTests} passed, ${failedTests} failed, ${pendingTests} pending`;
+                statusElement.style.background = '#f3f4f6';
+                statusElement.style.color = '#374151';
+            }
+        }
+
+        async function findWorkingServer() {
+            log('🔍 Finding working server...');
+            
+            for (const port of serverPorts) {
+                try {
+                    const response = await fetch(`http://localhost:${port}/`, { 
+                        method: 'HEAD',
+                        timeout: 3000 
+                    });
+                    
+                    if (response.ok) {
+                        currentServerURL = `http://localhost:${port}`;
+                        log(`✅ Server found at: ${currentServerURL}`);
+                        
+                        // Load the customer profile page
+                        document.getElementById('profileFrame').src = `${currentServerURL}/profile-customer.html`;
+                        return;
+                    }
+                } catch (error) {
+                    log(`❌ Port ${port} not responding`);
+                }
+            }
+            
+            log('❌ No working server found. Please start the server first.');
+            updateTestResult('server_connection', 'error', 'Server not found on any expected port');
+        }
+
+        function checkServerStatus() {
+            log('🌐 Checking server status...');
+            findWorkingServer();
+        }
+
+        function openCustomerProfile() {
+            if (currentServerURL) {
+                window.open(`${currentServerURL}/profile-customer.html`, '_blank');
+                log('📄 Opened customer profile in new tab');
+            } else {
+                log('❌ No server URL available');
+            }
+        }
+
+        async function runSingleTest(testId) {
+            if (!currentServerURL) {
+                updateTestResult(testId, 'error', 'Server not available');
+                return;
+            }
+
+            updateTestResult(testId, 'pending', 'Testing...');
+            
+            try {
+                switch (testId) {
+                    case 'server_connection':
+                        await testServerConnection();
+                        break;
+                    case 'page_load':
+                        await testPageLoad();
+                        break;
+                    case 'search_functionality':
+                        await testSearchFunctionality();
+                        break;
+                    case 'search_empty_email':
+                        await testEmptyEmailSearch();
+                        break;
+                    case 'search_nonexistent':
+                        await testNonexistentCustomer();
+                        break;
+                    case 'form_validation':
+                        await testFormValidation();
+                        break;
+                    case 'reset_button':
+                        await testResetButton();
+                        break;
+                    case 'save_button':
+                        await testSaveButton();
+                        break;
+                    case 'update_button':
+                        await testUpdateButton();
+                        break;
+                    case 'email_validation':
+                        await testEmailValidation();
+                        break;
+                    case 'terms_checkbox':
+                        await testTermsCheckbox();
+                        break;
+                    case 'character_counters':
+                        await testCharacterCounters();
+                        break;
+                    default:
+                        updateTestResult(testId, 'error', 'Unknown test');
+                }
+            } catch (error) {
+                updateTestResult(testId, 'error', `Test failed: ${error.message}`);
+            }
+        }
+
+        async function runAllTests() {
+            log('🔥 Starting complete test suite...');
+            
+            for (const test of tests) {
+                await runSingleTest(test.id);
+                // Small delay between tests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            log('🏁 All tests completed!');
+        }
+
+        function resetAllTests() {
+            log('🔄 Resetting all tests...');
+            initializeTestGrid();
+            updateOverallStatus();
+        }
+
+        // Individual test functions
+        async function testServerConnection() {
+            const response = await fetch(currentServerURL);
+            if (response.ok) {
+                updateTestResult('server_connection', 'success', `Server responding on ${currentServerURL}`);
+            } else {
+                updateTestResult('server_connection', 'error', `Server returned ${response.status}`);
+            }
+        }
+
+        async function testPageLoad() {
+            const response = await fetch(`${currentServerURL}/profile-customer.html`);
+            if (response.ok) {
+                const content = await response.text();
+                if (content.includes('Customer Profile') && content.includes('btnSearch')) {
+                    updateTestResult('page_load', 'success', 'Customer profile page loaded successfully');
+                } else {
+                    updateTestResult('page_load', 'error', 'Page content missing expected elements');
+                }
+            } else {
+                updateTestResult('page_load', 'error', `Failed to load page: ${response.status}`);
+            }
+        }
+
+        async function testSearchFunctionality() {
+            // Test with a known email (we'll use a test email)
+            const response = await fetch(`${currentServerURL}/fetch-one?kuchEmail=test@example.com`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    updateTestResult('search_functionality', 'success', 'Search endpoint working correctly');
+                } else {
+                    updateTestResult('search_functionality', 'error', 'Search returned unexpected format');
+                }
+            } else if (response.status === 400) {
+                updateTestResult('search_functionality', 'error', 'Search returning 400 Bad Request');
+            } else {
+                updateTestResult('search_functionality', 'error', `Search failed: ${response.status}`);
+            }
+        }
+
+        async function testEmptyEmailSearch() {
+            const response = await fetch(`${currentServerURL}/fetch-one?kuchEmail=`);
+            
+            if (response.status === 400) {
+                updateTestResult('search_empty_email', 'success', 'Empty email correctly returns 400 error');
+            } else {
+                updateTestResult('search_empty_email', 'error', `Expected 400 error, got ${response.status}`);
+            }
+        }
+
+        async function testNonexistentCustomer() {
+            const response = await fetch(`${currentServerURL}/fetch-one?kuchEmail=nonexistent@test.com`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data) && data.length === 0) {
+                    updateTestResult('search_nonexistent', 'success', 'Non-existent customer returns empty array');
+                } else {
+                    updateTestResult('search_nonexistent', 'error', 'Non-existent customer returned unexpected data');
+                }
+            } else {
+                updateTestResult('search_nonexistent', 'error', `Search failed: ${response.status}`);
+            }
+        }
+
+        async function testFormValidation() {
+            // This would need to be tested through the iframe or by simulating form interactions
+            updateTestResult('form_validation', 'info', 'Manual test required - check form validation in embedded page');
+        }
+
+        async function testResetButton() {
+            updateTestResult('reset_button', 'info', 'Manual test required - click Reset button in embedded page');
+        }
+
+        async function testSaveButton() {
+            updateTestResult('save_button', 'info', 'Manual test required - test Save button in embedded page');
+        }
+
+        async function testUpdateButton() {
+            updateTestResult('update_button', 'info', 'Manual test required - test Update button in embedded page');
+        }
+
+        async function testEmailValidation() {
+            updateTestResult('email_validation', 'info', 'Manual test required - test email validation in embedded page');
+        }
+
+        async function testTermsCheckbox() {
+            updateTestResult('terms_checkbox', 'info', 'Manual test required - test terms checkbox in embedded page');
+        }
+
+        async function testCharacterCounters() {
+            updateTestResult('character_counters', 'info', 'Manual test required - test character counters in embedded page');
+        }
+    </script>
+</body>
+</html>

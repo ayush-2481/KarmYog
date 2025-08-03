@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Functionality Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+        .test-section {
+            margin: 25px 0;
+            padding: 25px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+        }
+        .success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .status-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Login & Authentication Test</h1>
+            <p>Test all authentication endpoints with connection pooling fix</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔍 Test 1: Check Email Existence</h3>
+            <div class="form-group">
+                <label>Email to Check:</label>
+                <input type="email" id="checkEmail" placeholder="Enter email to check" value="">
+            </div>
+            <button onclick="testEmailCheck()">Check Email</button>
+            <div id="checkResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📝 Test 2: User Registration</h3>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="signupEmail" placeholder="new@example.com" value="">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="signupPassword" placeholder="Enter password" value="">
+            </div>
+            <div class="form-group">
+                <label>User Type:</label>
+                <select id="signupUserType">
+                    <option value="customer">Customer</option>
+                    <option value="provider">Provider</option>
+                </select>
+            </div>
+            <button onclick="testSignup()">Test Registration</button>
+            <div id="signupResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔑 Test 3: User Login</h3>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="loginEmail" placeholder="Enter registered email" value="">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="loginPassword" placeholder="Enter password" value="">
+            </div>
+            <button onclick="testLogin()">Test Login</button>
+            <button onclick="setTestCredentials()">Use Test Customer</button>
+            <div id="loginResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="status-card">
+            <h3>📊 Connection Status</h3>
+            <div id="connectionStatus">Ready to test authentication endpoints...</div>
+        </div>
+    </div>
+
+    <script>
+        function testEmailCheck() {
+            const email = $('#checkEmail').val();
+            if (!email) {
+                showResult('checkResult', '❌ Please enter an email address', 'error');
+                return;
+            }
+            
+            showResult('checkResult', '🔄 Checking email existence...', 'info');
+            updateConnectionStatus('🔄 Testing checkUserLogin endpoint...', 'info');
+            
+            $.ajax({
+                url: '/checkUserLogin',
+                method: 'GET',
+                data: { kuchEmail: email },
+                success: function(response) {
+                    if (response.includes('Database error')) {
+                        showResult('checkResult', '❌ DATABASE CONNECTION FAILED!\n' + response, 'error');
+                        updateConnectionStatus('❌ Connection pool not working for checkUserLogin', 'error');
+                    } else {
+                        showResult('checkResult', '✅ Email check working!\nResponse: ' + response, 'success');
+                        updateConnectionStatus('✅ checkUserLogin endpoint working with connection pool', 'success');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('checkResult', '❌ Request failed: ' + error, 'error');
+                    updateConnectionStatus('❌ Network error in checkUserLogin', 'error');
+                }
+            });
+        }
+
+        function testSignup() {
+            const email = $('#signupEmail').val();
+            const password = $('#signupPassword').val();
+            const userType = $('#signupUserType').val();
+            
+            if (!email || !password) {
+                showResult('signupResult', '❌ Please fill all fields', 'error');
+                return;
+            }
+            
+            showResult('signupResult', '🔄 Testing user registration...', 'info');
+            updateConnectionStatus('🔄 Testing saveProfile endpoint...', 'info');
+            
+            $.ajax({
+                url: '/saveProfile',
+                method: 'GET',
+                data: { 
+                    txtEmail: email,
+                    txtPwd: password,
+                    utype: userType
+                },
+                success: function(response) {
+                    if (response.includes('Database error')) {
+                        showResult('signupResult', '❌ DATABASE CONNECTION FAILED!\n' + response, 'error');
+                        updateConnectionStatus('❌ Connection pool not working for saveProfile', 'error');
+                    } else {
+                        showResult('signupResult', '✅ Registration working!\nResponse: ' + response, 'success');
+                        updateConnectionStatus('✅ saveProfile endpoint working with connection pool', 'success');
+                        
+                        // Set the registered email for login test
+                        $('#loginEmail').val(email);
+                        $('#loginPassword').val(password);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('signupResult', '❌ Request failed: ' + error, 'error');
+                    updateConnectionStatus('❌ Network error in saveProfile', 'error');
+                }
+            });
+        }
+
+        function testLogin() {
+            const email = $('#loginEmail').val();
+            const password = $('#loginPassword').val();
+            
+            if (!email || !password) {
+                showResult('loginResult', '❌ Please enter email and password', 'error');
+                return;
+            }
+            
+            showResult('loginResult', '🔄 Testing user login...', 'info');
+            updateConnectionStatus('🔄 Testing profileLogin endpoint...', 'info');
+            
+            $.ajax({
+                url: '/profileLogin',
+                method: 'POST',
+                data: { 
+                    Email: email,
+                    Pass: password
+                },
+                success: function(response) {
+                    if (response.includes('Database error')) {
+                        showResult('loginResult', '❌ DATABASE CONNECTION FAILED!\n' + response, 'error');
+                        updateConnectionStatus('❌ Connection pool not working for profileLogin', 'error');
+                    } else if (response === 'customer' || response === 'provider') {
+                        showResult('loginResult', '✅ LOGIN SUCCESSFUL!\nUser Type: ' + response, 'success');
+                        updateConnectionStatus('✅ profileLogin endpoint working with connection pool', 'success');
+                        
+                        // Store login info for customer profile test
+                        localStorage.setItem('User', email);
+                        showResult('loginResult', '✅ LOGIN SUCCESSFUL!\nUser Type: ' + response + '\n\n📧 Email stored for customer profile test!', 'success');
+                    } else {
+                        showResult('loginResult', '⚠️ Login response: ' + response, 'warning');
+                        updateConnectionStatus('✅ profileLogin endpoint working (authentication issue)', 'warning');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showResult('loginResult', '❌ Request failed: ' + error, 'error');
+                    updateConnectionStatus('❌ Network error in profileLogin', 'error');
+                }
+            });
+        }
+
+        function setTestCredentials() {
+            // Use a test customer account
+            $('#loginEmail').val('customer@test.com');
+            $('#loginPassword').val('test123');
+            $('#checkEmail').val('customer@test.com');
+            showResult('loginResult', '📧 Set test credentials - click "Test Login" to verify', 'info');
+        }
+
+        function showResult(elementId, message, type) {
+            const element = $('#' + elementId);
+            element.removeClass('success error info warning').addClass(type).text(message).show();
+        }
+
+        function updateConnectionStatus(message, type) {
+            const element = $('#connectionStatus');
+            element.removeClass('success error info warning').addClass(type).html(message);
+        }
+
+        $(document).ready(function() {
+            updateConnectionStatus('🔧 Connection pool fix applied to all authentication endpoints', 'info');
+            $('#checkEmail').val('customer@test.com');
+        });
+    </script>
+</body>
+</html>

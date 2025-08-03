@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KarmYog</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <script>
+
+        function doShowPreview(refFile, refImg) {
+            const [file] = refFile.files
+            if (file) {
+                refImg.src = URL.createObjectURL(file)
+            }
+        }
+        $(document).ready(function () {
+            // Get logged-in user's email and auto-fill
+            let loggedInEmail = localStorage.getItem("User");
+            if (loggedInEmail != null) {
+                $("#txtEmailProvider").val(loggedInEmail);
+                console.log("Auto-filled email from logged-in user:", loggedInEmail);
+                
+                // Automatically search for existing profile
+                searchProviderProfile(loggedInEmail);
+            } else {
+                console.log("No logged-in user found in localStorage");
+                alert("Please login first to access provider profile");
+                window.location.href = "/";
+            }
+            
+            $("#txtEmailProvider").keyup(function () {
+                let email = $("#txtEmailProvider").val();
+                var r = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+                if (r.test(email) == false) {
+                    $("#errEmailPro").html("(Invalid Email)").addClass("not-ok").removeClass("ok");
+                }
+                else
+                    $("#errEmailPro").html("(Valid Email)").addClass("ok").removeClass("not-ok");
+
+            })
+            //-----------------------------
+            // Search function that can be called from button or automatically
+            function searchProviderProfile(email) {
+                if (!email || email.trim() === '') {
+                    alert("Please enter an email address to search");
+                    return;
+                }
+                
+                console.log("Searching for provider profile:", email);
+                
+                // Show loading message
+                $("#btnSearchProvider").prop("disabled", true).text("Searching...");
+                
+                let obj = {
+                    url: "/fetch-providerprofile",
+                    data: {
+                        KuchEmail: email.trim(),
+                    }
+                }
+                
+                $.ajax(obj).done(function (respJsonArray) {
+                    console.log("Search result:", respJsonArray);
+                    
+                    if (respJsonArray && respJsonArray.length > 0) {
+                        // Populate the form with found data
+                        $("#txtEmailProvider").val(respJsonArray[0].email);
+                        $("#txtnamePro").val(respJsonArray[0].Fname);
+                        $("#txtnumberPro").val(respJsonArray[0].contact);
+                        $("#txtgenderPro").val(respJsonArray[0].gender);
+                        $("#txtcategoryPro").val(respJsonArray[0].category);
+                        $("#txtfirmPro").val(respJsonArray[0].firm);
+                        $("#txtwebsitePro").val(respJsonArray[0].website);
+                        $("#txtfirmaddPro").val(respJsonArray[0].location);
+                        $("#txtworkPro").val(respJsonArray[0].since);
+                        $("#txtselectPro").val(respJsonArray[0].otherinfo);
+                        
+                        // Handle profile picture
+                        if (respJsonArray[0].profpic) {
+                            if (respJsonArray[0].profpic.startsWith('http')) {
+                                // Cloudinary URL
+                                $("#prevpic2").prop("src", respJsonArray[0].profpic);
+                            } else {
+                                // Local file
+                                $("#prevpic2").prop("src", "uploads/" + respJsonArray[0].profpic);
+                            }
+                        }
+                        
+                        console.log("✅ Provider profile loaded successfully!");
+                        alert("Provider profile found and loaded successfully!");
+                    } else {
+                        console.log("❌ No provider profile found");
+                        alert("No provider profile found. You can create a new profile by filling the form below.");
+                    }
+                }).fail(function (xhr, status, error) {
+                    console.error("Search failed:", xhr.responseText || error);
+                    
+                    if (xhr.status === 404) {
+                        console.log("📝 Provider profile not found - user can create new profile");
+                        alert("No provider profile found. You can create a new profile by filling the form below.");
+                    } else if (xhr.status === 400) {
+                        alert("Please enter a valid email address.");
+                    } else {
+                        alert("Error searching for provider: " + (xhr.responseJSON?.error || error));
+                    }
+                }).always(function() {
+                    // Re-enable the search button
+                    $("#btnSearchProvider").prop("disabled", false).text("Search");
+                });
+            }
+            
+            // Search button click handler
+            $("#btnSearchProvider").click(function () {
+                let email = $("#txtEmailProvider").val();
+                searchProviderProfile(email);
+            })
+        });
+    </script>
+    <style>
+        body {
+            background-color: rgb(241, 240, 239);
+        }
+
+        .ok {
+            color: rgb(58, 228, 58);
+        }
+
+        .not-ok {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="margin-top: 10px;">
+        <div class=" cointainer d-flex justify-content-center">
+            <img src="https://media.licdn.com/dms/image/C5103AQFkp6O1V6WRYQ/profile-displayphoto-shrink_800_800/0/1563788959309?e=2147483647&v=beta&t=a1gxExM9X6Jgv9k_D42tPNu179KIUAja9VFLwys2JZk"
+                style="border-radius: 100px; height: 200px; width: 210px;" alt="">
+        </div>
+
+    </div>
+    <div class="d-flex justify-content-center">
+        <h1><b>Service Provider Profile</b></h1>
+    </div>
+    <form action="/provider-profile-save" method="post" enctype="multipart/form-data">
+
+        <div class="cointainer d-flex justify-content-center row g-3"
+            style="margin-left: 50px; margin-right: 100px;margin-bottom: 40px;">
+
+            <div class="col-md-12 mb-4" style="margin-top: 70px;">
+                <label for="txtEmailProvider" class="form-label ms-2 "><b>Email ID</b> <span
+                        id="errEmailPro"></span></label>
+                <button type="button" class="btn btn-outline-primary mb-2" id="btnSearchProvider"
+                    name="btnSearchProvider">Search</button>
+                <input type="email" class="form-control" id="txtEmailProvider" name="txtEmailProvider" required
+                    placeholder="Logged-in user email" readonly>
+
+            </div>
+            <div class="col-md-4 mb-4">
+                <label for="txtnamePro" class="form-label ms-2"><b>Name</b></label>
+                <input type="text" class="form-control" id="txtnamePro" name="txtnamePro" placeholder="Fill Your Name">
+            </div>
+            <div class="col-md-4 mb-4">
+                <label for="txtnumberPro" class="form-label ms-2"><b>Contact Number</b></label>
+                <input type="text" class="form-control" id="txtnumberPro" name="txtnumberPro" maxlength="15" pattern="[0-9+\-\s\(\)]+" placeholder="Enter contact number (max 15 characters)">
+                <small class="text-muted">Characters remaining: <span id="contactCounterPro">15</span></small>
+            </div>
+            <div class="col-md-4 mb-4">
+                <label for="txtgenderPro" class="form-label ms-2"><b>Gender</b></label>
+                <select class="form-select" id="txtgenderPro" name="txtgenderPro">
+                    <option selected>Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-4">
+                <label for="txtcategoryPro" class="form-label ms-2"><b>Category</b></label>
+                <select class="form-select" id="txtcategoryPro" name="txtcategoryPro">
+                    <option selected>Select Category</option>
+                    <option>Plumber</option>
+                    <option>Electrician</option>
+                    <option>Carpanter</option>
+                    <option>House Worker</option>
+                    <option>Driver</option>
+                    <option>Painter</option>
+                    <option>Home Tutors</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-4">
+                <label for="txtfirmPro" class="form-label ms-2"><b>Firm</b></label>
+                <input type="text" class="form-control" id="txtfirmPro" name="txtfirmPro"
+                    placeholder="Fill Name of Firm IF Any">
+            </div>
+            <div class="col-md-4 mb-4">
+                <label for="txtwebsitePro" class="form-label ms-2"><b>Website</b></label>
+                <input type="text" class="form-control" id="txtwebsitePro" name="txtwebsitePro"
+                    placeholder="Fill Website of Firm If Any">
+            </div>
+            <div class="col-8 mb-4">
+                <label for="txtfirmaddPro" class="form-label ms-2"><b>Location</b></label>
+                <input type="text" class="form-control" id="txtfirmaddPro" name="txtfirmaddPro"
+                    placeholder="Fill Location of Firm">
+            </div>
+            <div class="col-4 mb-4">
+                <label for="txtworkPro" class="form-label ms-2"><b>Working Experience Since</b></label>
+                <input type="text" class="form-control" id="txtworkPro" name="txtworkPro"
+                    placeholder="Fill Time Span of Experience">
+            </div>
+            <div class="mb-2">
+                <label for="txtpicPro" class="form-label ms-2"><b>ID Proof</b></label>
+                <input class="form-control" type="file" id="txtpicPro" name="txtpicPro" onchange="doShowPreview(this,prevpic2)">
+
+                <img src="" id="prevpic2" alt="" style="margin-top: 10px;">
+            </div>
+            <div class="col-md-12 mb-4">
+                <label for="txtselectPro" class="form-label ms-2"><b>Specialization in Selected Field</b></label>
+                <input type="text" class="form-control" id="txtselectPro" name="txtselectPro"
+                    placeholder="Fill Details">
+            </div>
+            <div class="col-12 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary me-3" id="btnuploadPro" name="btnuploadPro">Upload Data</button>
+                <span id="erruploadPro"></span>
+                <button type="submit" formaction="Edit-Profile" class="btn btn-primary" id="btnEditPro">Edit My Info
+                </button>
+            </div>
+        </div>
+    </form>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    
+    <script>
+        // Character counter for contact number field
+        $('#txtnumberPro').on('input', function() {
+            const maxLength = 15;
+            const currentLength = $(this).val().length;
+            const remaining = maxLength - currentLength;
+            $('#contactCounterPro').text(remaining);
+            
+            if (remaining < 3) {
+                $('#contactCounterPro').css('color', 'red');
+            } else {
+                $('#contactCounterPro').css('color', 'inherit');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Customer Search</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 300px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <h1>Debug Customer Search Issue</h1>
+    
+    <div class="test-section">
+        <h3>Step 0: Check Database Contents</h3>
+        <button onclick="checkDatabase()">Check Sample Data</button>
+        <button onclick="checkTableStructure()">Check Table Structure</button>
+        <div id="database-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 1: Test Email from localStorage</h3>
+        <button onclick="testLocalStorage()">Check localStorage</button>
+        <div id="localStorage-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Debug Database Check</h3>
+        <input type="email" id="debugEmail" placeholder="Enter email to debug" value="">
+        <button onclick="debugDatabase()">Debug Database</button>
+        <div id="debug-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Test Customer Search</h3>
+        <input type="email" id="searchEmail" placeholder="Enter email to search" value="">
+        <button onclick="testCustomerSearch()">Test Search</button>
+        <div id="search-result" class="result"></div>
+    </div>
+    
+    <script>
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div class="' + (isError ? 'error' : 'success') + '">' + 
+                new Date().toLocaleTimeString() + ': ' + message + '</div>' + element.innerHTML;
+        }
+        
+        function checkDatabase() {
+            log("database-result", "🔍 Checking database contents...");
+            
+            $.ajax({
+                url: '/sample-data',
+                success: function(response) {
+                    log("database-result", "📊 Database Sample Data:");
+                    log("database-result", "Users found: " + response.userCount);
+                    log("database-result", "Profiles found: " + response.profileCount);
+                    if (response.users.length > 0) {
+                        log("database-result", "Sample users: " + JSON.stringify(response.users, null, 2));
+                    }
+                    if (response.profiles.length > 0) {
+                        log("database-result", "Sample profiles: " + JSON.stringify(response.profiles, null, 2));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    log("database-result", "❌ Database check error: " + error, true);
+                    log("database-result", "Response: " + xhr.responseText, true);
+                }
+            });
+        }
+        
+        function checkTableStructure() {
+            log("database-result", "🔍 Checking table structure...");
+            
+            $.ajax({
+                url: '/table-structure',
+                success: function(response) {
+                    log("database-result", "📊 Table Structures:");
+                    log("database-result", "Users table: " + JSON.stringify(response.users, null, 2));
+                    log("database-result", "CustomProf table: " + JSON.stringify(response.customprof, null, 2));
+                },
+                error: function(xhr, status, error) {
+                    log("database-result", "❌ Table structure error: " + error, true);
+                    log("database-result", "Response: " + xhr.responseText, true);
+                }
+            });
+        }
+        
+        function testLocalStorage() {
+            const email = localStorage.getItem("User");
+            if (email) {
+                log("localStorage-result", "✅ Found email in localStorage: " + email);
+                document.getElementById("debugEmail").value = email;
+                document.getElementById("searchEmail").value = email;
+            } else {
+                log("localStorage-result", "❌ No email found in localStorage", true);
+                // Set a test email for debugging
+                localStorage.setItem("User", "test.customer@example.com");
+                log("localStorage-result", "🔧 Set test email: test.customer@example.com");
+            }
+        }
+        
+        function debugDatabase() {
+            const email = document.getElementById("debugEmail").value;
+            if (!email) {
+                log("debug-result", "❌ Please enter an email", true);
+                return;
+            }
+            
+            log("debug-result", "🔍 Debugging database for: " + email);
+            
+            $.ajax({
+                url: '/debug-customer',
+                data: { email: email },
+                success: function(response) {
+                    log("debug-result", "📊 Database Debug Results:");
+                    log("debug-result", "User exists: " + response.summary.userExists);
+                    log("debug-result", "User type: " + response.summary.userType);
+                    log("debug-result", "Profile exists: " + response.summary.profileExists);
+                    log("debug-result", "Can fetch profile: " + response.summary.canFetchProfile);
+                    log("debug-result", "Full response: " + JSON.stringify(response, null, 2));
+                },
+                error: function(xhr, status, error) {
+                    log("debug-result", "❌ Debug error: " + error, true);
+                    log("debug-result", "Response: " + xhr.responseText, true);
+                }
+            });
+        }
+        
+        function testCustomerSearch() {
+            const email = document.getElementById("searchEmail").value;
+            if (!email) {
+                log("search-result", "❌ Please enter an email", true);
+                return;
+            }
+            
+            log("search-result", "🔍 Testing customer search for: " + email);
+            
+            $.ajax({
+                url: '/fetch-one',
+                data: { kuchEmail: email },
+                success: function(response) {
+                    log("search-result", "✅ Search successful!");
+                    log("search-result", "Profile data: " + JSON.stringify(response, null, 2));
+                },
+                error: function(xhr, status, error) {
+                    log("search-result", "❌ Search failed: " + status + " " + error, true);
+                    if (xhr.responseJSON) {
+                        log("search-result", "Error details: " + xhr.responseJSON.error, true);
+                    } else {
+                        log("search-result", "Response text: " + xhr.responseText, true);
+                    }
+                }
+            });
+        }
+        
+        // Auto-test on load
+        $(document).ready(function() {
+            checkDatabase();
+            checkTableStructure();
+            testLocalStorage();
+        });
+    </script>
+</body>
+</html>

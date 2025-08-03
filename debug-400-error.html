@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔍 Debug Specific Email Error</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        .result { padding: 15px; margin: 10px 0; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input { padding: 8px; margin: 5px; width: 300px; border: 1px solid #ddd; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug: aymo@gmail.com 400 Error</h1>
+        
+        <div class="info result">
+            <strong>🚨 Error Reported:</strong>
+            GET http://localhost:3004/fetch-one?kuchEmail=aymo%40gmail.com 400 (Bad Request)
+            
+            <strong>Investigation:</strong>
+            - Testing the exact same email that's causing the 400 error
+            - Checking URL encoding, parameter parsing, and server response
+        </div>
+
+        <div style="margin: 20px 0;">
+            <h3>Test the Problematic Email</h3>
+            <input type="email" id="testEmail" value="aymo@gmail.com" readonly>
+            <button onclick="testProblematicEmail()">Test: aymo@gmail.com</button>
+            <div id="result1"></div>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <h3>URL Encoding Test</h3>
+            <button onclick="testURLEncoding()">Test URL Encoding</button>
+            <div id="result2"></div>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <h3>Manual AJAX Test</h3>
+            <input type="text" id="manualEmail" placeholder="Test any email">
+            <button onclick="testManualEmail()">Test Manual Email</button>
+            <div id="result3"></div>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <h3>Server Status Check</h3>
+            <button onclick="checkServerStatus()">Check if Server is Running</button>
+            <div id="result4"></div>
+        </div>
+    </div>
+
+    <script>
+        function displayResult(elementId, data, type = 'info') {
+            document.getElementById(elementId).innerHTML = `<div class="result ${type}">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        function testProblematicEmail() {
+            const email = 'aymo@gmail.com';
+            console.log("🔍 Testing problematic email:", email);
+            
+            displayResult('result1', {
+                status: "Testing...",
+                email: email,
+                encodedEmail: encodeURIComponent(email),
+                timestamp: new Date().toISOString()
+            }, 'info');
+
+            $.ajax({
+                url: "/fetch-one",
+                method: "GET",
+                data: { kuchEmail: email },
+                timeout: 10000
+            }).done(function (response, textStatus, xhr) {
+                console.log("✅ SUCCESS:", response);
+                displayResult('result1', {
+                    status: "✅ SUCCESS - No 400 error!",
+                    httpStatus: xhr.status,
+                    response: response,
+                    responseType: typeof response,
+                    arrayLength: Array.isArray(response) ? response.length : 'Not an array'
+                }, 'success');
+            }).fail(function (xhr, status, error) {
+                console.error("❌ FAILED:", xhr, status, error);
+                displayResult('result1', {
+                    status: "❌ FAILED - Got the 400 error",
+                    httpStatus: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    errorThrown: error,
+                    ajaxStatus: status,
+                    headers: xhr.getAllResponseHeaders()
+                }, 'error');
+            });
+        }
+
+        function testURLEncoding() {
+            const email = 'aymo@gmail.com';
+            const encoded = encodeURIComponent(email);
+            
+            displayResult('result2', {
+                original: email,
+                encoded: encoded,
+                manualURL: `/fetch-one?kuchEmail=${encoded}`,
+                expectedBehavior: "@ should become %40 in URL"
+            }, 'info');
+        }
+
+        function testManualEmail() {
+            const email = document.getElementById('manualEmail').value;
+            if (!email) {
+                displayResult('result3', { error: "Please enter an email to test" }, 'error');
+                return;
+            }
+
+            $.ajax({
+                url: "/fetch-one",
+                data: { kuchEmail: email }
+            }).done(function (response) {
+                displayResult('result3', {
+                    status: "✅ SUCCESS",
+                    email: email,
+                    response: response
+                }, 'success');
+            }).fail(function (xhr, status, error) {
+                displayResult('result3', {
+                    status: "❌ FAILED",
+                    email: email,
+                    httpStatus: xhr.status,
+                    error: error,
+                    responseText: xhr.responseText
+                }, 'error');
+            });
+        }
+
+        function checkServerStatus() {
+            // Test if server is responding at all
+            $.ajax({
+                url: "/",
+                timeout: 5000
+            }).done(function (response) {
+                displayResult('result4', {
+                    status: "✅ Server is running",
+                    homePageResponse: "Server responded to / request"
+                }, 'success');
+            }).fail(function (xhr, status, error) {
+                displayResult('result4', {
+                    status: "❌ Server connection failed",
+                    error: error,
+                    status: status,
+                    possibleCause: "Server might not be running on port 3004"
+                }, 'error');
+            });
+        }
+
+        // Auto-run the problematic email test on page load
+        window.onload = function() {
+            console.log("🎯 Debug page loaded - testing aymo@gmail.com");
+            setTimeout(testProblematicEmail, 1000);
+        };
+    </script>
+</body>
+</html>

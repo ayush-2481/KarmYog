@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Provider Search</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 300px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Provider Search Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Check if specific provider exists</h2>
+        <button onclick="testSpecificProvider()">Test robert.mechanic@gmail.com</button>
+        <div id="test1-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Search functionality</h2>
+        <input type="email" id="testEmail" value="robert.mechanic@gmail.com" placeholder="Enter email to search">
+        <button onclick="testSearch()">Search Provider</button>
+        <div id="test2-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: List all providers</h2>
+        <button onclick="listAllProviders()">List All Providers</button>
+        <div id="test3-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Health Check</h2>
+        <button onclick="healthCheck()">Check Server Health</button>
+        <div id="test4-result" class="result"></div>
+    </div>
+
+    <script>
+        function testSpecificProvider() {
+            $("#test1-result").html("Testing...");
+            
+            $.get("/test-provider")
+                .done(function(data) {
+                    $("#test1-result").html(`
+                        <div class="${data.found ? 'success' : 'error'}">
+                            <strong>Result:</strong> ${data.found ? 'Provider found!' : 'Provider not found'}<br>
+                            <strong>Email:</strong> ${data.email}<br>
+                            <strong>Count:</strong> ${data.count}<br>
+                            <strong>Data:</strong> <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                        </div>
+                    `);
+                })
+                .fail(function(xhr, status, error) {
+                    $("#test1-result").html(`<div class="error">Error: ${xhr.responseText || error}</div>`);
+                });
+        }
+        
+        function testSearch() {
+            const email = $("#testEmail").val();
+            $("#test2-result").html("Searching...");
+            
+            $.get("/fetch-providerprofile", { KuchEmail: email })
+                .done(function(data) {
+                    $("#test2-result").html(`
+                        <div class="success">
+                            <strong>Search successful!</strong><br>
+                            <strong>Results:</strong> ${data.length} provider(s) found<br>
+                            <strong>Data:</strong> <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `);
+                })
+                .fail(function(xhr, status, error) {
+                    const response = xhr.responseJSON || { error: error };
+                    $("#test2-result").html(`
+                        <div class="error">
+                            <strong>Search failed!</strong><br>
+                            <strong>Status:</strong> ${xhr.status}<br>
+                            <strong>Error:</strong> ${response.error || error}
+                        </div>
+                    `);
+                });
+        }
+        
+        function listAllProviders() {
+            $("#test3-result").html("Loading...");
+            
+            $.get("/angular-fetchprovider-all", { simple: 'true', limit: 5 })
+                .done(function(data) {
+                    const providers = Array.isArray(data) ? data : data.providers || [];
+                    $("#test3-result").html(`
+                        <div class="success">
+                            <strong>Total providers:</strong> ${providers.length}<br>
+                            <strong>Sample data:</strong> <pre>${JSON.stringify(providers.slice(0, 3), null, 2)}</pre>
+                        </div>
+                    `);
+                })
+                .fail(function(xhr, status, error) {
+                    $("#test3-result").html(`<div class="error">Error: ${xhr.responseText || error}</div>`);
+                });
+        }
+        
+        function healthCheck() {
+            $("#test4-result").html("Checking...");
+            
+            $.get("/health")
+                .done(function(data) {
+                    $("#test4-result").html(`
+                        <div class="success">
+                            <strong>Server Status:</strong> ${data.status}<br>
+                            <strong>Message:</strong> ${data.message}<br>
+                            <strong>Available Routes:</strong> <pre>${JSON.stringify(data.routes, null, 2)}</pre>
+                        </div>
+                    `);
+                })
+                .fail(function(xhr, status, error) {
+                    $("#test4-result").html(`<div class="error">Health check failed: ${error}</div>`);
+                });
+        }
+        
+        // Auto-run tests when page loads
+        $(document).ready(function() {
+            console.log("Test page loaded. You can run tests manually or check the console for any errors.");
+        });
+    </script>
+</body>
+</html>

@@ -118,6 +118,20 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
         
+        .form-input:read-only {
+            background: #f8fafc;
+            color: #64748b;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+        
+        .form-input:read-only:hover {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            box-shadow: none;
+            transform: none;
+        }
+        
         .form-textarea {
             resize: vertical;
             min-height: 80px;
@@ -506,7 +520,106 @@
         }
     </style>
     <script>
+        // Modern notification function (defined early for use in document.ready)
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            $('.notification').remove();
+            
+            const iconMap = {
+                'success': 'fas fa-check-circle',
+                'error': 'fas fa-exclamation-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'info': 'fas fa-info-circle'
+            };
+            
+            const colorMap = {
+                'success': '#22c55e',
+                'error': '#ef4444',
+                'warning': '#f59e0b',
+                'info': '#0ea5e9'
+            };
+            
+            const notification = $(`
+                <div class="notification" style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: white;
+                    border-left: 4px solid ${colorMap[type]};
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                    z-index: 1000;
+                    max-width: 400px;
+                    animation: slideIn 0.3s ease;
+                ">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="${iconMap[type]}" style="color: ${colorMap[type]};"></i>
+                        <span style="color: #1e293b; font-weight: 500;">${message}</span>
+                        <button onclick="$(this).closest('.notification').remove()" style="
+                            background: none;
+                            border: none;
+                            color: #64748b;
+                            cursor: pointer;
+                            margin-left: auto;
+                            padding: 0;
+                        ">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `);
+            
+            $('body').append(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 5000);
+        }
+        
         $(document).ready(function () {
+            console.log("🔧 Document ready - jQuery loaded successfully");
+            console.log("🔧 Current URL:", window.location.href);
+            console.log("🔧 Checking localStorage...");
+            
+            // Add a slight delay to ensure DOM is fully loaded
+            setTimeout(function() {
+                console.log("🔧 Starting email auto-fill process...");
+                
+                // Get logged-in user's email and auto-fill
+                let loggedInEmail = localStorage.getItem("User");
+                console.log("🔧 localStorage 'User' value:", loggedInEmail);
+                console.log("🔧 localStorage 'User' type:", typeof loggedInEmail);
+                
+                // Check if email field exists
+                const emailField = $("#txtEmailProf");
+                console.log("🔧 Email field found:", emailField.length > 0);
+                console.log("🔧 Email field current value:", emailField.val());
+                
+                if (loggedInEmail != null && loggedInEmail.trim() !== '') {
+                    console.log("✅ Found logged-in email, auto-filling...");
+                    emailField.val(loggedInEmail.trim());
+                    console.log("✅ Auto-filled email from logged-in user:", loggedInEmail);
+                    console.log("🔧 Email field value after setting:", emailField.val());
+                    
+                    // Show info message that user can search for existing profile
+                    showNotification("Email auto-filled from your account. Click 'Search' to load existing data or fill the form to create a new profile.", "info");
+                } else {
+                    console.log("❌ No logged-in user found in localStorage");
+                    console.log("🔧 localStorage contents:", localStorage);
+                    showNotification("Please login first to access customer profile. You will be redirected in 10 seconds.", "error");
+                    
+                    // Add a manual redirect link for better UX
+                    setTimeout(() => {
+                        const redirectDiv = $('<div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; z-index: 9999;"><h3>Please Login</h3><p>You need to login to access your customer profile.</p><a href="/" style="background: #0ea5e9; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; margin: 0 0.5rem;">Go to Login</a><button onclick="$(this).parent().remove()" style="background: #64748b; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer; margin: 0 0.5rem;">Stay Here</button></div>');
+                        $('body').append(redirectDiv);
+                    }, 3000);
+                }
+            }, 100); // 100ms delay to ensure DOM is ready
+            
             $("#txtEmailProf").keyup(function () {
                 let email = $("#txtEmailProf").val();
                 // More flexible email validation regex
@@ -817,66 +930,6 @@
             }
         });
 
-        // Modern notification function
-        function showNotification(message, type = 'info') {
-            // Remove existing notifications
-            $('.notification').remove();
-            
-            const iconMap = {
-                'success': 'fas fa-check-circle',
-                'error': 'fas fa-exclamation-circle',
-                'warning': 'fas fa-exclamation-triangle',
-                'info': 'fas fa-info-circle'
-            };
-            
-            const colorMap = {
-                'success': '#22c55e',
-                'error': '#ef4444',
-                'warning': '#f59e0b',
-                'info': '#0ea5e9'
-            };
-            
-            const notification = $(`
-                <div class="notification" style="
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: white;
-                    border-left: 4px solid ${colorMap[type]};
-                    padding: 1rem 1.5rem;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-                    z-index: 1000;
-                    max-width: 400px;
-                    animation: slideIn 0.3s ease;
-                ">
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <i class="${iconMap[type]}" style="color: ${colorMap[type]};"></i>
-                        <span style="color: #1e293b; font-weight: 500;">${message}</span>
-                        <button onclick="$(this).closest('.notification').remove()" style="
-                            background: none;
-                            border: none;
-                            color: #64748b;
-                            cursor: pointer;
-                            margin-left: auto;
-                            padding: 0;
-                        ">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `);
-            
-            $('body').append(notification);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                notification.fadeOut(300, function() {
-                    $(this).remove();
-                });
-            }, 5000);
-        }
-
         // Character counter for address field
         $('#txtAddProf').on('input', function() {
             const maxLength = 1000;
@@ -1028,7 +1081,7 @@
                         </label>
                         <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
                             <input type="email" class="form-input" name="txtEmailProf" id="txtEmailProf" 
-                                   placeholder="Enter your email address" required style="flex: 1;">
+                                   placeholder="Enter your email address" required readonly style="flex: 1;">
                             <button type="button" class="btn btn-secondary btn-sm" id="btnSearch">
                                 <i class="fas fa-search"></i>
                                 Search
@@ -1039,7 +1092,7 @@
                         </div>
                         <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
                             <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i>
-                            Enter your email and click Search to load existing profile, or start filling details for a new profile
+                            Email auto-filled from your account. Click Search to load existing profile, or fill the form to create a new profile
                         </div>
                     </div>
                 </div>

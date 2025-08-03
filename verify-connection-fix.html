@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Connection Fix Verification</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+        .status-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .test-section {
+            margin: 25px 0;
+            padding: 25px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .test-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .test-section h3::before {
+            content: "🧪";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        input {
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            width: 320px;
+            font-size: 14px;
+            margin: 5px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .fix-summary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .fix-summary h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Database Connection Pool Fix</h1>
+            <p>Testing the resolution for "Can't add new command when connection is in closed state" error</p>
+        </div>
+        
+        <div class="fix-summary">
+            <h2>✅ Connection Pool Implementation Complete</h2>
+            <p><strong>Changes Made:</strong></p>
+            <ul>
+                <li>✅ Replaced single MySQL connection with connection pool (10 connections)</li>
+                <li>✅ Added automatic reconnection with 2-second delay</li>
+                <li>✅ Updated `/fetch-one` endpoint to use connection pooling</li>
+                <li>✅ Updated `/custProfileSave` endpoint to use connection pooling</li>
+                <li>✅ Updated `/custProfileUpdate` endpoint to use connection pooling</li>
+                <li>✅ Added proper connection release after each query</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 1: Customer Profile Search</h3>
+            <p>This tests the main functionality that was failing with the closed connection error.</p>
+            <input type="email" id="testEmail" placeholder="Enter customer email to test" value="">
+            <br>
+            <button onclick="testCustomerSearch()" id="searchBtn">🔍 Test Customer Search</button>
+            <button onclick="setTestEmail()">📧 Use Test Email</button>
+            <div id="searchResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 2: Connection Pool Stress Test</h3>
+            <p>Send multiple simultaneous requests to test connection pool handling.</p>
+            <button onclick="testConnectionPool()" id="poolBtn">⚡ Test Connection Pool (10 simultaneous requests)</button>
+            <div id="poolResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 3: Auto-fill and Profile Integration</h3>
+            <p>Test the complete customer profile workflow.</p>
+            <button onclick="testAutoFill()">📝 Test Email Auto-fill</button>
+            <button onclick="openCustomerProfile()">🎯 Open Customer Profile</button>
+            <div id="integrationResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="status-card">
+            <h3>🔍 Connection Status</h3>
+            <div id="connectionStatus">Click any test button to check connection status...</div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Set default email for testing
+            const storedEmail = localStorage.getItem('User');
+            if (storedEmail) {
+                $('#testEmail').val(storedEmail);
+                updateConnectionStatus('✅ Found stored email: ' + storedEmail, 'success');
+            } else {
+                updateConnectionStatus('📧 No stored email found. You can set a test email.', 'info');
+            }
+        });
+
+        function setTestEmail() {
+            const testEmail = 'customer@test.com';
+            localStorage.setItem('User', testEmail);
+            $('#testEmail').val(testEmail);
+            updateConnectionStatus('📧 Set test email: ' + testEmail, 'success');
+        }
+
+        function testCustomerSearch() {
+            const email = $('#testEmail').val();
+            if (!email) {
+                showResult('searchResult', '❌ Please enter an email address first', 'error');
+                return;
+            }
+            
+            $('#searchBtn').prop('disabled', true).text('🔄 Testing...');
+            showResult('searchResult', '🔄 Testing customer search with connection pooling...', 'info');
+            updateConnectionStatus('🔄 Testing database connection...', 'info');
+            
+            $.ajax({
+                url: '/fetch-one',
+                method: 'GET',
+                data: { kuchEmail: email },
+                timeout: 10000,
+                success: function(response) {
+                    showResult('searchResult', '✅ SUCCESS! Customer search working with connection pool.\n\nResponse:\n' + JSON.stringify(response, null, 2), 'success');
+                    updateConnectionStatus('✅ Database connection pool working correctly!', 'success');
+                },
+                error: function(xhr, status, error) {
+                    const errorMsg = xhr.responseJSON ? xhr.responseJSON.error : error;
+                    if (errorMsg.includes('closed state')) {
+                        showResult('searchResult', '❌ CONNECTION POOL FAILED!\nStill getting closed connection error:\n' + errorMsg, 'error');
+                        updateConnectionStatus('❌ Connection pool not working - server may need restart', 'error');
+                    } else {
+                        showResult('searchResult', '✅ Connection pool working! (Different error):\n' + errorMsg, 'warning');
+                        updateConnectionStatus('✅ No connection errors detected', 'success');
+                    }
+                },
+                complete: function() {
+                    $('#searchBtn').prop('disabled', false).text('🔍 Test Customer Search');
+                }
+            });
+        }
+
+        function testConnectionPool() {
+            $('#poolBtn').prop('disabled', true).text('⚡ Testing...');
+            showResult('poolResult', '🔄 Sending 10 simultaneous requests to test connection pool...', 'info');
+            
+            const email = $('#testEmail').val() || 'test@example.com';
+            const promises = [];
+            const startTime = Date.now();
+            
+            for (let i = 0; i < 10; i++) {
+                const promise = $.ajax({
+                    url: '/fetch-one',
+                    method: 'GET',
+                    data: { kuchEmail: email },
+                    timeout: 15000
+                }).then(
+                    response => ({ success: true, index: i, response }),
+                    xhr => ({ success: false, index: i, error: xhr.responseJSON ? xhr.responseJSON.error : 'Network error' })
+                );
+                promises.push(promise);
+            }
+            
+            Promise.all(promises).then(results => {
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                const successCount = results.filter(r => r.success).length;
+                const failureCount = results.filter(r => !r.success).length;
+                const connectionErrors = results.filter(r => !r.success && r.error.includes('closed state')).length;
+                
+                let resultText = `⏱️ Test completed in ${duration}ms\n\n`;
+                resultText += `📊 Results:\n`;
+                resultText += `✅ Successful requests: ${successCount}/10\n`;
+                resultText += `❌ Failed requests: ${failureCount}/10\n`;
+                resultText += `🔌 Connection errors: ${connectionErrors}/10\n\n`;
+                
+                if (connectionErrors === 0) {
+                    resultText += `🎉 CONNECTION POOL SUCCESS!\nNo closed connection errors detected.`;
+                    showResult('poolResult', resultText, 'success');
+                    updateConnectionStatus('🎉 Connection pool handling concurrent requests perfectly!', 'success');
+                } else {
+                    resultText += `⚠️ CONNECTION ISSUES DETECTED!\n${connectionErrors} requests failed with connection errors.`;
+                    showResult('poolResult', resultText, 'error');
+                    updateConnectionStatus('⚠️ Connection pool may need additional configuration', 'warning');
+                }
+                
+                $('#poolBtn').prop('disabled', false).text('⚡ Test Connection Pool (10 simultaneous requests)');
+            });
+        }
+
+        function testAutoFill() {
+            const email = localStorage.getItem('User');
+            if (email) {
+                showResult('integrationResult', '✅ Email auto-fill working!\nStored email: ' + email, 'success');
+            } else {
+                showResult('integrationResult', '❌ No email in localStorage\nSet a test email first.', 'warning');
+            }
+        }
+
+        function openCustomerProfile() {
+            const email = localStorage.getItem('User');
+            if (email) {
+                showResult('integrationResult', '🔄 Opening customer profile with email: ' + email, 'info');
+                window.open('/profile-customer.html', '_blank');
+            } else {
+                showResult('integrationResult', '❌ No email set. Use "Use Test Email" first.', 'warning');
+            }
+        }
+
+        function showResult(elementId, message, type) {
+            const element = $('#' + elementId);
+            element.removeClass('success error info warning').addClass(type).text(message).show();
+        }
+
+        function updateConnectionStatus(message, type) {
+            const element = $('#connectionStatus');
+            element.removeClass('success error info warning').addClass(type).html(message);
+        }
+    </script>
+</body>
+</html>

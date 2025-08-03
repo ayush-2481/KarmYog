@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🎯 Console Error Fix Test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .test-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; }
+        .result { padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        input, button { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎯 Customer Search Console Error Fix Test</h1>
+        
+        <div class="warning result">
+            <strong>📋 Testing Objective:</strong><br>
+            ✅ Verify that "customer not found" returns empty array (no console error)<br>
+            ✅ Verify that existing customers return data normally<br>
+            ✅ Verify that bad requests still return proper errors
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Test 1: Non-Existent Customer (Should NOT cause console error)</h3>
+            <input type="email" id="email1" placeholder="Enter non-existent email" value="nonexistent@test.com">
+            <button onclick="testNonExistent()">Test Non-Existent Customer</button>
+            <div id="result1"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Test 2: Empty Email (Should return 400 error)</h3>
+            <button onclick="testEmptyEmail()">Test Empty Email</button>
+            <div id="result2"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Console Log Monitor</h3>
+            <p>Open your browser's Developer Console (F12) to monitor for errors during testing.</p>
+            <div id="consoleStatus" class="result warning">
+                <strong>Console Status:</strong> Ready to test - Watch for any console errors!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function displayResult(elementId, data, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        function updateConsoleStatus(message, type = 'warning') {
+            document.getElementById('consoleStatus').innerHTML = `<div class="result ${type}"><strong>Console Status:</strong> ${message}</div>`;
+        }
+
+        function testNonExistent() {
+            const email = document.getElementById('email1').value || 'nonexistent@test.com';
+            console.log("🔍 Testing non-existent customer:", email);
+            updateConsoleStatus("Testing non-existent customer...", 'warning');
+            
+            $.ajax({
+                url: "/fetch-one",
+                data: { kuchEmail: email }
+            }).done(function (response) {
+                console.log("✅ SUCCESS Response:", response);
+                
+                if (response.length === 0) {
+                    displayResult('result1', {
+                        status: "✅ PERFECT! No console error",
+                        message: "Server returned empty array for non-existent customer",
+                        response: response,
+                        responseType: typeof response,
+                        arrayLength: response.length
+                    }, 'success');
+                    updateConsoleStatus("✅ SUCCESS: No console errors detected!", 'success');
+                } else {
+                    displayResult('result1', {
+                        status: "Unexpected: Customer found",
+                        response: response
+                    }, 'warning');
+                    updateConsoleStatus("⚠️ Unexpected: Customer was found", 'warning');
+                }
+            }).fail(function (xhr, status, error) {
+                console.error("❌ Unexpected FAIL for non-existent customer:", xhr, status, error);
+                displayResult('result1', {
+                    status: "❌ FAILED - This should not happen",
+                    error: error,
+                    status: status,
+                    responseText: xhr.responseText
+                }, 'error');
+                updateConsoleStatus("❌ ERROR: Unexpected failure in AJAX", 'error');
+            });
+        }
+
+        function testEmptyEmail() {
+            console.log("🔍 Testing empty email (should cause 400 error)");
+            updateConsoleStatus("Testing empty email (expecting 400 error)...", 'warning');
+            
+            $.ajax({
+                url: "/fetch-one",
+                data: { kuchEmail: "" }
+            }).done(function (response) {
+                console.log("Unexpected success for empty email:", response);
+                displayResult('result2', {
+                    status: "⚠️ Unexpected success",
+                    response: response
+                }, 'warning');
+                updateConsoleStatus("⚠️ Unexpected: Empty email succeeded", 'warning');
+            }).fail(function (xhr, status, error) {
+                console.log("Expected failure for empty email:", xhr.status, xhr.responseJSON);
+                
+                if (xhr.status === 400) {
+                    displayResult('result2', {
+                        status: "✅ CORRECT: 400 Bad Request as expected",
+                        error: xhr.responseJSON?.error || "Email parameter is required",
+                        httpStatus: xhr.status
+                    }, 'success');
+                    updateConsoleStatus("✅ CORRECT: 400 error for empty email is expected", 'success');
+                } else {
+                    displayResult('result2', {
+                        status: "❌ Wrong error type",
+                        httpStatus: xhr.status,
+                        error: error
+                    }, 'error');
+                    updateConsoleStatus("❌ Wrong error type returned", 'error');
+                }
+            });
+        }
+
+        // Initialize
+        window.onload = function() {
+            console.log("🎯 Console Error Fix Test initialized");
+            updateConsoleStatus("Ready to test - Page loaded successfully", 'success');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Signup & Navigation Changes</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background-color: #f5f5f5; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            background: #f9f9f9; 
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+        }
+        .success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+        }
+        .error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+        }
+        .info { 
+            background: #d1ecf1; 
+            color: #0c5460; 
+            border: 1px solid #bee5eb; 
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            cursor: pointer; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+        }
+        button:hover { 
+            background: #0056b3; 
+        }
+        select, input { 
+            padding: 8px 12px; 
+            margin: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 3px; 
+            width: 200px; 
+        }
+        .form-group { 
+            margin: 15px 0; 
+        }
+        label { 
+            display: inline-block; 
+            width: 120px; 
+            font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Signup & Navigation Changes</h1>
+        <p>This page tests the new signup flow and navigation changes.</p>
+
+        <!-- Test Section 1: Test Signup Flow -->
+        <div class="test-section">
+            <h2>1. Test Signup Flow</h2>
+            <p>Test that users are redirected to their appropriate dashboard after signup.</p>
+            
+            <div class="form-group">
+                <label for="testEmail">Email:</label>
+                <input type="email" id="testEmail" value="testuser@example.com" placeholder="Enter test email">
+            </div>
+            
+            <div class="form-group">
+                <label for="testPassword">Password:</label>
+                <input type="password" id="testPassword" value="test123" placeholder="Enter password">
+            </div>
+            
+            <div class="form-group">
+                <label for="testUserType">User Type:</label>
+                <select id="testUserType">
+                    <option value="Customer">Customer</option>
+                    <option value="Service-Provider">Service Provider</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            
+            <button onclick="testSignup()">Test Signup</button>
+            <div id="signupResult"></div>
+        </div>
+
+        <!-- Test Section 2: Test Navigation -->
+        <div class="test-section">
+            <h2>2. Test Navigation Changes</h2>
+            <p>Verify that the navigation dropdown shows only Dashboard and Logout options.</p>
+            
+            <div class="info">
+                <strong>Expected Changes:</strong>
+                <ul>
+                    <li>✅ After signup, users go directly to their dashboard (not profile setup)</li>
+                    <li>✅ Navigation dropdown shows only: Dashboard, Logout</li>
+                    <li>❌ "My Profile" option should be removed from dropdown</li>
+                </ul>
+            </div>
+            
+            <button onclick="simulateLogin()">Simulate Login State</button>
+            <button onclick="testDashboardRedirect()">Test Dashboard Links</button>
+            <div id="navigationResult"></div>
+        </div>
+
+        <!-- Test Section 3: Verify Endpoints -->
+        <div class="test-section">
+            <h2>3. Verify Server Endpoints</h2>
+            <p>Check that all required endpoints are working.</p>
+            
+            <button onclick="testSaveProfile()">Test /saveProfile Endpoint</button>
+            <button onclick="testDashboardPages()">Test Dashboard Pages</button>
+            <div id="endpointResult"></div>
+        </div>
+
+        <!-- Test Section 4: Quick Links -->
+        <div class="test-section">
+            <h2>4. Quick Links</h2>
+            <p>Navigate to different parts of the application for testing.</p>
+            
+            <button onclick="location.href='/'">Go to Home Page</button>
+            <button onclick="location.href='/customerDash'">Customer Dashboard</button>
+            <button onclick="location.href='/service-providerdashboard.html'">Provider Dashboard</button>
+            <button onclick="location.href='/admin'">Admin Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        function displayResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            const className = isError ? 'error' : 'success';
+            element.innerHTML = `
+                <div class="status ${className}">
+                    <strong>${isError ? 'Error:' : 'Result:'}</strong>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        function displayInfo(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status info">${message}</div>`;
+        }
+
+        async function testSignup() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            const userType = document.getElementById('testUserType').value;
+
+            if (!email || !password) {
+                displayResult('signupResult', { error: 'Please enter email and password' }, true);
+                return;
+            }
+
+            displayInfo('signupResult', 'Testing signup...');
+
+            try {
+                const response = await fetch('/saveProfile?' + new URLSearchParams({
+                    txtEmail: email,
+                    txtPwd: password,
+                    utype: userType
+                }));
+                
+                const result = await response.text();
+                
+                const testResult = {
+                    email: email,
+                    userType: userType,
+                    serverResponse: result,
+                    expectedRedirect: userType === 'Customer' ? '/customerDash' : 
+                                     userType === 'Service-Provider' ? '/service-providerdashboard.html' :
+                                     userType === 'Admin' ? '/admin' : 'unknown',
+                    instructions: 'If signup is successful, the page should redirect to the dashboard automatically.',
+                    timestamp: new Date().toISOString()
+                };
+
+                if (result.includes('Successfully')) {
+                    displayResult('signupResult', testResult);
+                } else {
+                    displayResult('signupResult', testResult, true);
+                }
+            } catch (error) {
+                displayResult('signupResult', { error: error.message }, true);
+            }
+        }
+
+        function simulateLogin() {
+            // Simulate being logged in
+            localStorage.setItem('User', 'testuser@example.com');
+            localStorage.setItem('usertype', 'Customer');
+            
+            displayResult('navigationResult', {
+                message: 'Simulated login state set',
+                user: 'testuser@example.com',
+                userType: 'Customer',
+                instructions: 'Go to home page to see the navigation dropdown. It should show only Dashboard and Logout options.'
+            });
+        }
+
+        function testDashboardRedirect() {
+            const userTypes = ['Customer', 'Service-Provider', 'Admin'];
+            const expectedUrls = ['/customerDash', '/service-providerdashboard.html', '/admin'];
+            
+            const results = userTypes.map((type, index) => ({
+                userType: type,
+                expectedDashboard: expectedUrls[index],
+                testUrl: window.location.origin + expectedUrls[index]
+            }));
+
+            displayResult('navigationResult', {
+                dashboardUrls: results,
+                instructions: 'These are the dashboard URLs that users should be redirected to after signup/login.'
+            });
+        }
+
+        async function testSaveProfile() {
+            displayInfo('endpointResult', 'Testing /saveProfile endpoint...');
+
+            try {
+                const response = await fetch('/saveProfile?' + new URLSearchParams({
+                    txtEmail: 'test@endpoint.com',
+                    txtPwd: 'testpass',
+                    utype: 'Customer'
+                }));
+                
+                const result = await response.text();
+                
+                displayResult('endpointResult', {
+                    endpoint: '/saveProfile',
+                    status: response.status,
+                    response: result,
+                    working: response.ok
+                });
+            } catch (error) {
+                displayResult('endpointResult', { 
+                    endpoint: '/saveProfile',
+                    error: error.message 
+                }, true);
+            }
+        }
+
+        async function testDashboardPages() {
+            const dashboards = [
+                '/customerDash',
+                '/service-providerdashboard.html',
+                '/admin'
+            ];
+
+            const results = [];
+
+            for (const dashboard of dashboards) {
+                try {
+                    const response = await fetch(dashboard);
+                    results.push({
+                        url: dashboard,
+                        status: response.status,
+                        accessible: response.ok
+                    });
+                } catch (error) {
+                    results.push({
+                        url: dashboard,
+                        status: 'error',
+                        error: error.message,
+                        accessible: false
+                    });
+                }
+            }
+
+            displayResult('endpointResult', {
+                dashboardTests: results,
+                summary: results.filter(r => r.accessible).length + ' out of ' + results.length + ' dashboards accessible'
+            });
+        }
+
+        // Auto-run basic checks on page load
+        window.onload = function() {
+            console.log('Signup & Navigation Test Tool loaded');
+            
+            // Check if user is already logged in
+            const user = localStorage.getItem('User');
+            const userType = localStorage.getItem('usertype');
+            
+            if (user && userType) {
+                displayInfo('navigationResult', `Currently logged in as: ${user} (${userType}). Go to home page to test navigation dropdown.`);
+            }
+        };
+    </script>
+</body>
+</html>

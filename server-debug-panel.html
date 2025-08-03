@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔧 Server Debug Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; }
+        .result { padding: 15px; margin: 10px 0; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input { padding: 8px; margin: 5px; width: 300px; border: 1px solid #ddd; border-radius: 4px; }
+        .debug-url { background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Server Debug Panel - 400 Error Investigation</h1>
+        
+        <div class="warning result">
+            <strong>🎯 Mission:</strong> Identify why aymo@gmail.com is causing 400 Bad Request
+            <strong>Current Server Status:</strong> Check if server is running with enhanced debug logging
+        </div>
+
+        <div class="test-section">
+            <h3>🌐 Server Health Check</h3>
+            <button onclick="checkServer()">Check Server Status</button>
+            <div id="serverStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Test Exact Problematic URL</h3>
+            <div class="debug-url">
+                Direct URL: http://localhost:3004/fetch-one?kuchEmail=aymo%40gmail.com
+            </div>
+            <button onclick="testExactURL()">Test Exact URL from Error</button>
+            <div id="exactURLResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Parameter Encoding Test</h3>
+            <input type="email" id="testEmail" value="aymo@gmail.com">
+            <button onclick="testParameterEncoding()">Test Parameter Encoding</button>
+            <div id="encodingResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🛠️ Raw Fetch Test</h3>
+            <button onclick="testRawFetch()">Test with Raw Fetch API</button>
+            <div id="rawFetchResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Debug Information</h3>
+            <button onclick="showDebugInfo()">Show Current Debug Info</button>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        function displayResult(elementId, data, type = 'info') {
+            document.getElementById(elementId).innerHTML = `<div class="result ${type}">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        function checkServer() {
+            displayResult('serverStatus', { status: "Checking server..." }, 'info');
+            
+            fetch('/')
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                })
+                .then(data => {
+                    displayResult('serverStatus', {
+                        status: "✅ Server is running",
+                        httpStatus: 200,
+                        timestamp: new Date().toISOString()
+                    }, 'success');
+                })
+                .catch(error => {
+                    displayResult('serverStatus', {
+                        status: "❌ Server connection failed",
+                        error: error.message,
+                        timestamp: new Date().toISOString(),
+                        suggestion: "Please start the server with debug-server.bat"
+                    }, 'error');
+                });
+        }
+
+        function testExactURL() {
+            const exactURL = '/fetch-one?kuchEmail=aymo%40gmail.com';
+            console.log("🔍 Testing exact URL from error:", exactURL);
+            
+            displayResult('exactURLResult', { status: "Testing exact URL...", url: exactURL }, 'info');
+            
+            fetch(exactURL)
+                .then(response => {
+                    console.log("Response status:", response.status);
+                    return response.json().then(data => ({ status: response.status, data }));
+                })
+                .then(result => {
+                    if (result.status === 200) {
+                        displayResult('exactURLResult', {
+                            status: "✅ SUCCESS - No 400 error!",
+                            httpStatus: result.status,
+                            response: result.data
+                        }, 'success');
+                    } else {
+                        displayResult('exactURLResult', {
+                            status: "❌ Got error status",
+                            httpStatus: result.status,
+                            response: result.data
+                        }, 'error');
+                    }
+                })
+                .catch(error => {
+                    displayResult('exactURLResult', {
+                        status: "❌ Fetch failed",
+                        error: error.message
+                    }, 'error');
+                });
+        }
+
+        function testParameterEncoding() {
+            const email = document.getElementById('testEmail').value;
+            const encodedEmail = encodeURIComponent(email);
+            
+            displayResult('encodingResult', {
+                originalEmail: email,
+                encodedEmail: encodedEmail,
+                manualURL: `/fetch-one?kuchEmail=${encodedEmail}`,
+                note: "@ should become %40"
+            }, 'info');
+            
+            // Test both ways
+            Promise.all([
+                fetch(`/fetch-one?kuchEmail=${email}`).then(r => ({ method: 'unencoded', status: r.status, response: r.json() })),
+                fetch(`/fetch-one?kuchEmail=${encodedEmail}`).then(r => ({ method: 'encoded', status: r.status, response: r.json() }))
+            ]).then(results => {
+                console.log("Encoding test results:", results);
+            });
+        }
+
+        function testRawFetch() {
+            const email = 'aymo@gmail.com';
+            
+            displayResult('rawFetchResult', { status: "Testing with raw Fetch API..." }, 'info');
+            
+            fetch('/fetch-one?kuchEmail=' + encodeURIComponent(email), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                console.log("Raw fetch response:", response);
+                return response.json().then(data => ({
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: Object.fromEntries(response.headers.entries()),
+                    data: data
+                }));
+            })
+            .then(result => {
+                displayResult('rawFetchResult', {
+                    status: result.status === 200 ? "✅ SUCCESS" : "❌ FAILED",
+                    httpStatus: result.status,
+                    statusText: result.statusText,
+                    responseData: result.data,
+                    responseHeaders: result.headers
+                }, result.status === 200 ? 'success' : 'error');
+            })
+            .catch(error => {
+                displayResult('rawFetchResult', {
+                    status: "❌ Exception occurred",
+                    error: error.message,
+                    errorType: error.constructor.name
+                }, 'error');
+            });
+        }
+
+        function showDebugInfo() {
+            displayResult('debugInfo', {
+                userAgent: navigator.userAgent,
+                currentURL: window.location.href,
+                timestamp: new Date().toISOString(),
+                jQueryVersion: typeof $ !== 'undefined' ? $.fn.jquery : 'Not loaded',
+                serverExpected: 'http://localhost:3004',
+                debugServerFile: 'debug-server.bat (run this to start server with logging)'
+            }, 'info');
+        }
+
+        // Auto-check server status on load
+        window.onload = function() {
+            setTimeout(checkServer, 500);
+        };
+    </script>
+</body>
+</html>

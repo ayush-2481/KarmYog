@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KarmYog - Provider Dashboard Access</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: none;
+        }
+        .btn {
+            border-radius: 8px;
+            padding: 12px 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid d-flex align-items-center justify-content-center vh-100">
+        <div class="row w-100">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body p-5 text-center">
+                        <i class="fas fa-tools fa-4x text-primary mb-4"></i>
+                        <h2 class="mb-3">KarmYog Provider Portal</h2>
+                        <p class="text-muted mb-4">Welcome to the service provider dashboard. Please login to continue.</p>
+                        
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="providerEmail" placeholder="Enter your email address">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-primary btn-lg" onclick="loginAndRedirect()">
+                                <i class="fas fa-sign-in-alt me-2"></i>Access Dashboard
+                            </button>
+                            
+                            <button class="btn btn-success" onclick="useDemoAccount()">
+                                <i class="fas fa-eye me-2"></i>Try Demo Account
+                            </button>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <a href="/debug-dashboard" class="btn btn-info w-100">
+                                        <i class="fas fa-bug me-2"></i>Debug
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="/health" class="btn btn-secondary w-100">
+                                        <i class="fas fa-heartbeat me-2"></i>Health
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        <p class="small text-muted">
+                            For testing: Use email "demo@provider.com" or any valid email format
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function loginAndRedirect() {
+            const email = $("#providerEmail").val().trim();
+            if (!email) {
+                alert("Please enter your email address");
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                alert("Please enter a valid email address");
+                return;
+            }
+            
+            localStorage.setItem("User", email);
+            console.log("User logged in:", email);
+            
+            // Show success message briefly
+            $(".card-body").html(`
+                <div class="text-center">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                    <h4>Login Successful!</h4>
+                    <p>Redirecting to dashboard...</p>
+                </div>
+            `);
+            
+            // Redirect to dashboard
+            setTimeout(function() {
+                window.location.href = '/providerdash';
+            }, 1500);
+        }
+        
+        function useDemoAccount() {
+            localStorage.setItem("User", "demo@provider.com");
+            console.log("Demo user set");
+            
+            // Create demo provider data first
+            $.get('/create-demo-provider').done(function(response) {
+                console.log("Demo provider response:", response);
+            });
+            
+            $(".card-body").html(`
+                <div class="text-center">
+                    <i class="fas fa-user-check fa-4x text-success mb-3"></i>
+                    <h4>Demo Mode Activated!</h4>
+                    <p>Loading demo dashboard...</p>
+                </div>
+            `);
+            
+            setTimeout(function() {
+                window.location.href = '/providerdash';
+            }, 1500);
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Auto-focus on email input
+        $(document).ready(function() {
+            $("#providerEmail").focus();
+            
+            // Allow Enter key to login
+            $("#providerEmail").keypress(function(e) {
+                if (e.which === 13) {
+                    loginAndRedirect();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

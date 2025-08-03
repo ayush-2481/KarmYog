@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Search Debug Console</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            background: #f9f9f9; 
+        }
+        .result { 
+            background: #f8f9fa; 
+            border: 1px solid #e9ecef; 
+            border-radius: 5px; 
+            padding: 15px; 
+            margin: 10px 0; 
+            font-family: monospace; 
+            font-size: 12px; 
+            max-height: 300px; 
+            overflow-y: auto; 
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            cursor: pointer; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+        }
+        input { 
+            padding: 8px 12px; 
+            margin: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 3px; 
+            width: 300px; 
+        }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Customer Search Console Error Debug</h1>
+    
+    <div style="background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 5px;">
+        <strong>🚨 Console Error:</strong> "Search error: {readyState: 4, ...} error Bad Request"<br>
+        <strong>Cause:</strong> The search is failing and going to the .fail() function instead of .done()
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Customer Search (Same as Profile Page)</h3>
+        <input type="email" id="testEmail" placeholder="Enter email to test" value="test@example.com">
+        <button onclick="testLikeProfilePage()">Test Like Profile Page</button>
+        <div id="searchResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Quick Tests</h3>
+        <button onclick="testExistingCustomer()">Test: Existing Customer</button>
+        <button onclick="testNonExistentEmail()">Test: Non-Existent Email</button>
+        <button onclick="testEmptyEmail()">Test: Empty Email (Bad Request)</button>
+        <div id="quickTestResult"></div>
+    </div>
+
+    <script>
+        function displayResult(elementId, data, isError = false) {
+            const className = isError ? 'result error' : 'result success';
+            document.getElementById(elementId).innerHTML = `
+                <div class="${className}">${JSON.stringify(data, null, 2)}</div>
+            `;
+        }
+
+        function testLikeProfilePage() {
+            const email = document.getElementById('testEmail').value;
+            console.log("🔍 Testing customer search for:", email);
+            
+            // This is exactly how the profile page does it
+            let obj = {
+                url: "/fetch-one",
+                data: {
+                    kuchEmail: email,
+                }
+            }
+            
+            $.ajax(obj).done(function (respJsonArray) {
+                console.log("✅ SUCCESS - Search response:", respJsonArray);
+                
+                if (respJsonArray && respJsonArray.length > 0) {
+                    displayResult('searchResult', {
+                        status: "✅ SUCCESS - Customer found!",
+                        customerData: respJsonArray[0],
+                        customerName: respJsonArray[0].Fname + " " + respJsonArray[0].Lname,
+                        email: respJsonArray[0].emailid
+                    }, false);
+                } else {
+                    displayResult('searchResult', {
+                        status: "ℹ️ No customer found but request succeeded",
+                        response: respJsonArray
+                    }, false);
+                }
+            }).fail(function (xhr, status, error) {
+                console.error("❌ FAILED - Search error:", xhr, status, error);
+                
+                let errorMessage = "Error searching for profile: ";
+                let errorDetails = {};
+                
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage += xhr.responseJSON.error;
+                    errorDetails.serverError = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        const errorData = JSON.parse(xhr.responseText);
+                        errorMessage += errorData.error || xhr.responseText;
+                        errorDetails.parsedError = errorData;
+                    } catch (e) {
+                        errorMessage += xhr.responseText;
+                        errorDetails.rawError = xhr.responseText;
+                    }
+                } else {
+                    errorMessage += (error || "Unknown error");
+                }
+                
+                displayResult('searchResult', {
+                    status: "❌ FAILED - This is the console error!",
+                    errorMessage: errorMessage,
+                    httpStatus: xhr.status,
+                    httpStatusText: xhr.statusText,
+                    errorDetails: errorDetails,
+                    xhrReadyState: xhr.readyState,
+                    explanation: "This fail() function is what's causing the console error you're seeing"
+                }, true);
+            });
+        }
+
+        function testExistingCustomer() {
+            // First create a test customer, then search for it
+            $.get('/create-test-customer')
+                .done(function(result) {
+                    console.log("Test customer created:", result);
+                    document.getElementById('testEmail').value = 'testcustomer@example.com';
+                    testLikeProfilePage();
+                })
+                .fail(function() {
+                    // Try searching anyway
+                    document.getElementById('testEmail').value = 'testcustomer@example.com';
+                    testLikeProfilePage();
+                });
+        }
+
+        function testNonExistentEmail() {
+            document.getElementById('testEmail').value = 'definitely-does-not-exist@nowhere.com';
+            testLikeProfilePage();
+        }
+
+        function testEmptyEmail() {
+            document.getElementById('testEmail').value = '';
+            testLikeProfilePage();
+        }
+
+        // Auto-run test on page load
+        window.onload = function() {
+            console.log("Customer Search Debug Console loaded");
+            console.log("This page replicates the exact search logic from profile-customer.html");
+            
+            // Show helpful message
+            displayResult('searchResult', {
+                message: "👆 Click 'Test Like Profile Page' to see the exact same error that appears in the console",
+                tip: "The error happens when the search fails (404, 400, etc.) and goes to the .fail() function"
+            }, false);
+        };
+    </script>
+</body>
+</html>

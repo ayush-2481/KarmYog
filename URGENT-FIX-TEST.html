@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🚨 IMMEDIATE FIX TEST - Customer Search 400 Error</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f8ff; }
+        .urgent { background: #dc3545; color: white; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; }
+        .test-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto; }
+        .result { padding: 15px; margin: 10px 0; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
+        .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 2px solid #ffeeba; }
+        .info { background: #e7f3ff; color: #004085; border: 2px solid #b3d7ff; }
+        button { padding: 12px 25px; margin: 8px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #c82333; }
+        .test-section { margin: 25px 0; padding: 20px; border: 3px solid #007bff; border-radius: 10px; }
+        .big-button { font-size: 18px; padding: 15px 30px; }
+    </style>
+</head>
+<body>
+    <div class="urgent">
+        <h1>🚨 URGENT: Fixing Customer Search 400 Error</h1>
+        <p><strong>Issue:</strong> GET http://localhost:3004/fetch-one?kuchEmail=aymo%40gmail.com 400 (Bad Request)</p>
+        <p><strong>Status:</strong> Testing the server fix NOW</p>
+    </div>
+
+    <div class="test-container">
+        <div class="test-section">
+            <h2>🔍 Step 1: Check Server Status</h2>
+            <button class="big-button" onclick="checkServerHealth()">CHECK IF SERVER IS RUNNING</button>
+            <div id="serverCheck"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 Step 2: Test Exact Failing Email</h2>
+            <button class="big-button" onclick="testProblematicEmail()">TEST: aymo@gmail.com (400 Error)</button>
+            <div id="emailTest"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Step 3: Test Server Response Details</h2>
+            <button class="big-button" onclick="detailedServerTest()">DETAILED SERVER RESPONSE TEST</button>
+            <div id="detailedTest"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Instructions to Fix</h2>
+            <div class="info result">
+<strong>IF SERVER IS NOT RUNNING:</strong>
+1. Double-click: RESTART-SERVER.bat
+2. Wait for "Server listening on port 3004" message
+3. Refresh this page and test again
+
+<strong>IF 400 ERROR PERSISTS:</strong>
+1. Server is running but has an issue
+2. Check server console logs for detailed debugging
+3. The enhanced validation should show exactly what's wrong
+
+<strong>IF TESTS PASS:</strong>
+✅ Problem is SOLVED! The customer search will work without console errors.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function displayResult(elementId, data, type = 'info') {
+            document.getElementById(elementId).innerHTML = `<div class="result ${type}">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        function checkServerHealth() {
+            displayResult('serverCheck', { status: "Checking server health..." }, 'info');
+            
+            fetch('/', { timeout: 5000 })
+                .then(response => {
+                    if (response.ok) {
+                        displayResult('serverCheck', {
+                            status: "✅ SERVER IS RUNNING!",
+                            message: "Server responded successfully on port 3004",
+                            httpStatus: response.status,
+                            timestamp: new Date().toISOString()
+                        }, 'success');
+                        return true;
+                    } else {
+                        throw new Error(`Server returned: ${response.status} ${response.statusText}`);
+                    }
+                })
+                .catch(error => {
+                    displayResult('serverCheck', {
+                        status: "❌ SERVER CONNECTION FAILED",
+                        error: error.message,
+                        solution: "Run RESTART-SERVER.bat to start the server",
+                        timestamp: new Date().toISOString()
+                    }, 'error');
+                });
+        }
+
+        function testProblematicEmail() {
+            const testEmail = 'aymo@gmail.com';
+            console.log("🔍 Testing problematic email:", testEmail);
+            
+            displayResult('emailTest', { 
+                status: "Testing aymo@gmail.com...", 
+                url: `/fetch-one?kuchEmail=${encodeURIComponent(testEmail)}`
+            }, 'info');
+
+            $.ajax({
+                url: "/fetch-one",
+                method: "GET",
+                data: { kuchEmail: testEmail },
+                timeout: 10000
+            }).done(function (response, textStatus, xhr) {
+                console.log("✅ SUCCESS - No 400 error!", response);
+                displayResult('emailTest', {
+                    status: "✅ SUCCESS - 400 ERROR IS FIXED!",
+                    httpStatus: xhr.status,
+                    response: response,
+                    message: "Customer search is working properly",
+                    responseType: typeof response,
+                    isArray: Array.isArray(response),
+                    arrayLength: Array.isArray(response) ? response.length : 'N/A'
+                }, 'success');
+            }).fail(function (xhr, status, error) {
+                console.error("❌ 400 Error still happening:", xhr, status, error);
+                
+                let errorDetails = {
+                    status: "❌ 400 ERROR STILL HAPPENING",
+                    httpStatus: xhr.status,
+                    statusText: xhr.statusText,
+                    errorThrown: error,
+                    ajaxStatus: status
+                };
+
+                if (xhr.responseJSON) {
+                    errorDetails.serverErrorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    errorDetails.responseText = xhr.responseText;
+                }
+
+                displayResult('emailTest', errorDetails, 'error');
+            });
+        }
+
+        function detailedServerTest() {
+            displayResult('detailedTest', { status: "Running detailed tests..." }, 'info');
+            
+            // Test multiple scenarios
+            const tests = [
+                { name: "Valid Email", email: "test@example.com" },
+                { name: "Problematic Email", email: "aymo@gmail.com" },
+                { name: "Empty Email", email: "" },
+                { name: "Invalid Email", email: "notanemail" }
+            ];
+            
+            Promise.allSettled(tests.map(test => 
+                fetch(`/fetch-one?kuchEmail=${encodeURIComponent(test.email)}`)
+                    .then(response => response.json().then(data => ({
+                        testName: test.name,
+                        email: test.email,
+                        httpStatus: response.status,
+                        success: response.ok,
+                        data: data
+                    })))
+                    .catch(error => ({
+                        testName: test.name,
+                        email: test.email,
+                        error: error.message,
+                        success: false
+                    }))
+            )).then(results => {
+                const testResults = results.map(r => r.value || r.reason);
+                displayResult('detailedTest', {
+                    status: "Detailed test results",
+                    tests: testResults,
+                    summary: {
+                        totalTests: tests.length,
+                        successfulTests: testResults.filter(r => r.success).length,
+                        failedTests: testResults.filter(r => !r.success).length
+                    }
+                }, 'info');
+            });
+        }
+
+        // Auto-run health check on page load
+        window.onload = function() {
+            setTimeout(() => {
+                console.log("🚨 Auto-running server health check...");
+                checkServerHealth();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

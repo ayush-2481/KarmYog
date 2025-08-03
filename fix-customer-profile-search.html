@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Profile Search Fix Tool</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background-color: #f5f5f5; 
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .fix-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            background: #f9f9f9; 
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+        }
+        .success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+        }
+        .error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+        }
+        .info { 
+            background: #d1ecf1; 
+            color: #0c5460; 
+            border: 1px solid #bee5eb; 
+        }
+        .warning { 
+            background: #fff3cd; 
+            color: #856404; 
+            border: 1px solid #ffeaa7; 
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            cursor: pointer; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+        }
+        button:hover { 
+            background: #0056b3; 
+        }
+        .btn-success { background: #28a745; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-danger { background: #dc3545; }
+        input[type="email"] { 
+            padding: 8px 12px; 
+            margin: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 3px; 
+            width: 300px; 
+        }
+        .form-group { 
+            margin: 15px 0; 
+        }
+        label { 
+            display: inline-block; 
+            width: 120px; 
+            font-weight: bold; 
+        }
+        .data-display { 
+            background: #f8f9fa; 
+            border: 1px solid #e9ecef; 
+            border-radius: 5px; 
+            padding: 15px; 
+            margin: 10px 0; 
+            font-family: monospace; 
+            font-size: 12px; 
+            max-height: 300px; 
+            overflow-y: auto; 
+        }
+        .step-indicator {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #495057;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Customer Profile Search Fix Tool</h1>
+        <p>This tool helps diagnose and fix the "This email is not registered as a customer" error.</p>
+
+        <!-- Step 1: Diagnose the Issue -->
+        <div class="fix-section">
+            <div class="step-indicator">Step 1</div>
+            <h2>🔍 Diagnose the Issue</h2>
+            <p>Enter the email that's causing the search error:</p>
+            
+            <div class="form-group">
+                <label for="problemEmail">Problem Email:</label>
+                <input type="email" id="problemEmail" placeholder="Enter the problematic email">
+                <button onclick="diagnoseIssue()">Diagnose Issue</button>
+            </div>
+            <div id="diagnoseResult"></div>
+        </div>
+
+        <!-- Step 2: Quick Fix Options -->
+        <div class="fix-section">
+            <div class="step-indicator">Step 2</div>
+            <h2>⚡ Quick Fix Options</h2>
+            <p>Choose the appropriate fix based on the diagnosis:</p>
+            
+            <div class="form-group">
+                <label for="fixEmail">Email to Fix:</label>
+                <input type="email" id="fixEmail" placeholder="Enter email to fix">
+            </div>
+            
+            <button class="btn-success" onclick="quickFixCustomer()">🔧 Auto-Fix Customer Issue</button>
+            <button class="btn-warning" onclick="convertToCustomer()">🔄 Convert to Customer</button>
+            <button class="btn-danger" onclick="createNewCustomer()">➕ Create New Customer</button>
+            
+            <div id="fixResult"></div>
+        </div>
+
+        <!-- Step 3: Test the Fix -->
+        <div class="fix-section">
+            <div class="step-indicator">Step 3</div>
+            <h2>🧪 Test the Fix</h2>
+            <p>Verify that the customer profile search now works:</p>
+            
+            <div class="form-group">
+                <label for="testEmail">Test Email:</label>
+                <input type="email" id="testEmail" placeholder="Enter email to test">
+                <button onclick="testCustomerSearch()">Test Search</button>
+            </div>
+            <div id="testResult"></div>
+        </div>
+
+        <!-- Step 4: Common Issues & Solutions -->
+        <div class="fix-section">
+            <div class="step-indicator">Reference</div>
+            <h2>📚 Common Issues & Solutions</h2>
+            
+            <div class="warning">
+                <h3>Common Causes of "Not registered as customer" Error:</h3>
+                <ul>
+                    <li><strong>Wrong User Type:</strong> User exists but registered as "Service-Provider" or "Admin"</li>
+                    <li><strong>Case Sensitivity:</strong> User type stored as "Customer" but code expects "customer"</li>
+                    <li><strong>User Doesn't Exist:</strong> Email not found in users table at all</li>
+                    <li><strong>Database Issues:</strong> Connection problems or query errors</li>
+                </ul>
+            </div>
+
+            <div class="info">
+                <h3>Quick Solutions:</h3>
+                <ul>
+                    <li><strong>Auto-Fix:</strong> Automatically handles most common issues</li>
+                    <li><strong>Convert User Type:</strong> Changes existing user to Customer type</li>
+                    <li><strong>Create New:</strong> Creates a new customer account</li>
+                    <li><strong>Manual Database:</strong> Direct database queries if needed</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Step 5: Navigation -->
+        <div class="fix-section">
+            <div class="step-indicator">Navigation</div>
+            <h2>🔗 Quick Links</h2>
+            <button onclick="location.href='/profile-customer.html'">Customer Profile Page</button>
+            <button onclick="location.href='/debug-customer?email=test@example.com'">Debug Customer API</button>
+            <button onclick="location.href='/sample-data'">View Sample Data</button>
+            <button onclick="location.href='/'">Home Page</button>
+        </div>
+    </div>
+
+    <script>
+        function displayResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            const className = isError ? 'error' : 'success';
+            element.innerHTML = `
+                <div class="status ${className}">
+                    <strong>${isError ? 'Error:' : 'Result:'}</strong>
+                    <div class="data-display">${JSON.stringify(data, null, 2)}</div>
+                </div>
+            `;
+        }
+
+        function displayInfo(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status info">${message}</div>`;
+        }
+
+        async function diagnoseIssue() {
+            const email = document.getElementById('problemEmail').value;
+            if (!email) {
+                displayResult('diagnoseResult', { error: 'Please enter an email' }, true);
+                return;
+            }
+
+            displayInfo('diagnoseResult', '🔍 Diagnosing the issue...');
+
+            try {
+                // First try the debug endpoint
+                const debugResponse = await fetch(`/debug-customer?email=${encodeURIComponent(email)}`);
+                const debugData = await debugResponse.json();
+                
+                // Then try the actual search to see the error
+                let searchError = null;
+                try {
+                    const searchResponse = await fetch(`/fetch-one?kuchEmail=${encodeURIComponent(email)}`);
+                    const searchData = await searchResponse.json();
+                    if (!searchResponse.ok) {
+                        searchError = searchData;
+                    }
+                } catch (e) {
+                    searchError = { error: e.message };
+                }
+
+                const diagnosis = {
+                    email: email,
+                    userExists: debugData.summary?.userExists || false,
+                    userType: debugData.summary?.userType || 'not found',
+                    profileExists: debugData.summary?.profileExists || false,
+                    searchError: searchError,
+                    recommendation: getRecommendation(debugData.summary, searchError)
+                };
+
+                displayResult('diagnoseResult', diagnosis);
+                
+                // Auto-fill the fix email
+                document.getElementById('fixEmail').value = email;
+                document.getElementById('testEmail').value = email;
+
+            } catch (error) {
+                displayResult('diagnoseResult', { error: error.message }, true);
+            }
+        }
+
+        function getRecommendation(summary, searchError) {
+            if (!summary?.userExists) {
+                return "User doesn't exist - Create new customer account";
+            }
+            if (summary.userType && summary.userType.toLowerCase() !== 'customer') {
+                return `User is '${summary.userType}' - Convert to Customer type`;
+            }
+            if (summary.userExists && summary.userType.toLowerCase() === 'customer' && !summary.profileExists) {
+                return "User is customer but no profile exists - Create customer profile";
+            }
+            if (searchError) {
+                return "Search error occurred - Use auto-fix to resolve";
+            }
+            return "User should be working - Test the search";
+        }
+
+        async function quickFixCustomer() {
+            const email = document.getElementById('fixEmail').value;
+            if (!email) {
+                displayResult('fixResult', { error: 'Please enter an email' }, true);
+                return;
+            }
+
+            displayInfo('fixResult', '🔧 Applying quick fix...');
+
+            try {
+                const response = await fetch(`/quick-fix-customer?email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayResult('fixResult', {
+                        success: true,
+                        action: data.action,
+                        message: data.message,
+                        details: data,
+                        nextStep: 'Now test the customer search to verify the fix worked.'
+                    });
+                } else {
+                    displayResult('fixResult', data, true);
+                }
+
+                // Auto-fill test email
+                document.getElementById('testEmail').value = email;
+
+            } catch (error) {
+                displayResult('fixResult', { error: error.message }, true);
+            }
+        }
+
+        async function convertToCustomer() {
+            const email = document.getElementById('fixEmail').value;
+            if (!email) {
+                displayResult('fixResult', { error: 'Please enter an email' }, true);
+                return;
+            }
+
+            displayInfo('fixResult', '🔄 Converting user to customer type...');
+
+            try {
+                const response = await fetch(`/fix-user-type?email=${encodeURIComponent(email)}&usertype=Customer`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayResult('fixResult', {
+                        success: true,
+                        message: 'User type converted to Customer successfully',
+                        details: data
+                    });
+                } else {
+                    displayResult('fixResult', data, true);
+                }
+
+            } catch (error) {
+                displayResult('fixResult', { error: error.message }, true);
+            }
+        }
+
+        async function createNewCustomer() {
+            const email = document.getElementById('fixEmail').value;
+            if (!email) {
+                displayResult('fixResult', { error: 'Please enter an email' }, true);
+                return;
+            }
+
+            displayInfo('fixResult', '➕ Creating new customer account...');
+
+            try {
+                const response = await fetch('/saveProfile?' + new URLSearchParams({
+                    txtEmail: email,
+                    txtPwd: 'temp123',
+                    utype: 'Customer'
+                }));
+                
+                const result = await response.text();
+                
+                if (result.includes('Successfully')) {
+                    displayResult('fixResult', {
+                        success: true,
+                        message: 'New customer account created successfully',
+                        email: email,
+                        tempPassword: 'temp123',
+                        note: 'Account created with temporary password. User should update it.'
+                    });
+                } else {
+                    displayResult('fixResult', { error: result }, true);
+                }
+
+            } catch (error) {
+                displayResult('fixResult', { error: error.message }, true);
+            }
+        }
+
+        async function testCustomerSearch() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                displayResult('testResult', { error: 'Please enter an email' }, true);
+                return;
+            }
+
+            displayInfo('testResult', '🧪 Testing customer profile search...');
+
+            try {
+                const response = await fetch(`/fetch-one?kuchEmail=${encodeURIComponent(email)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayResult('testResult', {
+                        success: true,
+                        message: '✅ Customer search is working!',
+                        customerData: data,
+                        note: 'The fix was successful. Customer profile search is now working.'
+                    });
+                } else {
+                    displayResult('testResult', {
+                        error: '❌ Search still failing',
+                        status: response.status,
+                        errorData: data,
+                        suggestion: 'Try the auto-fix option or check if the user needs to be created/converted.'
+                    }, true);
+                }
+
+            } catch (error) {
+                displayResult('testResult', { error: error.message }, true);
+            }
+        }
+
+        // Auto-run basic diagnostics on page load
+        window.onload = function() {
+            console.log('Customer Profile Search Fix Tool loaded');
+            
+            // Check if there's a URL parameter for email
+            const urlParams = new URLSearchParams(window.location.search);
+            const emailParam = urlParams.get('email');
+            if (emailParam) {
+                document.getElementById('problemEmail').value = emailParam;
+                document.getElementById('fixEmail').value = emailParam;
+                document.getElementById('testEmail').value = emailParam;
+                // Auto-diagnose if email provided
+                setTimeout(() => diagnoseIssue(), 500);
+            }
+        };
+    </script>
+</body>
+</html>

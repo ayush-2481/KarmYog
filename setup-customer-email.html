@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Test Email for Customer Profile</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .btn { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; font-weight: bold; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        input { padding: 10px; margin: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Customer Profile Email Setup</h1>
+    
+    <div>
+        <h3>Current localStorage Status:</h3>
+        <div id="currentStatus" class="status info">Checking...</div>
+    </div>
+    
+    <div>
+        <h3>Set Test Email:</h3>
+        <input type="email" id="testEmail" placeholder="Enter test email" value="customer@test.com">
+        <button class="btn" onclick="setTestEmail()">Set Email in localStorage</button>
+        <button class="btn" onclick="clearEmail()">Clear Email</button>
+    </div>
+    
+    <div>
+        <h3>Test Customer Profile:</h3>
+        <button class="btn" onclick="openCustomerProfile()" style="background: #28a745;">Open Customer Profile</button>
+        <button class="btn" onclick="checkEmailFill()" style="background: #6c757d;">Test Email Fill</button>
+    </div>
+    
+    <div id="testResult" class="status" style="display: none;"></div>
+    
+    <script>
+        function updateStatus() {
+            const email = localStorage.getItem("User");
+            const statusDiv = document.getElementById("currentStatus");
+            
+            if (email) {
+                statusDiv.className = "status success";
+                statusDiv.innerHTML = "✅ Email in localStorage: " + email;
+            } else {
+                statusDiv.className = "status warning";
+                statusDiv.innerHTML = "⚠️ No email found in localStorage";
+            }
+        }
+        
+        function setTestEmail() {
+            const email = document.getElementById("testEmail").value;
+            if (email) {
+                localStorage.setItem("User", email);
+                updateStatus();
+                showResult("✅ Email set successfully: " + email, "success");
+            } else {
+                showResult("❌ Please enter an email address", "warning");
+            }
+        }
+        
+        function clearEmail() {
+            localStorage.removeItem("User");
+            updateStatus();
+            showResult("🗑️ Email cleared from localStorage", "info");
+        }
+        
+        function openCustomerProfile() {
+            window.open("http://localhost:3004/customerprof", "_blank");
+        }
+        
+        function checkEmailFill() {
+            const email = localStorage.getItem("User");
+            if (email) {
+                // Simulate the customer profile auto-fill logic
+                showResult("🔧 Testing email auto-fill with: " + email + 
+                          "<br>✅ This should auto-fill in the customer profile page", "info");
+            } else {
+                showResult("❌ No email in localStorage to test with. Set an email first.", "warning");
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById("testResult");
+            resultDiv.className = "status " + type;
+            resultDiv.innerHTML = message;
+            resultDiv.style.display = "block";
+            
+            setTimeout(() => {
+                resultDiv.style.display = "none";
+            }, 5000);
+        }
+        
+        // Initialize on page load
+        $(document).ready(function() {
+            updateStatus();
+        });
+    </script>
+</body>
+</html>

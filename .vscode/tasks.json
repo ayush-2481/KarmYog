@@ -6,6 +6,15 @@
 			"type": "shell",
 			"command": "npm install",
 			"group": "build"
+		},
+		{
+			"label": "Start Server",
+			"type": "shell",
+			"command": "node",
+			"args": ["server.js"],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
 		}
 	]
 }
