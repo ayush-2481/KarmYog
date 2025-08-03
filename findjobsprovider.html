@@ -2,384 +2,963 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Jobs</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
-    ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="KarmYog Find Jobs - Discover service opportunities in your area" />
+    <meta name="author" content="KarmYog Team" />
+    <title>Find Jobs - KarmYog</title>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/reset.css">
+    <link rel="stylesheet" href="/css/modern-design-system.css">
+    <link rel="stylesheet" href="/css/modern-navbar.css">
+    <link rel="stylesheet" href="/public/css/responsive.css">
+
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
-
-      body {
-        font-family: "poppins", sans-serif;
+      /* Find Jobs Page Specific Styles */
+      .find-jobs-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #fafafa 0%, #f0f9ff 100%);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
 
-      .footer-clean {
-        padding: 50px 0;
-        background-color: #eff2f7;
-        color: #4b4c4d;
+      .page-hero {
+        background: linear-gradient(135deg, #0284c7 0%, #075985 100%);
+        color: white;
+        padding: 4rem 0 3rem;
+        position: relative;
+        overflow: hidden;
       }
 
-      .footer-clean h3 {
-        margin-top: 0;
-        margin-bottom: 12px;
-        font-weight: bold;
-        font-size: 16px;
+      .page-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0)"/></radialGradient></defs><circle cx="200" cy="200" r="200" fill="url(%23a)"/><circle cx="800" cy="800" r="300" fill="url(%23a)"/></svg>');
+        pointer-events: none;
       }
 
-      .footer-clean ul {
-        padding: 0;
+      .hero-content {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #ffffff, #e2e8f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: 1.125rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .search-section {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin: -2rem auto 3rem;
+        max-width: 800px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .filter-input {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e5e5;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #fafafa;
+      }
+
+      .filter-input:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        background: white;
+      }
+
+      .filter-select {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e5e5;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        background: #fafafa;
+        transition: all 0.3s ease;
+        min-width: 150px;
+        cursor: pointer;
+      }
+
+      .filter-select:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        background: white;
+      }
+
+      .jobs-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      .jobs-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .jobs-count {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #404040;
+      }
+
+      .view-toggle {
+        display: flex;
+        background: #f5f5f5;
+        border-radius: 0.75rem;
+        padding: 0.25rem;
+      }
+
+      .view-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: transparent;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #525252;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .view-btn.active {
+        background: white;
+        color: #0284c7;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .jobs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .job-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border: 1px solid #e5e5e5;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .job-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+        border-color: #bae6fd;
+      }
+
+      .job-card-header {
+        padding: 1.5rem 1.5rem 1rem;
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .job-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #262626;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .job-subtitle {
+        color: #525252;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .job-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .job-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 1rem;
+      }
+
+      .job-badge.secondary {
+        background: #f5f5f5;
+        color: #404040;
+      }
+
+      .job-card-body {
+        padding: 1rem 1.5rem;
+      }
+
+      .job-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        color: #525252;
+        font-size: 0.875rem;
+      }
+
+      .job-detail i {
+        width: 16px;
+        color: #0ea5e9;
+      }
+
+      .job-task {
+        background: #fafafa;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-top: 1rem;
+        border-left: 4px solid #0ea5e9;
+      }
+
+      .job-task-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #525252;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+      }
+
+      .job-task-content {
+        color: #262626;
+        line-height: 1.5;
+      }
+
+      .job-card-footer {
+        padding: 1rem 1.5rem;
+        background: #fafafa;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .job-date {
+        font-size: 0.75rem;
+        color: #737373;
+        flex: 1;
+      }
+
+      .apply-btn {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+      }
+
+      .apply-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 15px rgba(14, 165, 233, 0.3);
+      }
+
+      .loading-state {
+        text-align: center;
+        padding: 4rem 2rem;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #e5e5e5;
+        border-top: 4px solid #0ea5e9;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+      }
+
+      .empty-state-icon {
+        font-size: 4rem;
+        color: #d4d4d4;
+        margin-bottom: 1rem;
+      }
+
+      .empty-state-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #404040;
+        margin-bottom: 0.5rem;
+      }
+
+      .empty-state-text {
+        color: #737373;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      /* Modern Footer */
+      .modern-footer {
+        background: linear-gradient(135deg, #262626 0%, #171717 100%);
+        color: #d4d4d4;
+        padding: 3rem 0 2rem;
+        margin-top: 4rem;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h3 {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.125rem;
+      }
+
+      .footer-section ul {
         list-style: none;
-        line-height: 1.6;
-        font-size: 14px;
-        margin-bottom: 0;
+        padding: 0;
+        margin: 0;
       }
 
-      .footer-clean ul a {
-        color: inherit;
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section ul li a {
+        color: #a3a3a3;
         text-decoration: none;
-        opacity: 0.8;
+        transition: color 0.3s ease;
       }
 
-      .footer-clean ul a:hover {
-        opacity: 1;
+      .footer-section ul li a:hover {
+        color: #38bdf8;
       }
 
-      .footer-clean .item.social {
-        text-align: right;
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
       }
 
-      .footer-clean .item.social > a {
-        font-size: 24px;
+      .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 40px;
         height: 40px;
-        line-height: 40px;
-        display: inline-block;
-        text-align: center;
+        background: #404040;
         border-radius: 50%;
-        border: 1px solid #ccc;
-        margin-left: 10px;
-        margin-top: 22px;
-        color: inherit;
-        opacity: 0.75;
+        color: #d4d4d4;
+        text-decoration: none;
+        transition: all 0.3s ease;
       }
 
-      .footer-clean .item.social > a:hover {
-        opacity: 0.9;
+      .social-link:hover {
+        background: #0ea5e9;
+        color: white;
+        transform: translateY(-2px);
       }
 
-      .footer-clean .copyright {
-        margin-top: 14px;
-        margin-bottom: 0;
-        font-size: 13px;
-        opacity: 0.6;
+      .footer-bottom {
+        border-top: 1px solid #404040;
+        padding-top: 2rem;
+        text-align: center;
+        color: #737373;
+        font-size: 0.875rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 1.875rem;
+        }
+        
+        .search-section {
+          margin: -1rem 1rem 2rem;
+          padding: 1.5rem;
+        }
+        
+        .filter-group {
+          flex-direction: column;
+        }
+        
+        .filter-input, .filter-select {
+          min-width: 100%;
+        }
+        
+        .jobs-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        
+        .jobs-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        
+        .job-card-footer {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.75rem;
+        }
+        
+        .apply-btn {
+          justify-content: center;
+        }
+        
+        .navbar-brand {
+          margin-left: 1rem !important;
+        }
+        
+        .navbar-nav {
+          margin-right: 1rem !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .page-hero {
+          padding: 2rem 0 1.5rem;
+        }
+        
+        .search-section {
+          padding: 1rem;
+          margin: -1rem 0.5rem 1.5rem;
+        }
+        
+        .job-card-header,
+        .job-card-body,
+        .job-card-footer {
+          padding: 1rem;
+        }
+        
+        .hero-title {
+          font-size: 1.5rem;
+        }
+        
+        .hero-subtitle {
+          font-size: 1rem;
+        }
+        
+        .jobs-container {
+          padding: 0 0.5rem;
+        }
+      }
+
+      /* Animation fixes for better performance */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        .page-hero,
+        .search-section,
+        .modern-footer,
+        .apply-btn {
+          display: none;
+        }
+        
+        .job-card {
+          break-inside: avoid;
+          box-shadow: none;
+          border: 1px solid #000;
+        }
       }
     </style>
     <script>
-         var module = angular.module("myModule", []);
-    var controller = module.controller(
-      "myController",
-      function ($scope, $http) {
-        $scope.jsonRecordsAry = [];
-        //   ----------Fetch-all-------------------------------
-        $scope.doFetchAlljobs = function () {
-          let url = "/angular-fetch-alljobs";
-          $http.get(url).then(success, errors);
-          function success(response) {
-            $scope.jsonRecordsAry = response.data;
-          }
-          function errors(response) {
-            alert(response.data);
-          }
-        };
-      }
-    );
+      var module = angular.module("myModule", []);
+      var controller = module.controller(
+        "myController",
+        function ($scope, $http) {
+          $scope.jsonRecordsAry = [];
+          $scope.filteredJobs = [];
+          $scope.loading = true;
+          $scope.searchText = '';
+          $scope.selectedState = '';
+          $scope.selectedCity = '';
+          $scope.selectedService = '';
+          $scope.selectedSubService = '';
+          $scope.viewMode = 'grid';
+          
+          // Get unique values for filters
+          $scope.getUniqueStates = function() {
+            if (!$scope.jsonRecordsAry || $scope.jsonRecordsAry.length === 0) return [];
+            return [...new Set($scope.jsonRecordsAry.map(job => job.state).filter(Boolean))].sort();
+          };
+          
+          $scope.getUniqueCities = function() {
+            if (!$scope.jsonRecordsAry || $scope.jsonRecordsAry.length === 0) return [];
+            if ($scope.selectedState) {
+              return [...new Set($scope.jsonRecordsAry.filter(job => job.state === $scope.selectedState).map(job => job.city).filter(Boolean))].sort();
+            }
+            return [...new Set($scope.jsonRecordsAry.map(job => job.city).filter(Boolean))].sort();
+          };
+          
+          $scope.getUniqueServices = function() {
+            if (!$scope.jsonRecordsAry || $scope.jsonRecordsAry.length === 0) return [];
+            return [...new Set($scope.jsonRecordsAry.map(job => job.serviceCat).filter(Boolean))].sort();
+          };
+          
+          $scope.getUniqueSubServices = function() {
+            if (!$scope.jsonRecordsAry || $scope.jsonRecordsAry.length === 0) return [];
+            if ($scope.selectedService) {
+              return [...new Set($scope.jsonRecordsAry.filter(job => job.serviceCat === $scope.selectedService).map(job => job.subServiceCat).filter(Boolean))].sort();
+            }
+            return [...new Set($scope.jsonRecordsAry.map(job => job.subServiceCat).filter(Boolean))].sort();
+          };
+          
+          // Filter jobs based on search criteria
+          $scope.filterJobs = function() {
+            if (!$scope.jsonRecordsAry || $scope.jsonRecordsAry.length === 0) {
+              $scope.filteredJobs = [];
+              return;
+            }
+            
+            $scope.filteredJobs = $scope.jsonRecordsAry.filter(function(job) {
+              let matchesSearch = true;
+              let matchesState = true;
+              let matchesCity = true;
+              let matchesService = true;
+              let matchesSubService = true;
+              
+              if ($scope.searchText && $scope.searchText.trim()) {
+                const searchLower = $scope.searchText.toLowerCase().trim();
+                matchesSearch = (
+                  (job.emailid && job.emailid.toLowerCase().includes(searchLower)) ||
+                  (job.serviceCat && job.serviceCat.toLowerCase().includes(searchLower)) ||
+                  (job.subServiceCat && job.subServiceCat.toLowerCase().includes(searchLower)) ||
+                  (job.city && job.city.toLowerCase().includes(searchLower)) ||
+                  (job.state && job.state.toLowerCase().includes(searchLower)) ||
+                  (job.task && job.task.toLowerCase().includes(searchLower)) ||
+                  (job.address && job.address.toLowerCase().includes(searchLower))
+                );
+              }
+              
+              if ($scope.selectedState && $scope.selectedState.trim()) {
+                matchesState = job.state === $scope.selectedState;
+              }
+              
+              if ($scope.selectedCity && $scope.selectedCity.trim()) {
+                matchesCity = job.city === $scope.selectedCity;
+              }
+              
+              if ($scope.selectedService && $scope.selectedService.trim()) {
+                matchesService = job.serviceCat === $scope.selectedService;
+              }
+              
+              if ($scope.selectedSubService && $scope.selectedSubService.trim()) {
+                matchesSubService = job.subServiceCat === $scope.selectedSubService;
+              }
+              
+              return matchesSearch && matchesState && matchesCity && matchesService && matchesSubService;
+            });
+          };
+          
+          // Clear all filters
+          $scope.clearFilters = function() {
+            $scope.searchText = '';
+            $scope.selectedState = '';
+            $scope.selectedCity = '';
+            $scope.selectedService = '';
+            $scope.selectedSubService = '';
+            $scope.filterJobs();
+          };
+          
+          // Toggle view mode
+          $scope.setViewMode = function(mode) {
+            $scope.viewMode = mode;
+          };
+          
+          // Format date
+          $scope.formatDate = function(dateString) {
+            if (!dateString) return 'Recently posted';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return '1 day ago';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+            return date.toLocaleDateString();
+          };
+          
+          // Get service icon
+          $scope.getServiceIcon = function(service) {
+            const icons = {
+              'Electrical': 'fas fa-bolt',
+              'Plumbing': 'fas fa-wrench',
+              'Cleaning': 'fas fa-broom',
+              'Gardening': 'fas fa-seedling',
+              'Cooking': 'fas fa-utensils',
+              'Tutoring': 'fas fa-book',
+              'Repair': 'fas fa-tools',
+              'Transportation': 'fas fa-car',
+              'Delivery': 'fas fa-truck',
+              'Security': 'fas fa-shield-alt',
+              'Beauty': 'fas fa-cut',
+              'Health': 'fas fa-heartbeat',
+              'Fitness': 'fas fa-dumbbell',
+              'Pet Care': 'fas fa-paw',
+              'Moving': 'fas fa-boxes',
+              'Painting': 'fas fa-paint-brush',
+              'Technology': 'fas fa-laptop',
+              'Photography': 'fas fa-camera',
+              'Music': 'fas fa-music',
+              'Event': 'fas fa-calendar-alt'
+            };
+            
+            for (let key in icons) {
+              if (service && service.toLowerCase().includes(key.toLowerCase())) {
+                return icons[key];
+              }
+            }
+            return 'fas fa-briefcase';
+          };
+          
+          // Contact job poster
+          $scope.contactPoster = function(job) {
+            if (job.emailid) {
+              window.location.href = `mailto:${job.emailid}?subject=Interest in ${job.serviceCat} Service&body=Hi,\n\nI'm interested in the ${job.serviceCat} service you posted on KarmYog.\n\nService Details:\n- Type: ${job.serviceCat}\n- Sub-service: ${job.subServiceCat}\n- Location: ${job.city}, ${job.state}\n\nPlease let me know more details.\n\nBest regards`;
+            }
+          };
+
+          //   ----------Fetch-all-------------------------------
+          $scope.doFetchAlljobs = function () {
+            $scope.loading = true;
+            $scope.jsonRecordsAry = [];
+            $scope.filteredJobs = [];
+            
+            let url = "/angular-fetch-alljobs";
+            $http.get(url).then(success, errors);
+            
+            function success(response) {
+              console.log("Jobs data received:", response.data);
+              $scope.jsonRecordsAry = response.data || [];
+              $scope.filteredJobs = response.data || [];
+              $scope.loading = false;
+              
+              // Trigger a digest cycle to update the UI
+              if (!$scope.$$phase) {
+                $scope.$apply();
+              }
+            }
+            
+            function errors(response) {
+              console.error("Error fetching jobs:", response);
+              alert("Error fetching jobs: " + (response.data || response.statusText || "Unknown error"));
+              $scope.jsonRecordsAry = [];
+              $scope.filteredJobs = [];
+              $scope.loading = false;
+              
+              // Trigger a digest cycle to update the UI
+              if (!$scope.$$phase) {
+                $scope.$apply();
+              }
+            }
+          };
+
+          // Watch for filter changes
+          $scope.$watch('searchText', $scope.filterJobs);
+          $scope.$watch('selectedState', function() {
+            $scope.selectedCity = ''; // Reset city when state changes
+            $scope.filterJobs();
+          });
+          $scope.$watch('selectedCity', $scope.filterJobs);
+          $scope.$watch('selectedService', function() {
+            $scope.selectedSubService = ''; // Reset sub-service when service changes
+            $scope.filterJobs();
+          });
+          $scope.$watch('selectedSubService', $scope.filterJobs);
+        }
+      );
     </script>
   </head>
-  <body ng-app="myModule" ng-controller="myController" ng-init="doFetchAlljobs();" ">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <body ng-app="myModule" ng-controller="myController" ng-init="doFetchAlljobs();" class="find-jobs-page">
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000;">
       <div class="container-fluid">
-        <a href="/spd" style="text-decoration: none"
-          ><h5 class="navbar-brand" style="margin-left: 50px">
-            KarmYog.com
-          </h5></a
-        >
-
-        
+        <a href="/spd" style="text-decoration: none">
+          <h5 class="navbar-brand" style="margin-left: 50px; color: #0284c7; font-weight: 700; margin-bottom: 0;">
+            <i class="fas fa-briefcase me-2"></i>KarmYog.com
+          </h5>
+        </a>
+        <div class="navbar-nav ms-auto me-5">
+          <a href="/spd" class="nav-link" style="color: #525252; font-weight: 500; text-decoration: none;">
+            <i class="fas fa-home me-1"></i>Dashboard
+          </a>
+        </div>
       </div>
     </nav>
 
+    <!-- Hero Section -->
+    <section class="page-hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="hero-title">Find Your Next Opportunity</h1>
+          <p class="hero-subtitle">
+            Discover service jobs in your area and connect with customers who need your expertise. 
+            Browse through available opportunities and start earning today.
+          </p>
+        </div>
+      </div>
+    </section>
 
-    <div class="container  mt-2">
-        
-      
-        <div class="row ">
-          <div class="col-md-3 mt-3" ng-repeat="obj in jsonRecordsAry">
-            <div class="card mb-3" >
-               
-              <div class="card-body">
-                <h5 class="card-title">{{obj.emailid}}</h5>
-                <p class="card-text">Service: {{obj.serviceCat}}</p>
-                <p class="card-text">Sub Service: {{obj.subServiceCat}}</p>
-                <p class="card-text">State: {{obj.state}}</p>
-                <p class="card-text">City: {{obj.city}}</p>
-                <p class="card-text">Address: {{obj.address}}</p>
-                <p class="card-text">Up to date: {{obj.UptoDate}}</p>
-                <p class="card-text">Task: {{obj.task}}</p>
-                
-              </div>
+    <!-- Search and Filter Section -->
+    <div class="container">
+      <div class="search-section">
+        <div class="filter-group">
+          <input 
+            type="text" 
+            class="filter-input" 
+            placeholder="Search jobs, services, locations..." 
+            ng-model="searchText">
+          <select class="filter-select" ng-model="selectedState">
+            <option value="">All States</option>
+            <option ng-repeat="state in getUniqueStates()" value="{{state}}">{{state}}</option>
+          </select>
+          <select class="filter-select" ng-model="selectedCity">
+            <option value="">All Cities</option>
+            <option ng-repeat="city in getUniqueCities()" value="{{city}}">{{city}}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <select class="filter-select" ng-model="selectedService">
+            <option value="">All Services</option>
+            <option ng-repeat="service in getUniqueServices()" value="{{service}}">{{service}}</option>
+          </select>
+          <select class="filter-select" ng-model="selectedSubService">
+            <option value="">All Sub-Services</option>
+            <option ng-repeat="subService in getUniqueSubServices()" value="{{subService}}">{{subService}}</option>
+          </select>
+          <button class="apply-btn" ng-click="clearFilters()" style="white-space: nowrap;">
+            <i class="fas fa-times me-1"></i>Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jobs Content -->
+    <div class="jobs-container">
+      <!-- Loading State -->
+      <div ng-if="loading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <h3 style="color: #404040; margin-bottom: 0.5rem; font-weight: 600;">Loading Opportunities</h3>
+        <p style="color: #737373; margin: 0;">Finding the best service jobs for you...</p>
+      </div>
+
+      <!-- Jobs Header -->
+      <div ng-if="!loading && jsonRecordsAry.length > 0" class="jobs-header">
+        <div class="jobs-count">
+          <i class="fas fa-briefcase me-2"></i>
+          {{filteredJobs.length}} {{filteredJobs.length === 1 ? 'Opportunity' : 'Opportunities'}} Found
+          <span ng-if="filteredJobs.length !== jsonRecordsAry.length" style="color: #737373; font-weight: 400;">
+            (of {{jsonRecordsAry.length}} total)
+          </span>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn" ng-class="{active: viewMode === 'grid'}" ng-click="setViewMode('grid')">
+            <i class="fas fa-th me-1"></i>Grid
+          </button>
+          <button class="view-btn" ng-class="{active: viewMode === 'list'}" ng-click="setViewMode('list')">
+            <i class="fas fa-list me-1"></i>List
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div ng-if="!loading && filteredJobs.length === 0 && jsonRecordsAry.length === 0" class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <h3 class="empty-state-title">No job opportunities available</h3>
+        <p class="empty-state-text">
+          There are currently no job postings. Please check back later for new opportunities.
+        </p>
+      </div>
+
+      <!-- No Results State -->
+      <div ng-if="!loading && filteredJobs.length === 0 && jsonRecordsAry.length > 0" class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3 class="empty-state-title">No opportunities match your search</h3>
+        <p class="empty-state-text">
+          Try adjusting your search criteria or clearing filters to see more results.
+        </p>
+        <button class="apply-btn" ng-click="clearFilters()" style="margin-top: 1rem;">
+          <i class="fas fa-times me-1"></i>Clear All Filters
+        </button>
+      </div>
+
+      <!-- Jobs Grid -->
+      <div ng-if="!loading && filteredJobs.length > 0" class="jobs-grid">
+        <div class="job-card" ng-repeat="obj in filteredJobs">
+          <div class="job-card-header">
+            <div class="job-title">
+              <i class="{{getServiceIcon(obj.serviceCat)}} me-2"></i>
+              {{obj.serviceCat || 'Service Opportunity'}}
             </div>
+            <div class="job-subtitle">{{obj.subServiceCat || 'General Service'}}</div>
+            <div class="job-badges">
+              <span class="job-badge">{{obj.serviceCat}}</span>
+              <span class="job-badge secondary" ng-if="obj.subServiceCat">{{obj.subServiceCat}}</span>
+            </div>
+          </div>
+
+          <div class="job-card-body">
+            <div class="job-detail">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>{{obj.city}}, {{obj.state}}</span>
+            </div>
+            <div class="job-detail" ng-if="obj.address">
+              <i class="fas fa-home"></i>
+              <span>{{obj.address}}</span>
+            </div>
+            <div class="job-detail">
+              <i class="fas fa-user"></i>
+              <span>{{obj.emailid}}</span>
+            </div>
+            <div class="job-detail" ng-if="obj.UptoDate">
+              <i class="fas fa-calendar"></i>
+              <span>Available until {{formatDate(obj.UptoDate)}}</span>
+            </div>
+
+            <div class="job-task" ng-if="obj.task">
+              <div class="job-task-label">Job Description</div>
+              <div class="job-task-content">{{obj.task}}</div>
+            </div>
+          </div>
+
+          <div class="job-card-footer">
+            <div class="job-date">
+              <i class="fas fa-clock me-1"></i>
+              {{formatDate(obj.UptoDate)}}
+            </div>
+            <button class="apply-btn" ng-click="contactPoster(obj)">
+              <i class="fas fa-envelope me-1"></i>
+              Contact
+            </button>
           </div>
         </div>
       </div>
-      <!-- --------------------------------------------------------------------------------- -->
-      <div class="footer-clean mt-5">
-        <footer>
-          <div class="container">
-            <div class="row justify-content-center">
-              <div class="col-md-3 item">
-                <h3>Services</h3>
-                <ul>
-                  <li><a href="#">Maid Services</a></li>
-                  <li><a href="#">Electrical Services</a></li>
-                  <li><a href="#">Gardening services</a></li>
-                </ul>
-              </div>
-              <div class="col-md-3 item">
-                <h3>About Us</h3>
-                <ul>
-                  <li>
-                    <a href="#"
-                      >KarmYog.com - Your Solution Hub! Connecting you with
-                      skilled professionals for seamless projects, ensuring local
-                      expertise, a simplified experience, and trusted
-                      professionals. Join us where projects find solutions!</a
-                    >
-                  </li>
-                </ul>
-              </div>
-              <div class="col-md-3 ml-2  mr-2 item">
-                <h3>Contact us</h3>
-                <ul>
-                  <li><a href="#">Jalandhar Punjab</a></li>
-                  <li><a href="#">Email: ayushsingla5552@gmail.com</a></li>
-                  <li><a href="#">Phone: +91 6284186961</a></li>
-                </ul>
-              </div>
-              <div class="col-lg-3 item">
-                <a href="#"
-                  ><i class="icon ion-social-facebook"
-                    ><svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="30px"
-                      height="30px"
-                      viewBox="0 0 24 24"
-                    >
-                      <g
-                        fill="none"
-                        stroke="black"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.85"
-                      >
-                        <path
-                          stroke-dasharray="66"
-                          stroke-dashoffset="66"
-                          d="M12 3H8C5.23858 3 3 5.23858 3 8V16C3 18.7614 5.23858 21 8 21H16C18.7614 21 21 18.7614 21 16V8C21 5.23858 18.7614 3 16 3z"
-                        >
-                          <animate
-                            fill="freeze"
-                            attributeName="stroke-dashoffset"
-                            dur="1.8s"
-                            values="66;132"
-                          />
-                        </path>
-                        <path
-                          stroke-dasharray="26"
-                          stroke-dashoffset="26"
-                          d="M12 8C14.20914 8 16 9.79086 16 12C16 14.20914 14.20914 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8"
-                        >
-                          <animate
-                            fill="freeze"
-                            attributeName="stroke-dashoffset"
-                            begin="2.1s"
-                            dur="1.2s"
-                            values="26;0"
-                          />
-                        </path>
-                      </g>
-                      <circle
-                        cx="17"
-                        cy="7"
-                        r="1.5"
-                        fill="black"
-                        fill-opacity="0"
-                      >
-                        <animate
-                          fill="freeze"
-                          attributeName="fill-opacity"
-                          begin="3.3s"
-                          dur="1.2s"
-                          values="0;1"
-                        />
-                      </circle></svg></i
-                ></a>
-  
-                <a href="#"
-                  ><i
-                    ><svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="30px"
-                      height="30px"
-                      viewBox="0 0 24 24"
-                    >
-                      <mask
-                        id="lineMdGithubLoop0"
-                        width="24"
-                        height="24"
-                        x="0"
-                        y="0"
-                      >
-                        <g fill="#fff">
-                          <ellipse cx="9.5" cy="9" rx="1.5" ry="1" />
-                          <ellipse cx="14.5" cy="9" rx="1.5" ry="1" />
-                        </g>
-                      </mask>
-                      <g
-                        fill="none"
-                        stroke="black"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.85"
-                      >
-                        <path
-                          stroke-dasharray="30"
-                          stroke-dashoffset="30"
-                          d="M12 4C13.6683 4 14.6122 4.39991 15 4.5C15.5255 4.07463 16.9375 3 18.5 3C18.8438 4 18.7863 5.21921 18.5 6C19.25 7 19.5 8 19.5 9.5C19.5 11.6875 19.017 13.0822 18 14C16.983 14.9178 15.8887 15.3749 14.5 15.5C15.1506 16.038 15 17.3743 15 18C15 18.7256 15 21 15 21M12 4C10.3317 4 9.38784 4.39991 9 4.5C8.47455 4.07463 7.0625 3 5.5 3C5.15625 4 5.21371 5.21921 5.5 6C4.75 7 4.5 8 4.5 9.5C4.5 11.6875 4.98301 13.0822 6 14C7.01699 14.9178 8.1113 15.3749 9.5 15.5C8.84944 16.038 9 17.3743 9 18C9 18.7256 9 21 9 21"
-                        >
-                          <animate
-                            fill="freeze"
-                            attributeName="stroke-dashoffset"
-                            dur="1.8s"
-                            values="30;0"
-                          />
-                        </path>
-                        <path
-                          stroke-dasharray="10"
-                          stroke-dashoffset="10"
-                          d="M9 19"
-                        >
-                          <animate
-                            fill="freeze"
-                            attributeName="stroke-dashoffset"
-                            begin="2.1s"
-                            dur="0.6s"
-                            values="10;0"
-                          />
-                          <animate
-                            attributeName="d"
-                            dur="9s"
-                            repeatCount="indefinite"
-                            values="M9 19c-1.406 0-2.844-.563-3.688-1.188C4.47 17.188 4.22 16.157 3 15.5;M9 19c-1.406 0-3-.5-4-.5-.532 0-1 0-2-.5;M9 19c-1.406 0-2.844-.563-3.688-1.188C4.47 17.188 4.22 16.157 3 15.5"
-                          />
-                        </path>
-                      </g>
-                      <rect
-                        width="8"
-                        height="4"
-                        x="8"
-                        y="11"
-                        fill="black"
-                        mask="url(#lineMdGithubLoop0)"
-                      >
-                        <animate
-                          attributeName="y"
-                          dur="30s"
-                          keyTimes="0;0.45;0.46;0.54;0.55;1"
-                          repeatCount="indefinite"
-                          values="11;11;7;7;11;11"
-                        />
-                      </rect></svg></i
-                ></a>
-                <a href="#"
-                  ><i class="icon"
-                    ><svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="30px"
-                      height="30px"
-                      viewBox="0 0 24 24"
-                    >
-                      <g fill="black">
-                        <path d="M1 2h2.5L3.5 2h-2.5z">
-                          <animate
-                            fill="freeze"
-                            attributeName="d"
-                            dur="1.2s"
-                            values="M1 2h2.5L3.5 2h-2.5z;M1 2h2.5L18.5 22h-2.5z"
-                          />
-                        </path>
-                        <path d="M5.5 2h2.5L7.2 2h-2.5z">
-                          <animate
-                            fill="freeze"
-                            attributeName="d"
-                            dur="1.2s"
-                            values="M5.5 2h2.5L7.2 2h-2.5z;M5.5 2h2.5L23 22h-2.5z"
-                          />
-                        </path>
-                        <path d="M3 2h5v0h-5z" opacity="0">
-                          <set attributeName="opacity" begin="1.2s" to="1" />
-                          <animate
-                            fill="freeze"
-                            attributeName="d"
-                            begin="1.2s"
-                            dur="1.2s"
-                            values="M3 2h5v0h-5z;M3 2h5v2h-5z"
-                          />
-                        </path>
-                        <path d="M16 22h5v0h-5z" opacity="0">
-                          <set attributeName="opacity" begin="1.2s" to="1" />
-                          <animate
-                            fill="freeze"
-                            attributeName="d"
-                            begin="1.2s"
-                            dur="1.2s"
-                            values="M16 22h5v0h-5z;M16 22h5v-2h-5z"
-                          />
-                        </path>
-                        <path d="M18.5 2h3.5L22 2h-3.5z" opacity="0">
-                          <set attributeName="opacity" begin="1.5s" to="1" />
-                          <animate
-                            fill="freeze"
-                            attributeName="d"
-                            begin="1.5s"
-                            dur="1.2s"
-                            values="M18.5 2h3.5L22 2h-3.5z;M18.5 2h3.5L5 22h-3.5z"
-                          />
-                        </path>
-                      </g></svg></i
-                ></a>
-                <a href="#"><i class="icon ion-social-instagram"></i></a>
-                <p class="copyright">KarmYog.com © 2024</p>
-              </div>
+    </div>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+      <div class="footer-content">
+        <div class="footer-grid">
+          <div class="footer-section">
+            <h3><i class="fas fa-briefcase me-2"></i>Services</h3>
+            <ul>
+              <li><a href="#">Maid Services</a></li>
+              <li><a href="#">Electrical Services</a></li>
+              <li><a href="#">Gardening Services</a></li>
+              <li><a href="#">Tutoring Services</a></li>
+              <li><a href="#">Repair Services</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3><i class="fas fa-info-circle me-2"></i>About KarmYog</h3>
+            <p style="line-height: 1.6; color: var(--neutral-400);">
+              Your Solution Hub! Connecting skilled professionals with customers for seamless projects. 
+              We ensure local expertise, simplified experience, and trusted professionals.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3><i class="fas fa-envelope me-2"></i>Contact Us</h3>
+            <ul>
+              <li><a href="#"><i class="fas fa-map-marker-alt me-2"></i>Jalandhar, Punjab</a></li>
+              <li><a href="mailto:ayushsingla5552@gmail.com"><i class="fas fa-envelope me-2"></i>ayushsingla5552@gmail.com</a></li>
+              <li><a href="tel:+916284186961"><i class="fas fa-phone me-2"></i>+91 6284186961</a></li>
+            </ul>
+            <div class="social-links">
+              <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+              <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
             </div>
           </div>
-        </footer>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2024 KarmYog.com. All rights reserved. | Where projects find solutions!</p>
+        </div>
       </div>
+    </footer>
     
   </body>
 </html>
